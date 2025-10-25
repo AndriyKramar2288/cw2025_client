@@ -1,0 +1,29 @@
+package com.banew.cw2025_client.ui.login;
+
+import androidx.lifecycle.ViewModel;
+import androidx.lifecycle.ViewModelProvider;
+import androidx.annotation.NonNull;
+
+import com.banew.cw2025_client.GlobalApplication;
+import com.banew.cw2025_client.data.DataSource;
+import com.banew.cw2025_client.data.LoginRepository;
+
+/**
+ * ViewModel provider factory to instantiate LoginViewModel.
+ * Required given LoginViewModel has a non-empty constructor
+ */
+public class LoginViewModelFactory implements ViewModelProvider.Factory {
+
+    @NonNull
+    @Override
+    @SuppressWarnings("unchecked")
+    public <T extends ViewModel> T create(@NonNull Class<T> modelClass) {
+        if (modelClass.isAssignableFrom(LoginViewModel.class)) {
+            return (T) new LoginViewModel(
+                    LoginRepository.getInstance(GlobalApplication.getInstance().getDataSource())
+            );
+        } else {
+            throw new IllegalArgumentException("Unknown ViewModel class");
+        }
+    }
+}
