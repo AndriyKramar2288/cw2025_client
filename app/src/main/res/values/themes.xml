@@ -1,0 +1,45 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Base application theme. -->
+    <style name="Base.Theme.Cw2025_client" parent="Theme.MaterialComponents.Light.NoActionBar">
+        <!-- Customize your light theme here. -->
+        <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
+        <item name="android:fontFamily">@font/roboto_mono_medium</item>
+    </style>
+
+    <style name="MyButton" parent="Widget.Material3.Button">
+        <item name="cornerRadius">16dp</item>
+        <item name="android:textSize">16sp</item>
+        <item name="android:padding">12dp</item>
+    </style>
+
+    <!-- Стиль для активного (вибраного) пункту -->
+    <style name="BottomNavTextActive" parent="TextAppearance.MaterialComponents.Caption">
+        <item name="android:fontFamily">@font/roboto_mono_medium</item>
+        <item name="android:textSize">14sp</item>
+    </style>
+
+    <!-- Стиль для неактивного пункту -->
+    <style name="BottomNavTextInactive" parent="TextAppearance.MaterialComponents.Caption">
+        <item name="android:fontFamily">@font/roboto_mono_medium</item>
+        <item name="android:textSize">14sp</item>
+    </style>
+
+    <style name="MyNavBar" parent="Widget.Design.BottomNavigationView">
+        <item name="itemIconSize">30dp</item>
+        <item name="itemIconTint">@color/navbar_icon_tint</item>
+        <item name="itemTextColor">@color/navbar_text</item>
+        <item name="itemHorizontalPadding">0dp</item>
+
+        <item name="android:background">@drawable/nav_background_curved</item>
+        <item name="android:layout_margin">7dp</item>
+        <item name="elevation">8dp</item>
+
+
+        <item name="labelVisibilityMode">labeled</item>
+
+        <item name="itemTextAppearanceActive">@style/BottomNavTextActive</item>
+        <item name="itemTextAppearanceInactive">@style/BottomNavTextInactive</item>
+    </style>
+
+    <style name="Theme.Cw2025_client" parent="Base.Theme.Cw2025_client" />
+</resources>

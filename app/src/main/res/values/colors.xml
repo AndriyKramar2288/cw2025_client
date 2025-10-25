@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="navbar_back">#F6F6F6</color>
+    <color name="navbar_text">#4B4B4B</color>
+    <color name="navbar_icon_tint">#565656</color>
+    <color name="navbar_back2">#E6E6E6</color>
+</resources>

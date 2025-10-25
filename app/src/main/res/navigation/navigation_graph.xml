@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/navigation_graph"
+    app:startDestination="@id/homeFragment">
+
+    <fragment
+        android:id="@+id/homeFragment"
+        android:name="com.banew.cw2025_client.MainPageFragment"
+        android:label="Головна" />
+
+    <fragment
+        android:id="@+id/profileFragment"
+        android:name="com.banew.cw2025_client.ProfilePageFragment"
+        android:label="Профіль" />
+</navigation>
