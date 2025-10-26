@@ -8,21 +8,25 @@ public class Result<T> {
     private Result() {
     }
 
-    @Override
-    public String toString() {
-        if (this instanceof Result.Success) {
-            Result.Success success = (Result.Success) this;
-            return "Success[data=" + success.getData().toString() + "]";
-        } else if (this instanceof Result.Error) {
-            Result.Error error = (Result.Error) this;
-            return "Error[exception=" + error.getError().toString() + "]";
-        }
-        return "";
+    public boolean isSuccess() {
+        return this instanceof Success;
+    }
+
+    public boolean isError() {
+        return this instanceof Error;
+    }
+
+    public Success<T> asSuccess() {
+        return (Success<T>) this;
+    }
+
+    public Error<T> asError() {
+        return (Error<T>) this;
     }
 
     // Success sub-class
-    public final static class Success<T> extends Result {
-        private T data;
+    public final static class Success<T> extends Result<T> {
+        private final T data;
 
         public Success(T data) {
             this.data = data;
@@ -34,8 +38,8 @@ public class Result<T> {
     }
 
     // Error sub-class
-    public final static class Error extends Result {
-        private Exception error;
+    public final static class Error<T> extends Result<T> {
+        private final Exception error;
 
         public Error(Exception error) {
             this.error = error;

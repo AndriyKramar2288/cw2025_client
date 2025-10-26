@@ -4,13 +4,13 @@
     <item
         android:icon="@drawable/globe_24px"
         android:id="@+id/homeFragment"
-        android:title="Головна" />
+        android:title="@string/main_main_page" />
     <item
         android:id="@+id/nav_courses"
         android:icon="@drawable/book_2_24px"
-        android:title="Курси" />
+        android:title="@string/main_my_courses" />
     <item
         android:icon="@drawable/contacts_product_24px"
         android:id="@+id/profileFragment"
-        android:title="Профіль" />
+        android:title="@string/main_profile" />
 </menu>

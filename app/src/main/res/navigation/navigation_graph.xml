@@ -6,11 +6,11 @@
 
     <fragment
         android:id="@+id/homeFragment"
-        android:name="com.banew.cw2025_client.MainPageFragment"
+        android:name="com.banew.cw2025_client.ui.main.MainPageFragment"
         android:label="Головна" />
 
     <fragment
         android:id="@+id/profileFragment"
-        android:name="com.banew.cw2025_client.ProfilePageFragment"
+        android:name="com.banew.cw2025_client.ui.main.ProfilePageFragment"
         android:label="Профіль" />
 </navigation>
