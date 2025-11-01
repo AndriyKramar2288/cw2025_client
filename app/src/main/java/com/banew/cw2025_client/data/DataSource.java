@@ -12,6 +12,7 @@ import androidx.annotation.Nullable;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
+import com.banew.cw2025_backend_common.dto.coursePlans.CoursePlanBasicDto;
 import com.banew.cw2025_backend_common.dto.users.UserLoginForm;
 import com.banew.cw2025_backend_common.dto.users.UserProfileBasicDto;
 import com.banew.cw2025_backend_common.dto.users.UserTokenFormResult;
@@ -20,6 +21,7 @@ import com.banew.cw2025_client.R;
 import com.banew.cw2025_client.data.api.ApiService;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
@@ -69,6 +71,24 @@ public class DataSource {
 //        ).build();
 
         prefs = applicationContext.getSharedPreferences("MyAppPrefs", MODE_PRIVATE);
+    }
+
+    public LiveData<Result<List<CoursePlanBasicDto>>> getCurrentCoursePlanList() {
+        MutableLiveData<Result<List<CoursePlanBasicDto>>> result = new MutableLiveData<>();
+
+        enqueue(
+                getApiService().currentCoursePlanList("Bearer " + getToken()),
+        list -> {
+                    result.postValue(new Result.Success<>(list));
+                },
+                (t) -> {
+                    result.postValue(new Result.Error<>(new IOException(
+                            context.getString(R.string.network_error), t)));
+                },
+                Map.of(403, this::logout)
+        );
+
+        return result;
     }
 
     public LiveData<Result<UserProfileBasicDto>> getCurrentUserProfile() {

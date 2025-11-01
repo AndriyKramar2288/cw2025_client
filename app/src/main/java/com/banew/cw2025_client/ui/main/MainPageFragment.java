@@ -10,8 +10,13 @@ import androidx.fragment.app.Fragment;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
+import com.banew.cw2025_client.CoursePlanAdapter;
 import com.banew.cw2025_client.R;
+
+import java.util.ArrayList;
 
 public class MainPageFragment extends Fragment {
     @Nullable
@@ -26,10 +31,12 @@ public class MainPageFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        RecyclerView recyclerView = view.findViewById(R.id.coursesRecyclerView);
+        recyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
+        var adapter = new CoursePlanAdapter(new ArrayList<>());
+        recyclerView.setAdapter(adapter);
+
         var mainPageModel = new ViewModelProvider(requireActivity()).get(MainPageModel.class);
-        mainPageModel.getCurrentUser().observe(getViewLifecycleOwner(), u -> {
-            var ac = ((TextView) requireView().findViewById(R.id.long_text));
-            if (ac != null) ac.setText(u.username());
-        });
+        mainPageModel.getCurrentCoursePlans().observe(getViewLifecycleOwner(), adapter::setList);
     }
 }

@@ -1,9 +1,12 @@
 package com.banew.cw2025_client.data.api;
 
+import com.banew.cw2025_backend_common.dto.coursePlans.CoursePlanBasicDto;
 import com.banew.cw2025_backend_common.dto.users.UserLoginForm;
 import com.banew.cw2025_backend_common.dto.users.UserProfileBasicDto;
 import com.banew.cw2025_backend_common.dto.users.UserRegisterForm;
 import com.banew.cw2025_backend_common.dto.users.UserTokenFormResult;
+
+import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.http.Body;
@@ -21,4 +24,7 @@ public interface ApiService {
 
     @GET("users/")
     Call<UserProfileBasicDto> currentUser(@Header("Authorization") String token);
+
+    @GET("course-plan/examples")
+    Call<List<CoursePlanBasicDto>> currentCoursePlanList(@Header("Authorization") String token);
 }

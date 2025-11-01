@@ -49,7 +49,7 @@ public class MainActivity extends AppCompatActivity {
         SwipeRefreshLayout swipeRefresh = findViewById(R.id.swipeRefresh);
 
         swipeRefresh.setOnRefreshListener(() -> {
-            mainPageModel.refreshProfile();
+            mainPageModel.refresh();
 
             mainPageModel.getLastResult().observe(this, result -> {
                 swipeRefresh.setRefreshing(false);

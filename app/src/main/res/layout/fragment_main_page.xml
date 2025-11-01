@@ -6,11 +6,11 @@
     android:layout_height="match_parent"
     tools:context=".ui.main.MainPageFragment">
 
-    <TextView
-        android:id="@+id/long_text"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:fontFamily="@font/roboto_mono_medium"
-        android:layout_margin="@dimen/text_margin"
-        android:text="@string/large_text" />
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/coursesRecyclerView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="8dp"/>
+
+
 </androidx.core.widget.NestedScrollView>
