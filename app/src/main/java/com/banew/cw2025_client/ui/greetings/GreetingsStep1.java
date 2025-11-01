@@ -1,4 +1,4 @@
-package com.banew.cw2025_client;
+package com.banew.cw2025_client.ui.greetings;
 
 import android.os.Bundle;
 
@@ -12,6 +12,8 @@ import android.view.animation.AccelerateInterpolator;
 import android.view.animation.OvershootInterpolator;
 import android.widget.Button;
 import android.widget.ImageView;
+
+import com.banew.cw2025_client.R;
 
 public class GreetingsStep1 extends Fragment {
 

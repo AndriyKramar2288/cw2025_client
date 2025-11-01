@@ -1,4 +1,4 @@
-package com.banew.cw2025_client;
+package com.banew.cw2025_client.ui.main;
 
 import android.os.Bundle;
 
@@ -7,7 +7,8 @@ import androidx.fragment.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
+
+import com.banew.cw2025_client.R;
 
 public class MyCoursesFragment extends Fragment {
     @Override

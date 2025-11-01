@@ -15,7 +15,7 @@ import androidx.navigation.fragment.NavHostFragment;
 import androidx.navigation.ui.NavigationUI;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
-import com.banew.cw2025_client.GreetingsActivity;
+import com.banew.cw2025_client.ui.greetings.GreetingsActivity;
 import com.banew.cw2025_client.R;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
@@ -32,26 +32,23 @@ public class MainActivity extends AppCompatActivity {
         setUpNavigation();
 
         mainPageModel = new ViewModelProvider(this).get(MainPageModel.class);
+        // kick user if not login
         if (mainPageModel.isShouldToSwitchToLogin()) {
             Intent intent = new Intent(this, GreetingsActivity.class);
             startActivity(intent);
         }
 
-        mainPageModel.getLastResult().observeForever(r -> {
-            if (r.isError()) {
-                var result = r.asError();
-                Toast.makeText(this,
-                        result.getError().getMessage(),
-                        Toast.LENGTH_SHORT).show();
-            }
+        // show errors
+        mainPageModel.getLastException().observe(this, r -> {
+            Toast.makeText(this,
+                    r.getMessage(),
+                    Toast.LENGTH_SHORT).show();
         });
 
+        // swipeRefresh
         SwipeRefreshLayout swipeRefresh = findViewById(R.id.swipeRefresh);
-
         swipeRefresh.setOnRefreshListener(() -> {
-            mainPageModel.refresh();
-
-            mainPageModel.getLastResult().observe(this, result -> {
+            mainPageModel.refresh(() -> {
                 swipeRefresh.setRefreshing(false);
             });
         });

@@ -4,13 +4,13 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".GreetingsStep1">
+    tools:context=".ui.greetings.GreetingsStep1">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/greetings1"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context=".GreetingsActivity">
+        tools:context=".ui.greetings.GreetingsActivity">
 
         <ImageView
             android:id="@+id/logoImage"

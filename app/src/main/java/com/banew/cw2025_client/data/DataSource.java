@@ -9,29 +9,32 @@ import android.content.SharedPreferences;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.lifecycle.LiveData;
-import androidx.lifecycle.MutableLiveData;
 
 import com.banew.cw2025_backend_common.dto.coursePlans.CoursePlanBasicDto;
 import com.banew.cw2025_backend_common.dto.users.UserLoginForm;
 import com.banew.cw2025_backend_common.dto.users.UserProfileBasicDto;
 import com.banew.cw2025_backend_common.dto.users.UserTokenFormResult;
-import com.banew.cw2025_client.GreetingsActivity;
+import com.banew.cw2025_client.ui.greetings.GreetingsActivity;
 import com.banew.cw2025_client.R;
 import com.banew.cw2025_client.data.api.ApiService;
+import com.google.gson.annotations.SerializedName;
 
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
 import okhttp3.OkHttpClient;
+import okhttp3.Request;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
+import retrofit2.http.GET;
+import retrofit2.http.Header;
 
 public class DataSource {
     private final SharedPreferences prefs;
@@ -39,21 +42,28 @@ public class DataSource {
 
     private static Retrofit retrofit = null;
     private static final String BASE_URL = "http://10.0.2.2:8080/api/";
+    private static final boolean isNgrok = false;
     private final Context context;
 
     private static Retrofit getClient() {
         if (retrofit == null) {
-            OkHttpClient client = new OkHttpClient.Builder()
-                    .connectTimeout(5, TimeUnit.SECONDS)
-                    .readTimeout(3, TimeUnit.SECONDS)
-                    .build();
-
-            retrofit = new Retrofit.Builder()
-                    .baseUrl(BASE_URL)
-                    .client(client)
-                    .addConverterFactory(GsonConverterFactory.create())
-                    .build();
+            retrofit = buildClient(BASE_URL);
         }
+        return retrofit;
+    }
+
+    private static Retrofit buildClient(String path) {
+        OkHttpClient client = new OkHttpClient.Builder()
+                .connectTimeout(5, TimeUnit.SECONDS)
+                .readTimeout(3, TimeUnit.SECONDS)
+                .build();
+
+        retrofit = new Retrofit.Builder()
+                .baseUrl(path)
+                .client(client)
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+
         return retrofit;
     }
 
@@ -63,26 +73,26 @@ public class DataSource {
 
     public DataSource(Context applicationContext) {
         context = applicationContext;
-        
-//        db = Room.databaseBuilder(
-//                applicationContext,
-//                AppDatabase.class,
-//                "my-database"
-//        ).build();
 
         prefs = applicationContext.getSharedPreferences("MyAppPrefs", MODE_PRIVATE);
+
+        if (isNgrok) {
+            NgrokTokenExtractor.extractNgrokPath("", path -> {
+                retrofit = buildClient(path + "/api/");
+            });
+        }
     }
 
-    public LiveData<Result<List<CoursePlanBasicDto>>> getCurrentCoursePlanList() {
-        MutableLiveData<Result<List<CoursePlanBasicDto>>> result = new MutableLiveData<>();
+    public CompletableFuture<Result<List<CoursePlanBasicDto>>> getCurrentCoursePlanList() {
+        CompletableFuture<Result<List<CoursePlanBasicDto>>> result = new CompletableFuture<>();
 
         enqueue(
                 getApiService().currentCoursePlanList("Bearer " + getToken()),
         list -> {
-                    result.postValue(new Result.Success<>(list));
+                    result.complete(new Result.Success<>(list));
                 },
                 (t) -> {
-                    result.postValue(new Result.Error<>(new IOException(
+                    result.complete(new Result.Error<>(new IOException(
                             context.getString(R.string.network_error), t)));
                 },
                 Map.of(403, this::logout)
@@ -91,8 +101,8 @@ public class DataSource {
         return result;
     }
 
-    public LiveData<Result<UserProfileBasicDto>> getCurrentUserProfile() {
-        MutableLiveData<Result<UserProfileBasicDto>> result = new MutableLiveData<>();
+    public CompletableFuture<Result<UserProfileBasicDto>> getCurrentUserProfile() {
+        CompletableFuture<Result<UserProfileBasicDto>> result = new CompletableFuture<>();
 
         if (getToken() == null) {
             logout();
@@ -101,10 +111,10 @@ public class DataSource {
         enqueue(
                 getApiService().currentUser("Bearer " + getToken()),
                 user -> {
-                    result.postValue(new Result.Success<>(user));
+                    result.complete(new Result.Success<>(user));
                 },
                 (t) -> {
-                    result.postValue(new Result.Error<>(new IOException(
+                    result.complete(new Result.Error<>(new IOException(
                             context.getString(R.string.network_error), t)));
                 },
                 Map.of(403, this::logout)
@@ -113,22 +123,22 @@ public class DataSource {
         return result;
     }
 
-    public LiveData<Result<UserTokenFormResult>> login(String username, String password) {
-        MutableLiveData<Result<UserTokenFormResult>> result = new MutableLiveData<>();
+    public CompletableFuture<Result<UserTokenFormResult>> login(String username, String password) {
+        CompletableFuture<Result<UserTokenFormResult>> result = new CompletableFuture<>();
 
         var form = new UserLoginForm(username, password);
         enqueue(
                 getApiService().login(form),
                 resBody -> {
-                    result.postValue(new Result.Success<>(resBody));
+                    result.complete(new Result.Success<>(resBody));
                     updateToken(resBody.token());
                 },
                 (t) -> {
-                    result.postValue(new Result.Error<>(new IOException(
+                    result.complete(new Result.Error<>(new IOException(
                             context.getString(R.string.network_error), t)));
                 },
                 Map.of(400, () -> {
-                    result.postValue(new Result.Error<>(new IOException(
+                    result.complete(new Result.Error<>(new IOException(
                             context.getString(R.string.login_error))));
                 })
         );
@@ -178,5 +188,61 @@ public class DataSource {
         Intent intent = new Intent(context, GreetingsActivity.class);
         intent.setFlags(FLAG_ACTIVITY_NEW_TASK);
         context.startActivity(intent);
+    }
+
+    private static class NgrokTokenExtractor {
+        public static void extractNgrokPath(String token, Consumer<String> consumer) {
+            Retrofit retrofit = new Retrofit.Builder()
+                    .baseUrl("https://api.ngrok.com/")
+                    .addConverterFactory(GsonConverterFactory.create())
+                    .build();
+
+            NgrokApiService service = retrofit.create(NgrokApiService.class);
+
+            try {
+                service
+                .getTunnels("Bearer " + token, "2")
+                .enqueue(new Callback<NgrokTunnelsResponse>() {
+                    @Override
+                    public void onResponse(@NonNull Call<NgrokTunnelsResponse> call,
+                                           @NonNull Response<NgrokTunnelsResponse> response) {
+                        if (response.isSuccessful() && response.body() != null) {
+                            String path = response.body().tunnels.stream()
+                                    .findFirst()
+                                    .orElseThrow()
+                                    .publicUrl;
+
+                            System.out.println("Я ЖИВИЙЙЙ\n\n\n\n" + path);
+                            consumer.accept(path);
+                        }
+                    }
+                    @Override
+                    public void onFailure(@NonNull Call<NgrokTunnelsResponse> call,
+                                          @NonNull Throwable t) {
+
+                    }
+                });
+            }
+            catch (Exception e) {
+                throw new RuntimeException("Oh shit!", e);
+            }
+        }
+
+        private interface NgrokApiService {
+            @GET("tunnels")
+            Call<NgrokTunnelsResponse> getTunnels(
+                    @Header("Authorization") String bearerToken,
+                    @Header("Ngrok-Version") String version
+            );
+        }
+
+        private static class NgrokTunnelsResponse {
+            public List<NgrokTunnel> tunnels;
+        }
+
+        private static class NgrokTunnel {
+            @SerializedName("public_url")
+            public String publicUrl;
+        }
     }
 }

@@ -1,4 +1,4 @@
-package com.banew.cw2025_client;
+package com.banew.cw2025_client.ui.main;
 
 import android.annotation.SuppressLint;
 import android.view.LayoutInflater;
@@ -10,6 +10,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.banew.cw2025_backend_common.dto.coursePlans.CoursePlanBasicDto;
+import com.banew.cw2025_client.R;
 
 import java.util.List;
 import java.util.stream.Collectors;

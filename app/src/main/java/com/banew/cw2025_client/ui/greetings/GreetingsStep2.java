@@ -1,4 +1,4 @@
-package com.banew.cw2025_client;
+package com.banew.cw2025_client.ui.greetings;
 
 import android.os.Bundle;
 
@@ -7,6 +7,8 @@ import androidx.fragment.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
+import com.banew.cw2025_client.R;
 
 public class GreetingsStep2 extends Fragment {
     @Override

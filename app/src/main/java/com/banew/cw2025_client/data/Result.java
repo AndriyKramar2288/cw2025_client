@@ -1,11 +1,22 @@
 package com.banew.cw2025_client.data;
 
+import androidx.lifecycle.MutableLiveData;
+
 /**
  * A generic class that holds a result success w/ data or an error exception.
  */
 public class Result<T> {
     // hide the private constructor to limit subclass types (Success, Error)
     private Result() {
+    }
+
+    public void resolveData(MutableLiveData<T> success, MutableLiveData<Exception> failure) {
+        if (isSuccess()) {
+            success.postValue(asSuccess().getData());
+        }
+        else {
+            failure.postValue(asError().getError());
+        }
     }
 
     public boolean isSuccess() {

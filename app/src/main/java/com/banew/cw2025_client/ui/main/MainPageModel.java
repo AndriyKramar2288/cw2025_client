@@ -14,6 +14,7 @@ import com.banew.cw2025_client.data.Result;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 public class MainPageModel extends ViewModel {
     private final DataSource dataSource;
@@ -28,9 +29,9 @@ public class MainPageModel extends ViewModel {
         return currentCoursePlans;
     }
 
-    private final MutableLiveData<Result<?>> lastResult = new MutableLiveData<>();
-    public LiveData<Result<?>> getLastResult() {
-        return lastResult;
+    private final MutableLiveData<Exception> lastException = new MutableLiveData<>();
+    public LiveData<Exception> getLastException() {
+        return lastException;
     }
 
 
@@ -58,23 +59,19 @@ public class MainPageModel extends ViewModel {
     }
 
     public void refresh() {
-        observeOnce(dataSource.getCurrentUserProfile(), r -> {
-            if (r.isSuccess()) currentUser.postValue(r.asSuccess().getData());
-        });
-        observeOnce(dataSource.getCurrentCoursePlanList(), r -> {
-            if (r.isSuccess()) currentCoursePlans.postValue(r.asSuccess().getData());
-        });
+        refresh(() -> {});
     }
 
-    public <T> void observeOnce(LiveData<T> liveData, Observer<T> observer) {
-        liveData.observeForever(new Observer<T>() {
-            @Override
-            public void onChanged(T t) {
-                liveData.removeObserver(this);
-                lastResult.postValue((Result<?>) t);
-                observer.onChanged(t);
-            }
+    public void refresh(Runnable callback) {
+        var f1 = dataSource.getCurrentUserProfile().thenAccept(r -> {
+            r.resolveData(currentUser, lastException);
         });
+
+        var f2 = dataSource.getCurrentCoursePlanList().thenAccept(r -> {
+            r.resolveData(currentCoursePlans, lastException);
+        });
+
+        CompletableFuture.allOf(f1, f2).thenAccept(r -> callback.run());
     }
 
     public boolean isShouldToSwitchToLogin() {

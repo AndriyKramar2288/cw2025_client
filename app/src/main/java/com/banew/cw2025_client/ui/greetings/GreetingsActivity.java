@@ -1,17 +1,14 @@
-package com.banew.cw2025_client;
+package com.banew.cw2025_client.ui.greetings;
 
-import android.animation.TimeInterpolator;
 import android.os.Bundle;
-import android.view.animation.AccelerateInterpolator;
-import android.view.animation.OvershootInterpolator;
-import android.widget.ImageView;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+
+import com.banew.cw2025_client.R;
 
 public class GreetingsActivity extends AppCompatActivity {
 

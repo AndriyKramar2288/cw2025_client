@@ -111,4 +111,6 @@
     <string name="main_main_page">Головна</string>
     <string name="main_my_courses">Мої курси</string>
     <string name="main_profile">Профіль</string>
+    <string name="main_page_course_plan_list_label">Оберіть план навчання</string>
+    <string name="main_page_create_course_plan_label">Не знайшли бажаний курс?\nСтворіть власний!</string>
 </resources>
