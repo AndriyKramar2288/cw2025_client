@@ -11,17 +11,13 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
-import androidx.room.Room;
 
-import com.banew.cw2025_backend_common.dto.BasicResult;
-import com.banew.cw2025_backend_common.dto.UserLoginForm;
-import com.banew.cw2025_backend_common.dto.UserProfileBasicDto;
-import com.banew.cw2025_backend_common.dto.UserTokenFormResult;
+import com.banew.cw2025_backend_common.dto.users.UserLoginForm;
+import com.banew.cw2025_backend_common.dto.users.UserProfileBasicDto;
+import com.banew.cw2025_backend_common.dto.users.UserTokenFormResult;
 import com.banew.cw2025_client.GreetingsActivity;
 import com.banew.cw2025_client.R;
 import com.banew.cw2025_client.data.api.ApiService;
-import com.banew.cw2025_client.data.model.AppDatabase;
-import com.google.gson.Gson;
 
 import java.io.IOException;
 import java.util.Map;
@@ -46,8 +42,8 @@ public class DataSource {
     private static Retrofit getClient() {
         if (retrofit == null) {
             OkHttpClient client = new OkHttpClient.Builder()
-                    .connectTimeout(30, TimeUnit.SECONDS)
-                    .readTimeout(30, TimeUnit.SECONDS)
+                    .connectTimeout(5, TimeUnit.SECONDS)
+                    .readTimeout(3, TimeUnit.SECONDS)
                     .build();
 
             retrofit = new Retrofit.Builder()
@@ -78,7 +74,9 @@ public class DataSource {
     public LiveData<Result<UserProfileBasicDto>> getCurrentUserProfile() {
         MutableLiveData<Result<UserProfileBasicDto>> result = new MutableLiveData<>();
 
-        if (getToken() == null) throw new RuntimeException("Токена нема!!!");
+        if (getToken() == null) {
+            logout();
+        }
 
         enqueue(
                 getApiService().currentUser("Bearer " + getToken()),
@@ -98,14 +96,12 @@ public class DataSource {
     public LiveData<Result<UserTokenFormResult>> login(String username, String password) {
         MutableLiveData<Result<UserTokenFormResult>> result = new MutableLiveData<>();
 
-        var form = new UserLoginForm();
-        form.setEmail(username);
-        form.setPassword(password);
+        var form = new UserLoginForm(username, password);
         enqueue(
                 getApiService().login(form),
                 resBody -> {
                     result.postValue(new Result.Success<>(resBody));
-                    updateToken(resBody.getToken());
+                    updateToken(resBody.token());
                 },
                 (t) -> {
                     result.postValue(new Result.Error<>(new IOException(

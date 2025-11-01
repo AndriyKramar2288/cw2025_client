@@ -23,14 +23,13 @@ public class MainPageFragment extends Fragment {
     }
 
     @Override
-    public void onStart() {
-        super.onStart();
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
 
         var mainPageModel = new ViewModelProvider(requireActivity()).get(MainPageModel.class);
-        mainPageModel.getCurrentUser().observeForever(u -> {
-            ((TextView) getActivity().findViewById(R.id.long_text)).setText(
-                    u.getUsername()
-            );
+        mainPageModel.getCurrentUser().observe(getViewLifecycleOwner(), u -> {
+            var ac = ((TextView) requireView().findViewById(R.id.long_text));
+            if (ac != null) ac.setText(u.username());
         });
     }
 }

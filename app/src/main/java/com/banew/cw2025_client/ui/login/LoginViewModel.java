@@ -6,7 +6,7 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
-import com.banew.cw2025_backend_common.dto.UserTokenFormResult;
+import com.banew.cw2025_backend_common.dto.users.UserTokenFormResult;
 import com.banew.cw2025_client.R;
 import com.banew.cw2025_client.data.DataSource;
 import com.banew.cw2025_client.data.Result;

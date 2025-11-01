@@ -1,9 +1,9 @@
 package com.banew.cw2025_client.data.api;
 
-import com.banew.cw2025_backend_common.dto.UserLoginForm;
-import com.banew.cw2025_backend_common.dto.UserProfileBasicDto;
-import com.banew.cw2025_backend_common.dto.UserRegisterForm;
-import com.banew.cw2025_backend_common.dto.UserTokenFormResult;
+import com.banew.cw2025_backend_common.dto.users.UserLoginForm;
+import com.banew.cw2025_backend_common.dto.users.UserProfileBasicDto;
+import com.banew.cw2025_backend_common.dto.users.UserRegisterForm;
+import com.banew.cw2025_backend_common.dto.users.UserTokenFormResult;
 
 import retrofit2.Call;
 import retrofit2.http.Body;

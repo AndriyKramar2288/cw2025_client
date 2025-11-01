@@ -28,18 +28,18 @@ public class ProfilePageFragment extends Fragment {
 
         var mainPageModel = new ViewModelProvider(requireActivity()).get(MainPageModel.class);
 
-        mainPageModel.getCurrentUser().observeForever(u -> {
-            ((TextView) getActivity().findViewById(R.id.profile_email)).setText(
-                    u.getEmail()
+        mainPageModel.getCurrentUser().observe(getViewLifecycleOwner(), u -> {
+            ((TextView) requireActivity().findViewById(R.id.profile_email)).setText(
+                    u.email()
             );
-            ((TextView) getActivity().findViewById(R.id.profile_username)).setText(
-                    u.getUsername()
+            ((TextView) requireActivity().findViewById(R.id.profile_username)).setText(
+                    u.username()
             );
 
-            if (u.getPhotoSrc() != null) {
-                ImageView imageView = getActivity().findViewById(R.id.userAvatarImage);
+            if (u.photoSrc() != null) {
+                ImageView imageView = requireActivity().findViewById(R.id.userAvatarImage);
 
-                String imageUrl = u.getPhotoSrc();
+                String imageUrl = u.photoSrc();
 
                 Glide.with(this)
                         .load(imageUrl)

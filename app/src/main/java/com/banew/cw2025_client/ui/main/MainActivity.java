@@ -2,6 +2,7 @@ package com.banew.cw2025_client.ui.main;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -12,6 +13,7 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
 import androidx.navigation.fragment.NavHostFragment;
 import androidx.navigation.ui.NavigationUI;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.banew.cw2025_client.GreetingsActivity;
 import com.banew.cw2025_client.R;
@@ -34,6 +36,25 @@ public class MainActivity extends AppCompatActivity {
             Intent intent = new Intent(this, GreetingsActivity.class);
             startActivity(intent);
         }
+
+        mainPageModel.getLastResult().observeForever(r -> {
+            if (r.isError()) {
+                var result = r.asError();
+                Toast.makeText(this,
+                        result.getError().getMessage(),
+                        Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        SwipeRefreshLayout swipeRefresh = findViewById(R.id.swipeRefresh);
+
+        swipeRefresh.setOnRefreshListener(() -> {
+            mainPageModel.refreshProfile();
+
+            mainPageModel.getLastResult().observe(this, result -> {
+                swipeRefresh.setRefreshing(false);
+            });
+        });
     }
 
     private void setUpPaddings() {
