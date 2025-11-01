@@ -7,10 +7,16 @@
     <fragment
         android:id="@+id/homeFragment"
         android:name="com.banew.cw2025_client.ui.main.MainPageFragment"
-        android:label="Головна" />
+        android:label="Головна">
+    </fragment>
 
     <fragment
         android:id="@+id/profileFragment"
         android:name="com.banew.cw2025_client.ui.main.ProfilePageFragment"
         android:label="Профіль" />
+
+    <fragment
+        android:id="@+id/createCoursePlanFragment"
+        android:name="com.banew.cw2025_client.ui.main.CreateCoursePlanFragment"
+        android:label="Створити план курсу" />
 </navigation>

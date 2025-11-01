@@ -38,8 +38,6 @@ import retrofit2.http.Header;
 
 public class DataSource {
     private final SharedPreferences prefs;
-    //private final AppDatabase db;
-
     private static Retrofit retrofit = null;
     private static final String BASE_URL = "http://10.0.2.2:8080/api/";
     private static final boolean isNgrok = false;
@@ -77,7 +75,9 @@ public class DataSource {
         prefs = applicationContext.getSharedPreferences("MyAppPrefs", MODE_PRIVATE);
 
         if (isNgrok) {
-            NgrokTokenExtractor.extractNgrokPath("", path -> {
+            NgrokPathExtractor.extractNgrokPath(
+                    "34tAXbBzXVP23CRpx3aV8lIke4t_3TQ2CQKnWGniuwPzPRmC1",
+                    path -> {
                 retrofit = buildClient(path + "/api/");
             });
         }
@@ -146,6 +146,19 @@ public class DataSource {
         return result;
     }
 
+    public void logout() {
+        // TODO
+        // так робити, казали, нізя
+        Intent intent = new Intent(context, GreetingsActivity.class);
+        intent.setFlags(FLAG_ACTIVITY_NEW_TASK);
+        context.startActivity(intent);
+    }
+
+    @Nullable
+    public String getToken() {
+        return prefs.getString("jwt_token", null);
+    }
+
     private <T> void enqueue(Call<T> call,
                              Consumer<T> onSuccessBody,
                              Consumer<Throwable> onInternetError,
@@ -171,78 +184,9 @@ public class DataSource {
         });
     }
 
-    @Nullable
-    public String getToken() {
-        return prefs.getString("jwt_token", null);
-    }
-
     private void updateToken(@Nullable String token) {
         SharedPreferences.Editor editor = prefs.edit();
         editor.putString("jwt_token", token);
         editor.apply();
-    }
-
-    public void logout() {
-        // TODO
-        // так робити, казали, нізя
-        Intent intent = new Intent(context, GreetingsActivity.class);
-        intent.setFlags(FLAG_ACTIVITY_NEW_TASK);
-        context.startActivity(intent);
-    }
-
-    private static class NgrokTokenExtractor {
-        public static void extractNgrokPath(String token, Consumer<String> consumer) {
-            Retrofit retrofit = new Retrofit.Builder()
-                    .baseUrl("https://api.ngrok.com/")
-                    .addConverterFactory(GsonConverterFactory.create())
-                    .build();
-
-            NgrokApiService service = retrofit.create(NgrokApiService.class);
-
-            try {
-                service
-                .getTunnels("Bearer " + token, "2")
-                .enqueue(new Callback<NgrokTunnelsResponse>() {
-                    @Override
-                    public void onResponse(@NonNull Call<NgrokTunnelsResponse> call,
-                                           @NonNull Response<NgrokTunnelsResponse> response) {
-                        if (response.isSuccessful() && response.body() != null) {
-                            String path = response.body().tunnels.stream()
-                                    .findFirst()
-                                    .orElseThrow()
-                                    .publicUrl;
-
-                            System.out.println("Я ЖИВИЙЙЙ\n\n\n\n" + path);
-                            consumer.accept(path);
-                        }
-                    }
-                    @Override
-                    public void onFailure(@NonNull Call<NgrokTunnelsResponse> call,
-                                          @NonNull Throwable t) {
-
-                    }
-                });
-            }
-            catch (Exception e) {
-                throw new RuntimeException("Oh shit!", e);
-            }
-        }
-
-        private interface NgrokApiService {
-            @GET("tunnels")
-            Call<NgrokTunnelsResponse> getTunnels(
-                    @Header("Authorization") String bearerToken,
-                    @Header("Ngrok-Version") String version
-            );
-        }
-
-        private static class NgrokTunnelsResponse {
-            public List<NgrokTunnel> tunnels;
-        }
-
-        private static class NgrokTunnel {
-            @SerializedName("public_url")
-            public String publicUrl;
-        }
     }
 }
