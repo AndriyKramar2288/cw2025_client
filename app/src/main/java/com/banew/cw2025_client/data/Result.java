@@ -1,5 +1,6 @@
 package com.banew.cw2025_client.data;
 
+import androidx.compose.runtime.MutableState;
 import androidx.lifecycle.MutableLiveData;
 
 /**
@@ -10,12 +11,12 @@ public class Result<T> {
     private Result() {
     }
 
-    public void resolveData(MutableLiveData<T> success, MutableLiveData<Exception> failure) {
+    public void resolveData(MutableState<T> success, MutableState<Exception> failure) {
         if (isSuccess()) {
-            success.postValue(asSuccess().getData());
+            success.setValue(asSuccess().getData());
         }
         else {
-            failure.postValue(asError().getError());
+            failure.setValue(asError().getError());
         }
     }
 

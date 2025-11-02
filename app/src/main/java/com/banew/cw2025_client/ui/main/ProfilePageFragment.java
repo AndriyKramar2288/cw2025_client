@@ -28,26 +28,26 @@ public class ProfilePageFragment extends Fragment {
 
         var mainPageModel = new ViewModelProvider(requireActivity()).get(MainPageModel.class);
 
-        mainPageModel.getCurrentUser().observe(getViewLifecycleOwner(), u -> {
-            ((TextView) requireActivity().findViewById(R.id.profile_email)).setText(
-                    u.email()
-            );
-            ((TextView) requireActivity().findViewById(R.id.profile_username)).setText(
-                    u.username()
-            );
-
-            if (u.photoSrc() != null) {
-                ImageView imageView = requireActivity().findViewById(R.id.userAvatarImage);
-
-                String imageUrl = u.photoSrc();
-
-                Glide.with(this)
-                        .load(imageUrl)
-                        .placeholder(R.drawable.ic_launcher_foreground)
-                        .error(R.drawable.contacts_product_24px)
-                        .centerCrop()
-                        .into(imageView);
-            }
-        });
+//        mainPageModel.getCurrentUser().observe(getViewLifecycleOwner(), u -> {
+//            ((TextView) requireActivity().findViewById(R.id.profile_email)).setText(
+//                    u.email()
+//            );
+//            ((TextView) requireActivity().findViewById(R.id.profile_username)).setText(
+//                    u.username()
+//            );
+//
+//            if (u.photoSrc() != null) {
+//                ImageView imageView = requireActivity().findViewById(R.id.userAvatarImage);
+//
+//                String imageUrl = u.photoSrc();
+//
+//                Glide.with(this)
+//                        .load(imageUrl)
+//                        .placeholder(R.drawable.ic_launcher_foreground)
+//                        .error(R.drawable.contacts_product_24px)
+//                        .centerCrop()
+//                        .into(imageView);
+//            }
+//        });
     }
 }

@@ -24,9 +24,9 @@
         <item name="android:textSize">14sp</item>
     </style>
 
-<!--    <style name="" parent="">-->
+    <!--    <style name="" parent="">-->
 
-<!--    </style>-->
+    <!--    </style>-->
 
     <style name="MyNavBar" parent="Widget.Design.BottomNavigationView">
         <item name="itemIconSize">30dp</item>

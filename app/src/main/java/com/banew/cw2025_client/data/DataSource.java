@@ -6,6 +6,7 @@ import static android.content.Intent.FLAG_ACTIVITY_NEW_TASK;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -117,7 +118,7 @@ public class DataSource {
                     result.complete(new Result.Error<>(new IOException(
                             context.getString(R.string.network_error), t)));
                 },
-                Map.of(403, this::logout)
+                Map.of(401, this::logout)
         );
 
         return result;

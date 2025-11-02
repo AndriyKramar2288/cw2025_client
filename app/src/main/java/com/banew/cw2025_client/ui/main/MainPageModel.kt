@@ -1,80 +1,72 @@
-package com.banew.cw2025_client.ui.main;
+package com.banew.cw2025_client.ui.main
 
-import androidx.lifecycle.LiveData;
-import androidx.lifecycle.MutableLiveData;
-import androidx.lifecycle.Observer;
-import androidx.lifecycle.ViewModel;
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModel
+import com.banew.cw2025_backend_common.dto.coursePlans.CoursePlanBasicDto
+import com.banew.cw2025_backend_common.dto.users.UserProfileBasicDto
+import com.banew.cw2025_client.GlobalApplication
+import com.banew.cw2025_client.data.DataSource
+import com.banew.cw2025_client.data.NetworkMonitor
+import com.banew.cw2025_client.data.Result
+import java.util.concurrent.CompletableFuture
+import java.util.function.Consumer
 
-import com.banew.cw2025_backend_common.dto.coursePlans.CoursePlanBasicDto;
-import com.banew.cw2025_backend_common.dto.users.UserProfileBasicDto;
-import com.banew.cw2025_client.GlobalApplication;
-import com.banew.cw2025_client.data.DataSource;
-import com.banew.cw2025_client.data.NetworkMonitor;
-import com.banew.cw2025_client.data.Result;
+class MainPageModel : ViewModel() {
+    private val dataSource: DataSource = GlobalApplication.getInstance().dataSource
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.CompletableFuture;
+    var currentUser = mutableStateOf<UserProfileBasicDto?>(null)
+        private set
+    var currentCoursePlans =
+        mutableStateOf<MutableList<CoursePlanBasicDto?>?>(ArrayList<CoursePlanBasicDto?>())
+        private set
+    var lastException = mutableStateOf<Exception?>(null)
+        private set
 
-public class MainPageModel extends ViewModel {
-    private final DataSource dataSource;
+    private val networkMonitor: NetworkMonitor = NetworkMonitor.getInstance(
+        GlobalApplication.getInstance().applicationContext
+    )
 
-    private final MutableLiveData<UserProfileBasicDto> currentUser = new MutableLiveData<>();
-    public LiveData<UserProfileBasicDto> getCurrentUser() {
-        return currentUser;
+    private val networkObserver = Observer { connected: Boolean ->
+        if (connected) refresh()
     }
 
-    private final MutableLiveData<List<CoursePlanBasicDto>> currentCoursePlans = new MutableLiveData<>(new ArrayList<>());
-    public LiveData<List<CoursePlanBasicDto>> getCurrentCoursePlans() {
-        return currentCoursePlans;
+    init {
+        refresh()
+        networkMonitor.observeForever(networkObserver)
     }
 
-    private final MutableLiveData<Exception> lastException = new MutableLiveData<>();
-    public LiveData<Exception> getLastException() {
-        return lastException;
+    override fun onCleared() {
+        super.onCleared()
+
+        networkMonitor.removeObserver(networkObserver)
     }
 
+    fun refresh(callback: () -> Unit = {}) {
+        val f1 = dataSource.getCurrentUserProfile()
+            .thenAccept { r ->
+                when {
+                    r.isSuccess -> currentUser.value = r.asSuccess().data
+                    else -> lastException.value = r.asError().error
+                }
+            }
 
-    private final NetworkMonitor networkMonitor;
-    private final Observer<Boolean> networkObserver = connected -> {
-        if (connected) refresh();
-    };
+        val f2 = dataSource.getCurrentCoursePlanList()
+            .thenAccept { r ->
+                when {
+                    r.isSuccess ->
+                        currentCoursePlans.value = r.asSuccess().data.toMutableList()
+                    else -> lastException.value = r.asError().error
+                }
+            }
 
-    public MainPageModel() {
-        dataSource = GlobalApplication.getInstance().getDataSource();
-        networkMonitor = NetworkMonitor.getInstance(
-                GlobalApplication.getInstance().getApplicationContext()
-        );
-
-        refresh();
-
-        networkMonitor.observeForever(networkObserver);
+        CompletableFuture.allOf(f1, f2).thenAccept { callback() }
     }
 
-    @Override
-    protected void onCleared() {
-        super.onCleared();
-
-        networkMonitor.removeObserver(networkObserver);
-    }
-
-    public void refresh() {
-        refresh(() -> {});
-    }
-
-    public void refresh(Runnable callback) {
-        var f1 = dataSource.getCurrentUserProfile().thenAccept(r -> {
-            r.resolveData(currentUser, lastException);
-        });
-
-        var f2 = dataSource.getCurrentCoursePlanList().thenAccept(r -> {
-            r.resolveData(currentCoursePlans, lastException);
-        });
-
-        CompletableFuture.allOf(f1, f2).thenAccept(r -> callback.run());
-    }
-
-    public boolean isShouldToSwitchToLogin() {
-        return dataSource.getToken() == null;
-    }
+    val isShouldToSwitchToLogin: Boolean
+        get() = dataSource.token == null
 }
