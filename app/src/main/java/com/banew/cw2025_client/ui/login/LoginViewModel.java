@@ -31,7 +31,7 @@ public class LoginViewModel extends ViewModel {
 
     public void login(String username, String password) {
         // can be launched in a separate asynchronous job
-        dataSource.login(username, password).thenAccept(loginResult::setValue);
+        //dataSource.login(username, password).thenAccept(loginResult::setValue);
     }
 
     public void loginDataChanged(String username, String password) {

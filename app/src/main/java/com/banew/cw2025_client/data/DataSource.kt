@@ -1,193 +1,122 @@
-package com.banew.cw2025_client.data;
+package com.banew.cw2025_client.data
 
-import static android.content.Context.MODE_PRIVATE;
-import static android.content.Intent.FLAG_ACTIVITY_NEW_TASK;
+import android.content.Context
+import android.content.Intent
+import android.content.SharedPreferences
+import androidx.core.content.edit
+import com.banew.cw2025_backend_common.dto.coursePlans.CoursePlanBasicDto
+import com.banew.cw2025_backend_common.dto.users.UserLoginForm
+import com.banew.cw2025_backend_common.dto.users.UserProfileBasicDto
+import com.banew.cw2025_backend_common.dto.users.UserTokenFormResult
+import com.banew.cw2025_client.data.api.ApiService
+import com.banew.cw2025_client.ui.greetings.GreetingsActivity
+import okhttp3.OkHttpClient
+import retrofit2.HttpException
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
+import java.io.IOException
+import java.util.concurrent.TimeUnit
 
-import android.content.Context;
-import android.content.Intent;
-import android.content.SharedPreferences;
-import android.util.Log;
+class DataSource(private val context: Context) {
+    private val prefs: SharedPreferences = context.getSharedPreferences("MyAppPrefs", Context.MODE_PRIVATE)
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
-import com.banew.cw2025_backend_common.dto.coursePlans.CoursePlanBasicDto;
-import com.banew.cw2025_backend_common.dto.users.UserLoginForm;
-import com.banew.cw2025_backend_common.dto.users.UserProfileBasicDto;
-import com.banew.cw2025_backend_common.dto.users.UserTokenFormResult;
-import com.banew.cw2025_client.ui.greetings.GreetingsActivity;
-import com.banew.cw2025_client.R;
-import com.banew.cw2025_client.data.api.ApiService;
-import com.google.gson.annotations.SerializedName;
-
-import java.io.IOException;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.TimeUnit;
-import java.util.function.Consumer;
-
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
-import retrofit2.http.GET;
-import retrofit2.http.Header;
-
-public class DataSource {
-    private final SharedPreferences prefs;
-    private static Retrofit retrofit = null;
-    private static final String BASE_URL = "http://10.0.2.2:8080/api/";
-    private static final boolean isNgrok = false;
-    private final Context context;
-
-    private static Retrofit getClient() {
-        if (retrofit == null) {
-            retrofit = buildClient(BASE_URL);
+    init {
+        if (NGROK) {
+            NgrokPathExtractor.extractNgrokPath(
+                "34tAXbBzXVP23CRpx3aV8lIke4t_3TQ2CQKnWGniuwPzPRmC1"
+            ) { path: String? ->
+                retrofit = buildClient("$path/api/")
+            }
         }
-        return retrofit;
     }
 
-    private static Retrofit buildClient(String path) {
-        OkHttpClient client = new OkHttpClient.Builder()
+    suspend fun currentCoursePlanList(): Result<List<CoursePlanBasicDto>> {
+        return try {
+            val list = apiService.currentCoursePlanList("Bearer $token")
+            Result.Success(list)
+        } catch (e: HttpException) {
+            if (e.code() == 403) logout()
+            Result.Error(IOException("HTTP ${e.code()}", e))
+        } catch (e: Exception) {
+            Result.Error(IOException("Network error", e))
+        }
+    }
+
+    suspend fun currentUserProfile(): Result<UserProfileBasicDto> {
+
+        if (this.token == null) {
+            logout()
+        }
+
+        return try {
+            val list = apiService.currentUser("Bearer $token")
+            Result.Success(list)
+        } catch (e: HttpException) {
+            if (e.code() == 403) logout()
+            Result.Error(IOException("HTTP ${e.code()}", e))
+        } catch (e: Exception) {
+            Result.Error(IOException("Network error", e))
+        }
+    }
+
+    suspend fun login(username: String, password: String): Result<UserTokenFormResult> {
+
+        val form = UserLoginForm(username, password)
+
+        return try {
+            val list = apiService.login(form)
+            updateToken(list.token)
+            Result.Success(list)
+        } catch (e: HttpException) {
+            if (e.code() == 401) logout()
+            Result.Error(IOException("HTTP ${e.code()}", e))
+        } catch (e: Exception) {
+            Result.Error(IOException("Network error", e))
+        }
+    }
+
+    fun logout() {
+        // TODO
+        // так робити, казали, нізя
+        val intent = Intent(context, GreetingsActivity::class.java)
+        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+        context.startActivity(intent)
+    }
+
+    val token: String?
+        get() = prefs.getString("jwt_token", null)
+
+    private fun updateToken(token: String) {
+        prefs.edit {
+            putString("jwt_token", token)
+        }
+    }
+
+    companion object {
+        private var retrofit: Retrofit? = null
+        private const val BASE_URL = "http://10.0.2.2:8080/api/"
+        private const val NGROK = false
+        private val client: Retrofit?
+            get() = retrofit ?: buildClient(BASE_URL)
+
+        private fun buildClient(path: String): Retrofit {
+            val client = OkHttpClient.Builder()
                 .connectTimeout(5, TimeUnit.SECONDS)
                 .readTimeout(3, TimeUnit.SECONDS)
-                .build();
+                .build()
 
-        retrofit = new Retrofit.Builder()
+            retrofit = Retrofit.Builder()
                 .baseUrl(path)
                 .client(client)
                 .addConverterFactory(GsonConverterFactory.create())
-                .build();
+                .build()
 
-        return retrofit;
-    }
-
-    private static ApiService getApiService() {
-        return getClient().create(ApiService.class);
-    }
-
-    public DataSource(Context applicationContext) {
-        context = applicationContext;
-
-        prefs = applicationContext.getSharedPreferences("MyAppPrefs", MODE_PRIVATE);
-
-        if (isNgrok) {
-            NgrokPathExtractor.extractNgrokPath(
-                    "34tAXbBzXVP23CRpx3aV8lIke4t_3TQ2CQKnWGniuwPzPRmC1",
-                    path -> {
-                retrofit = buildClient(path + "/api/");
-            });
-        }
-    }
-
-    public CompletableFuture<Result<List<CoursePlanBasicDto>>> getCurrentCoursePlanList() {
-        CompletableFuture<Result<List<CoursePlanBasicDto>>> result = new CompletableFuture<>();
-
-        enqueue(
-                getApiService().currentCoursePlanList("Bearer " + getToken()),
-        list -> {
-                    result.complete(new Result.Success<>(list));
-                },
-                (t) -> {
-                    result.complete(new Result.Error<>(new IOException(
-                            context.getString(R.string.network_error), t)));
-                },
-                Map.of(403, this::logout)
-        );
-
-        return result;
-    }
-
-    public CompletableFuture<Result<UserProfileBasicDto>> getCurrentUserProfile() {
-        CompletableFuture<Result<UserProfileBasicDto>> result = new CompletableFuture<>();
-
-        if (getToken() == null) {
-            logout();
+            return retrofit!!
         }
 
-        enqueue(
-                getApiService().currentUser("Bearer " + getToken()),
-                user -> {
-                    result.complete(new Result.Success<>(user));
-                },
-                (t) -> {
-                    result.complete(new Result.Error<>(new IOException(
-                            context.getString(R.string.network_error), t)));
-                },
-                Map.of(401, this::logout)
-        );
-
-        return result;
-    }
-
-    public CompletableFuture<Result<UserTokenFormResult>> login(String username, String password) {
-        CompletableFuture<Result<UserTokenFormResult>> result = new CompletableFuture<>();
-
-        var form = new UserLoginForm(username, password);
-        enqueue(
-                getApiService().login(form),
-                resBody -> {
-                    result.complete(new Result.Success<>(resBody));
-                    updateToken(resBody.token());
-                },
-                (t) -> {
-                    result.complete(new Result.Error<>(new IOException(
-                            context.getString(R.string.network_error), t)));
-                },
-                Map.of(400, () -> {
-                    result.complete(new Result.Error<>(new IOException(
-                            context.getString(R.string.login_error))));
-                })
-        );
-
-        return result;
-    }
-
-    public void logout() {
-        // TODO
-        // так робити, казали, нізя
-        Intent intent = new Intent(context, GreetingsActivity.class);
-        intent.setFlags(FLAG_ACTIVITY_NEW_TASK);
-        context.startActivity(intent);
-    }
-
-    @Nullable
-    public String getToken() {
-        return prefs.getString("jwt_token", null);
-    }
-
-    private <T> void enqueue(Call<T> call,
-                             Consumer<T> onSuccessBody,
-                             Consumer<Throwable> onInternetError,
-                             Map<Integer, Runnable> onFailure) {
-        call.enqueue(new Callback<T>() {
-            @Override
-            public void onResponse(
-                    @NonNull Call<T> call,
-                    @NonNull Response<T> response
-            ) {
-                if (response.isSuccessful() && response.body() != null) {
-                    onSuccessBody.accept(response.body());
-                }
-                else {
-                    Runnable r = onFailure.get(response.code());
-                    if (r != null) r.run();
-                }
-            }
-            @Override
-            public void onFailure(@NonNull Call<T> call, @NonNull Throwable t) {
-                onInternetError.accept(t);
-            }
-        });
-    }
-
-    private void updateToken(@Nullable String token) {
-        SharedPreferences.Editor editor = prefs.edit();
-        editor.putString("jwt_token", token);
-        editor.apply();
+        private val apiService: ApiService
+            get() = client!!.create<ApiService>(
+                ApiService::class.java
+            )
     }
 }

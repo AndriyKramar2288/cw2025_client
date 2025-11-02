@@ -1,35 +1,31 @@
 package com.banew.cw2025_client.ui.main
 
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.banew.cw2025_backend_common.dto.coursePlans.CoursePlanBasicDto
 import com.banew.cw2025_backend_common.dto.users.UserProfileBasicDto
 import com.banew.cw2025_client.GlobalApplication
 import com.banew.cw2025_client.data.DataSource
 import com.banew.cw2025_client.data.NetworkMonitor
 import com.banew.cw2025_client.data.Result
-import java.util.concurrent.CompletableFuture
-import java.util.function.Consumer
+import kotlinx.coroutines.launch
 
-class MainPageModel : ViewModel() {
-    private val dataSource: DataSource = GlobalApplication.getInstance().dataSource
+class MainPageModel(val mock : Boolean = false) : ViewModel() {
+    private val dataSource: DataSource? = GlobalApplication.getInstance()?.dataSource
 
     var currentUser = mutableStateOf<UserProfileBasicDto?>(null)
         private set
     var currentCoursePlans =
-        mutableStateOf<MutableList<CoursePlanBasicDto?>?>(ArrayList<CoursePlanBasicDto?>())
+        mutableStateOf<List<CoursePlanBasicDto>>(ArrayList())
         private set
     var lastException = mutableStateOf<Exception?>(null)
         private set
 
-    private val networkMonitor: NetworkMonitor = NetworkMonitor.getInstance(
+    private val networkMonitor: NetworkMonitor? = if (!mock) NetworkMonitor.getInstance(
         GlobalApplication.getInstance().applicationContext
-    )
+    ) else null
 
     private val networkObserver = Observer { connected: Boolean ->
         if (connected) refresh()
@@ -37,36 +33,37 @@ class MainPageModel : ViewModel() {
 
     init {
         refresh()
-        networkMonitor.observeForever(networkObserver)
+        networkMonitor?.observeForever(networkObserver)
     }
 
     override fun onCleared() {
         super.onCleared()
 
-        networkMonitor.removeObserver(networkObserver)
+        networkMonitor?.removeObserver(networkObserver)
     }
 
     fun refresh(callback: () -> Unit = {}) {
-        val f1 = dataSource.getCurrentUserProfile()
-            .thenAccept { r ->
-                when {
-                    r.isSuccess -> currentUser.value = r.asSuccess().data
-                    else -> lastException.value = r.asError().error
-                }
+
+        if (mock) return
+
+        viewModelScope.launch {
+            val userRes = dataSource!!.currentUserProfile()
+            val plansRes = dataSource.currentCoursePlanList()
+
+            when (userRes) {
+                is Result.Success -> currentUser.value = userRes.data
+                is Result.Error -> lastException.value = userRes.error
             }
 
-        val f2 = dataSource.getCurrentCoursePlanList()
-            .thenAccept { r ->
-                when {
-                    r.isSuccess ->
-                        currentCoursePlans.value = r.asSuccess().data.toMutableList()
-                    else -> lastException.value = r.asError().error
-                }
+            when (plansRes) {
+                is Result.Success -> currentCoursePlans.value = plansRes.data.toMutableList()
+                is Result.Error -> lastException.value = plansRes.error
             }
 
-        CompletableFuture.allOf(f1, f2).thenAccept { callback() }
+            callback()
+        }
     }
 
     val isShouldToSwitchToLogin: Boolean
-        get() = dataSource.token == null
+        get() = dataSource?.token == null
 }

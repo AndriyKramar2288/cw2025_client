@@ -1,30 +1,27 @@
-package com.banew.cw2025_client.data.api;
+package com.banew.cw2025_client.data.api
 
-import com.banew.cw2025_backend_common.dto.coursePlans.CoursePlanBasicDto;
-import com.banew.cw2025_backend_common.dto.users.UserLoginForm;
-import com.banew.cw2025_backend_common.dto.users.UserProfileBasicDto;
-import com.banew.cw2025_backend_common.dto.users.UserRegisterForm;
-import com.banew.cw2025_backend_common.dto.users.UserTokenFormResult;
+import com.banew.cw2025_backend_common.dto.coursePlans.CoursePlanBasicDto
+import com.banew.cw2025_backend_common.dto.users.UserLoginForm
+import com.banew.cw2025_backend_common.dto.users.UserProfileBasicDto
+import com.banew.cw2025_backend_common.dto.users.UserRegisterForm
+import com.banew.cw2025_backend_common.dto.users.UserTokenFormResult
+import retrofit2.Call
+import retrofit2.http.Body
+import retrofit2.http.GET
+import retrofit2.http.Header
+import retrofit2.http.POST
 
-import java.util.List;
-
-import retrofit2.Call;
-import retrofit2.http.Body;
-import retrofit2.http.GET;
-import retrofit2.http.Header;
-import retrofit2.http.POST;
-
-public interface ApiService {
+interface ApiService {
     @POST("auth/login")
-    Call<UserTokenFormResult> login(@Body UserLoginForm request);
+    suspend fun login(@Body request: UserLoginForm): UserTokenFormResult
 
     // POST запит - реєстрація
     @POST("auth/register")
-    Call<UserTokenFormResult> register(@Body UserRegisterForm request);
+    suspend fun register(@Body request: UserRegisterForm): UserTokenFormResult
 
     @GET("users/")
-    Call<UserProfileBasicDto> currentUser(@Header("Authorization") String token);
+    suspend fun currentUser(@Header("Authorization") token: String): UserProfileBasicDto
 
     @GET("course-plan/examples")
-    Call<List<CoursePlanBasicDto>> currentCoursePlanList(@Header("Authorization") String token);
+    suspend fun currentCoursePlanList(@Header("Authorization") token: String): List<CoursePlanBasicDto>
 }
