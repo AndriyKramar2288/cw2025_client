@@ -44,7 +44,21 @@ class MainPageModel(val mock : Boolean = false) : ViewModel() {
 
     fun refresh(callback: () -> Unit = {}) {
 
-        if (mock) return
+        if (mock) {
+            currentCoursePlans.value = listOf(
+                CoursePlanBasicDto(
+                    null, "Курс", UserProfileBasicDto(
+                        "Користувач", "aboba@gmail.com", "qwewqweq"
+                    ), "wqeqeqwwq", listOf(
+                        CoursePlanBasicDto.TopicBasicDto(
+                            null, "тема 1", "опис"
+                        )
+                    )
+                )
+            ).flatMap { listOf(it, it) }
+
+            return
+        }
 
         viewModelScope.launch {
             val userRes = dataSource!!.currentUserProfile()
