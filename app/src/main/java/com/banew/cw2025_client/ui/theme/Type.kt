@@ -1,8 +1,6 @@
 package com.banew.cw2025_client.ui.theme
 
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Typography
-import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
@@ -33,11 +31,3 @@ val AppTypography = Typography(
         fontSize = 16.sp
     )
 )
-
-@Composable
-fun MyAppTheme(content: @Composable () -> Unit) {
-    MaterialTheme(
-        typography = AppTypography,
-        content = content
-    )
-}

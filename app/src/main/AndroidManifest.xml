@@ -27,7 +27,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".ui.main.TestJetpackActivity"
+            android:name=".ui.grave.TestJetpackActivity"
             android:exported="false"
             android:label="@string/title_activity_test_jetpack"
             android:theme="@style/Theme.Cw2025_client" />

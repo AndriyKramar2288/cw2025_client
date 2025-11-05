@@ -16,13 +16,14 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonColors
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -33,7 +34,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -52,12 +52,12 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.banew.cw2025_backend_common.dto.users.UserProfileBasicDto
 import com.banew.cw2025_client.R
 import com.banew.cw2025_client.ui.greetings.GreetingsActivity
 import com.banew.cw2025_client.ui.theme.MyAppTheme
@@ -96,10 +96,14 @@ fun MainScreen(viewModel : MainPageModel = viewModel()) {
         context.startActivity(intent)
     }
 
-    LaunchedEffect(viewModel.lastException) {
+    LaunchedEffect(viewModel.lastException.value) {
         viewModel.lastException.value?.let { e ->
             Toast.makeText(context, e.message ?: "Помилка", Toast.LENGTH_SHORT).show()
         }
+    }
+
+    LaunchedEffect(viewModel.preferredRoute.value) {
+        navController.navigate(viewModel.preferredRoute.value)
     }
 
     MyAppTheme {
@@ -127,21 +131,21 @@ fun MainScreen(viewModel : MainPageModel = viewModel()) {
                             currentRoute,
                             R.drawable.globe_24px,
                             "Головна",
-                            navController
+                            viewModel
                         )
                         MyNavigationItem(
                             "courses",
                             currentRoute,
                             R.drawable.book_2_24px,
                             "Мої курси",
-                            navController
+                            viewModel
                         )
                         MyNavigationItem(
                             "profile",
                             currentRoute,
                             R.drawable.contacts_product_24px,
                             "Профіль",
-                            navController
+                            viewModel
                         )
                     }
                 }
@@ -157,6 +161,7 @@ fun MainScreen(viewModel : MainPageModel = viewModel()) {
                     composable("home") { MainPageScreen(viewModel) }
                     composable("courses") { CreateCoursePlanScreen() }
                     composable("profile") { ProfilePageScreen() }
+                    composable("coursePlanCreationRoute") { CoursePlanCreationComponent(viewModel) }
                 }
             }
         }
@@ -169,11 +174,11 @@ fun RowScope.MyNavigationItem(
     currentRoute: String?,
     iconRes: Int,
     label: String,
-    navController: NavHostController
+    viewModel: MainPageModel
 ) {
     NavigationBarItem(
         selected = currentRoute == route,
-        onClick = { navController.navigate(route) },
+        onClick = { viewModel.preferredRoute.value = route },
         icon = {
             Icon(
                 painterResource(iconRes),
@@ -218,7 +223,11 @@ fun MainPageScreen(viewModel : MainPageModel) {
                 style = MaterialTheme.typography.titleMedium,
                 modifier = Modifier.padding(5.dp)
             )
-            LazyColumn {
+            LazyColumn (
+                modifier = Modifier.heightIn(
+                    max = 400.dp
+                )
+            ) {
                 items(viewModel.currentCoursePlans.value) { item ->
                     Column (
                         modifier = Modifier
@@ -279,18 +288,18 @@ fun MainPageScreen(viewModel : MainPageModel) {
             )
             Button(
                 contentPadding = PaddingValues(0.dp),
-                colors = ButtonColors(
-                    Color.Transparent,
-                    colorResource(R.color.navbar_back),
-                    Color.Transparent,
-                    Color.Transparent
+                colors = ButtonDefaults.buttonColors(
+                    contentColor = Color.Transparent,
+                    containerColor = Color.Transparent,
                 ),
                 modifier = Modifier
                     .padding(start = 20.dp)
                     .background(
                         Color.LightGray, shape = RoundedCornerShape(5.dp)
                     ),
-                onClick = {}
+                onClick = {
+                    viewModel.preferredRoute.value = "coursePlanCreationRoute"
+                }
             ) {
                 Text(
                     text = "+",

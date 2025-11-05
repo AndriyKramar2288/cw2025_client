@@ -1,4 +1,4 @@
-package com.banew.cw2025_client.ui.main;
+package com.banew.cw2025_client.ui.grave;
 
 import android.annotation.SuppressLint;
 import android.view.LayoutInflater;

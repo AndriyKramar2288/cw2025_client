@@ -1,4 +1,4 @@
-package com.banew.cw2025_client.ui.main.ui.theme
+package com.banew.cw2025_client.ui.theme
 
 import androidx.compose.ui.graphics.Color
 

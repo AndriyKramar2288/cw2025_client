@@ -3,13 +3,20 @@ package com.banew.cw2025_client.data
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
+import android.util.Log
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateOf
 import androidx.core.content.edit
+import com.banew.cw2025_backend_common.dto.BasicResult
+import com.banew.cw2025_backend_common.dto.FieldExceptionResult
 import com.banew.cw2025_backend_common.dto.coursePlans.CoursePlanBasicDto
 import com.banew.cw2025_backend_common.dto.users.UserLoginForm
 import com.banew.cw2025_backend_common.dto.users.UserProfileBasicDto
 import com.banew.cw2025_backend_common.dto.users.UserTokenFormResult
 import com.banew.cw2025_client.data.api.ApiService
 import com.banew.cw2025_client.ui.greetings.GreetingsActivity
+import com.google.gson.Gson
+import com.google.gson.JsonSyntaxException
 import okhttp3.OkHttpClient
 import retrofit2.HttpException
 import retrofit2.Retrofit
@@ -30,12 +37,71 @@ class DataSource(private val context: Context) {
         }
     }
 
+    suspend fun createCoursePlan(
+        name: String,
+        desc: String,
+        topics: List<TopicForm>
+    ): Result<CoursePlanBasicDto> {
+
+        if (token == null) {
+            logout()
+            return Result.Error(IOException("Not authorized!"))
+        }
+
+        return try {
+            val result = apiService.createCoursePlan("Bearer $token", CoursePlanBasicDto(
+                null,
+                name,
+                null,
+                desc,
+                topics.map { CoursePlanBasicDto.TopicBasicDto(
+                    null, it.name.value, it.desc.value
+                ) }
+            ))
+            Result.Success(result)
+        } catch (e: HttpException) {
+            Result.Error(IOException(resolveHttpException(e)))
+        } catch (e: Exception) {
+            Result.Error(IOException("Network error", e))
+        }
+    }
+
+    private fun resolveHttpException(e: HttpException) : String =
+        when (e.code()) {
+            401 -> {
+                if (e.code() == 401) logout()
+                "HTTP ${e.code()}"
+            }
+            400 -> {
+                val stringObj = e.response()?.errorBody()?.string()
+                val message =
+                    if (stringObj != null) {
+                        try {
+                            val obj = Gson()
+                                .fromJson(stringObj, FieldExceptionResult::class.java)
+
+                            "${obj.message()}\n${obj.fieldErrors.joinToString(separator = "\n")
+                            { "${it.field} - ${it.message}" }}"
+                        }
+                        catch (ex: JsonSyntaxException) {
+                            Gson()
+                                .fromJson(stringObj, BasicResult::class.java)
+                                .message()
+                        }
+                    }
+                    else "Введені дані некоректні!"
+
+                message
+            }
+            else -> "HTTP ${e.code()}"
+        }
+
     suspend fun currentCoursePlanList(): Result<List<CoursePlanBasicDto>> {
         return try {
             val list = apiService.currentCoursePlanList("Bearer $token")
             Result.Success(list)
         } catch (e: HttpException) {
-            if (e.code() == 403) logout()
+            if (e.code() == 401) logout()
             Result.Error(IOException("HTTP ${e.code()}", e))
         } catch (e: Exception) {
             Result.Error(IOException("Network error", e))
@@ -44,15 +110,16 @@ class DataSource(private val context: Context) {
 
     suspend fun currentUserProfile(): Result<UserProfileBasicDto> {
 
-        if (this.token == null) {
+        if (token == null) {
             logout()
+            return Result.Error(IOException("Not authorized!"))
         }
 
         return try {
             val list = apiService.currentUser("Bearer $token")
             Result.Success(list)
         } catch (e: HttpException) {
-            if (e.code() == 403) logout()
+            if (e.code() == 401) logout()
             Result.Error(IOException("HTTP ${e.code()}", e))
         } catch (e: Exception) {
             Result.Error(IOException("Network error", e))
@@ -92,6 +159,15 @@ class DataSource(private val context: Context) {
         }
     }
 
+    data class TopicForm(
+        var name : MutableState<String> = mutableStateOf(""),
+        var desc : MutableState<String> = mutableStateOf("")
+    ) {
+        constructor (name : String, desc : String) : this(
+            mutableStateOf(name),
+            mutableStateOf(desc)
+        )
+    }
     companion object {
         private var retrofit: Retrofit? = null
         private const val BASE_URL = "http://10.0.2.2:8080/api/"

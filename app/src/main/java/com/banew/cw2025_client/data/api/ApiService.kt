@@ -22,6 +22,12 @@ interface ApiService {
     @GET("users/")
     suspend fun currentUser(@Header("Authorization") token: String): UserProfileBasicDto
 
-    @GET("course-plan/examples")
+    @GET("course-plan/")
     suspend fun currentCoursePlanList(@Header("Authorization") token: String): List<CoursePlanBasicDto>
+
+    @POST("course-plan/")
+    suspend fun createCoursePlan(
+        @Header("Authorization") token: String,
+        @Body body: CoursePlanBasicDto
+    ) : CoursePlanBasicDto
 }

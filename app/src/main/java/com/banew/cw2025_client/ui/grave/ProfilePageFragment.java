@@ -1,4 +1,4 @@
-package com.banew.cw2025_client.ui.main;
+package com.banew.cw2025_client.ui.grave;
 
 import android.os.Bundle;
 
@@ -8,11 +8,9 @@ import androidx.lifecycle.ViewModelProvider;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
-import android.widget.TextView;
 
 import com.banew.cw2025_client.R;
-import com.bumptech.glide.Glide;
+import com.banew.cw2025_client.ui.main.MainPageModel;
 
 public class ProfilePageFragment extends Fragment {
     @Override

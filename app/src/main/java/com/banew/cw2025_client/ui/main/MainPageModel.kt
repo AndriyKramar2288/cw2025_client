@@ -1,13 +1,16 @@
 package com.banew.cw2025_client.ui.main
 
+import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.navigation.NavController
 import com.banew.cw2025_backend_common.dto.coursePlans.CoursePlanBasicDto
 import com.banew.cw2025_backend_common.dto.users.UserProfileBasicDto
 import com.banew.cw2025_client.GlobalApplication
 import com.banew.cw2025_client.data.DataSource
+import com.banew.cw2025_client.data.DataSource.TopicForm
 import com.banew.cw2025_client.data.NetworkMonitor
 import com.banew.cw2025_client.data.Result
 import kotlinx.coroutines.launch
@@ -21,6 +24,9 @@ class MainPageModel(val mock : Boolean = false) : ViewModel() {
         mutableStateOf<List<CoursePlanBasicDto>>(ArrayList())
         private set
     var lastException = mutableStateOf<Exception?>(null)
+        private set
+
+    var preferredRoute = mutableStateOf("home")
         private set
 
     private val networkMonitor: NetworkMonitor? = if (!mock) NetworkMonitor.getInstance(
@@ -42,6 +48,26 @@ class MainPageModel(val mock : Boolean = false) : ViewModel() {
         networkMonitor?.removeObserver(networkObserver)
     }
 
+    fun createCoursePlan(
+        name: String,
+        desc: String,
+        topics: List<TopicForm>
+    ) {
+        if(!mock && dataSource != null) viewModelScope.launch {
+            val planRes = dataSource.createCoursePlan(name, desc, topics)
+
+            when (planRes) {
+                is Result.Success -> {
+                    refresh()
+                    preferredRoute.value = "home"
+                }
+                is Result.Error -> {
+                    lastException.value = planRes.asError().error
+                }
+            }
+        }
+    }
+
     fun refresh(callback: () -> Unit = {}) {
 
         if (mock) {
@@ -55,7 +81,7 @@ class MainPageModel(val mock : Boolean = false) : ViewModel() {
                         )
                     )
                 )
-            ).flatMap { listOf(it, it) }
+            ).flatMap { listOf(it, it, it, it, it) }.flatMap { listOf(it, it, it) }
 
             return
         }
