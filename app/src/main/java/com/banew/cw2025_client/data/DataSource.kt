@@ -10,6 +10,7 @@ import com.banew.cw2025_backend_common.dto.BasicResult
 import com.banew.cw2025_backend_common.dto.FieldExceptionResult
 import com.banew.cw2025_backend_common.dto.coursePlans.CoursePlanBasicDto
 import com.banew.cw2025_backend_common.dto.courses.CourseBasicDto
+import com.banew.cw2025_backend_common.dto.courses.TopicCompendiumDto
 import com.banew.cw2025_backend_common.dto.users.UserLoginForm
 import com.banew.cw2025_backend_common.dto.users.UserProfileBasicDto
 import com.banew.cw2025_backend_common.dto.users.UserTokenFormResult
@@ -190,6 +191,18 @@ class DataSource(private val context: Context) {
     private fun updateToken(token: String) {
         prefs.edit {
             putString("jwt_token", token)
+        }
+    }
+
+    suspend fun beginTopic(topicId: Long) : Result<TopicCompendiumDto> {
+        return try {
+            val list = apiService.beginTopic("Bearer $token", topicId)
+            Result.Success(list)
+        } catch (e: HttpException) {
+            if (e.code() == 401) logout()
+            Result.Error(IOException("HTTP ${e.code()}", e))
+        } catch (e: Exception) {
+            Result.Error(IOException("Network error", e))
         }
     }
 

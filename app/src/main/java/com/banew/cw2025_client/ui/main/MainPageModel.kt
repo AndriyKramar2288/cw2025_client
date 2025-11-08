@@ -7,6 +7,7 @@ import androidx.lifecycle.viewModelScope
 import com.banew.cw2025_backend_common.dto.coursePlans.CoursePlanBasicDto
 import com.banew.cw2025_backend_common.dto.courses.CourseBasicDto
 import com.banew.cw2025_backend_common.dto.courses.CoursePlanCourseDto
+import com.banew.cw2025_backend_common.dto.courses.TopicCompendiumDto
 import com.banew.cw2025_backend_common.dto.users.UserProfileBasicDto
 import com.banew.cw2025_client.GlobalApplication
 import com.banew.cw2025_client.data.DataSource
@@ -74,9 +75,7 @@ class MainPageModel(val mock : Boolean = false) : ViewModel() {
         topics: List<TopicForm>
     ) {
         if(!mock && dataSource != null) viewModelScope.launch {
-            val planRes = dataSource.createCoursePlan(name, desc, topics)
-
-            when (planRes) {
+            when (val planRes = dataSource.createCoursePlan(name, desc, topics)) {
                 is Result.Success -> {
                     refresh()
                     preferredRoute.value = "home"
@@ -103,16 +102,44 @@ class MainPageModel(val mock : Boolean = false) : ViewModel() {
                 )
             ).flatMap { listOf(it, it, it, it, it) }.flatMap { listOf(it, it, it) }
 
-            currentCourses.value = listOf(
-                CourseBasicDto(
-                    Instant.now(), CoursePlanCourseDto(
-                        null, "Курс", UserProfileBasicDto(
-                            "Користувач", "aboba@gmail.com", "qwewqweq"
-                        ), "wqeqeqwwq"
+            val mockCourse = CourseBasicDto(
+                Instant.parse("2025-11-07T22:28:26.935362Z"),
+                CoursePlanCourseDto(
+                    1603L,
+                    "First normal Course",
+                    UserProfileBasicDto(
+                        "Banewko",
+                        "andriykramar465@gmail.com",
+                        "https://cdn.omlet.com/images/originals/breed_abyssinian_cat.jpg"
                     ),
-                    listOf()
-                )
+                    "Desc for the first normal course"
+                ),
+                listOf(
+                    TopicCompendiumDto(
+                        652L,
+                         null,
+                        CoursePlanBasicDto.TopicBasicDto(
+                            1703L,
+                            "",
+                            ""
+                        ),
+                        emptyList()
+                    ),
+                    TopicCompendiumDto(
+                        653L,
+                        null,
+                        CoursePlanBasicDto.TopicBasicDto(
+                            1704L,
+                            "Topic 2",
+                            "Desc 2"
+                        ),
+                        emptyList()
+                    )
+                ),
+                null
             )
+
+            currentCourses.value = listOf(mockCourse, mockCourse, mockCourse)
 
             return
         }
@@ -138,6 +165,20 @@ class MainPageModel(val mock : Boolean = false) : ViewModel() {
             }
 
             callback()
+        }
+    }
+
+    fun beginTopic(topicId: Long) {
+        if(!mock && dataSource != null) viewModelScope.launch {
+            when (val planRes = dataSource.beginTopic(topicId)) {
+                is Result.Success -> {
+                    refresh()
+                    preferredRoute.value = "home"
+                }
+                is Result.Error -> {
+                    lastException.value = planRes.asError().error
+                }
+            }
         }
     }
 

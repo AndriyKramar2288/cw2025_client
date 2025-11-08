@@ -14,6 +14,12 @@ val StandardFont = FontFamily(
 )
 
 val AppTypography = Typography(
+    bodySmall = TextStyle(
+        color = Color.Gray,
+        fontFamily = StandardFont,
+        fontWeight = FontWeight.Normal,
+        fontSize = 12.sp
+    ),
     bodyMedium = TextStyle(
         color = Color.Gray,
         fontFamily = StandardFont,
