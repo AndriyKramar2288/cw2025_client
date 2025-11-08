@@ -1,12 +1,12 @@
 package com.banew.cw2025_client.ui.main
 
-import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.navigation.NavController
 import com.banew.cw2025_backend_common.dto.coursePlans.CoursePlanBasicDto
+import com.banew.cw2025_backend_common.dto.courses.CourseBasicDto
+import com.banew.cw2025_backend_common.dto.courses.CoursePlanCourseDto
 import com.banew.cw2025_backend_common.dto.users.UserProfileBasicDto
 import com.banew.cw2025_client.GlobalApplication
 import com.banew.cw2025_client.data.DataSource
@@ -14,6 +14,7 @@ import com.banew.cw2025_client.data.DataSource.TopicForm
 import com.banew.cw2025_client.data.NetworkMonitor
 import com.banew.cw2025_client.data.Result
 import kotlinx.coroutines.launch
+import java.time.Instant
 
 class MainPageModel(val mock : Boolean = false) : ViewModel() {
     private val dataSource: DataSource? = GlobalApplication.getInstance()?.dataSource
@@ -23,6 +24,11 @@ class MainPageModel(val mock : Boolean = false) : ViewModel() {
     var currentCoursePlans =
         mutableStateOf<List<CoursePlanBasicDto>>(ArrayList())
         private set
+
+    var currentCourses =
+        mutableStateOf<List<CourseBasicDto>>(ArrayList())
+        private set
+
     var lastException = mutableStateOf<Exception?>(null)
         private set
 
@@ -46,6 +52,20 @@ class MainPageModel(val mock : Boolean = false) : ViewModel() {
         super.onCleared()
 
         networkMonitor?.removeObserver(networkObserver)
+    }
+
+    fun beginCourse(coursePLanId: Long) {
+        if(!mock && dataSource != null) viewModelScope.launch {
+            val result = dataSource.beginCourse(coursePLanId)
+
+            if (result.isSuccess) {
+                currentCourses.value += listOf(result.asSuccess().data)
+                preferredRoute.value = "courses"
+            }
+            else {
+                lastException.value = result.asError().error
+            }
+        }
     }
 
     fun createCoursePlan(
@@ -73,7 +93,7 @@ class MainPageModel(val mock : Boolean = false) : ViewModel() {
         if (mock) {
             currentCoursePlans.value = listOf(
                 CoursePlanBasicDto(
-                    null, "Курс", UserProfileBasicDto(
+                    3, "Курс", UserProfileBasicDto(
                         "Користувач", "aboba@gmail.com", "qwewqweq"
                     ), "wqeqeqwwq", listOf(
                         CoursePlanBasicDto.TopicBasicDto(
@@ -83,12 +103,24 @@ class MainPageModel(val mock : Boolean = false) : ViewModel() {
                 )
             ).flatMap { listOf(it, it, it, it, it) }.flatMap { listOf(it, it, it) }
 
+            currentCourses.value = listOf(
+                CourseBasicDto(
+                    Instant.now(), CoursePlanCourseDto(
+                        null, "Курс", UserProfileBasicDto(
+                            "Користувач", "aboba@gmail.com", "qwewqweq"
+                        ), "wqeqeqwwq"
+                    ),
+                    listOf()
+                )
+            )
+
             return
         }
 
         viewModelScope.launch {
             val userRes = dataSource!!.currentUserProfile()
             val plansRes = dataSource.currentCoursePlanList()
+            val coursesRes = dataSource.currentCourseList()
 
             when (userRes) {
                 is Result.Success -> currentUser.value = userRes.data
@@ -96,8 +128,13 @@ class MainPageModel(val mock : Boolean = false) : ViewModel() {
             }
 
             when (plansRes) {
-                is Result.Success -> currentCoursePlans.value = plansRes.data.toMutableList()
+                is Result.Success -> currentCoursePlans.value = plansRes.data
                 is Result.Error -> lastException.value = plansRes.error
+            }
+
+            when (coursesRes) {
+                is Result.Success -> currentCourses.value = coursesRes.data
+                is Result.Error -> lastException.value = coursesRes.error
             }
 
             callback()

@@ -3,25 +3,33 @@ package com.banew.cw2025_client.data
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
-import android.util.Log
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.core.content.edit
 import com.banew.cw2025_backend_common.dto.BasicResult
 import com.banew.cw2025_backend_common.dto.FieldExceptionResult
 import com.banew.cw2025_backend_common.dto.coursePlans.CoursePlanBasicDto
+import com.banew.cw2025_backend_common.dto.courses.CourseBasicDto
 import com.banew.cw2025_backend_common.dto.users.UserLoginForm
 import com.banew.cw2025_backend_common.dto.users.UserProfileBasicDto
 import com.banew.cw2025_backend_common.dto.users.UserTokenFormResult
 import com.banew.cw2025_client.data.api.ApiService
 import com.banew.cw2025_client.ui.greetings.GreetingsActivity
 import com.google.gson.Gson
-import com.google.gson.JsonSyntaxException
+import com.google.gson.GsonBuilder
+import com.google.gson.JsonDeserializationContext
+import com.google.gson.JsonDeserializer
+import com.google.gson.JsonElement
+import com.google.gson.JsonPrimitive
+import com.google.gson.JsonSerializationContext
+import com.google.gson.JsonSerializer
 import okhttp3.OkHttpClient
 import retrofit2.HttpException
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.io.IOException
+import java.lang.reflect.Type
+import java.time.Instant
 import java.util.concurrent.TimeUnit
 
 class DataSource(private val context: Context) {
@@ -34,6 +42,22 @@ class DataSource(private val context: Context) {
             ) { path: String? ->
                 retrofit = buildClient("$path/api/")
             }
+        }
+    }
+
+    suspend fun beginCourse(coursePlanId: Long): Result<CourseBasicDto> {
+        if (token == null) {
+            logout()
+            return Result.Error(IOException("Not authorized!"))
+        }
+
+        return try {
+            val result = apiService.beginCourse("Bearer $token", coursePlanId)
+            Result.Success(result)
+        } catch (e: HttpException) {
+            Result.Error(IOException(resolveHttpException(e)))
+        } catch (e: Exception) {
+            Result.Error(IOException("Network error", e))
         }
     }
 
@@ -83,7 +107,7 @@ class DataSource(private val context: Context) {
                             "${obj.message()}\n${obj.fieldErrors.joinToString(separator = "\n")
                             { "${it.field} - ${it.message}" }}"
                         }
-                        catch (ex: JsonSyntaxException) {
+                        catch (ex: NullPointerException) {
                             Gson()
                                 .fromJson(stringObj, BasicResult::class.java)
                                 .message()
@@ -96,13 +120,23 @@ class DataSource(private val context: Context) {
             else -> "HTTP ${e.code()}"
         }
 
+    suspend fun currentCourseList(): Result<List<CourseBasicDto>> {
+        return try {
+            val list = apiService.getUserCourses("Bearer $token")
+            Result.Success(list)
+        } catch (e: HttpException) {
+            Result.Error(IOException(resolveHttpException(e)))
+        } catch (e: Exception) {
+            Result.Error(IOException("Network error", e))
+        }
+    }
+
     suspend fun currentCoursePlanList(): Result<List<CoursePlanBasicDto>> {
         return try {
             val list = apiService.currentCoursePlanList("Bearer $token")
             Result.Success(list)
         } catch (e: HttpException) {
-            if (e.code() == 401) logout()
-            Result.Error(IOException("HTTP ${e.code()}", e))
+            Result.Error(IOException(resolveHttpException(e)))
         } catch (e: Exception) {
             Result.Error(IOException("Network error", e))
         }
@@ -176,6 +210,20 @@ class DataSource(private val context: Context) {
             get() = retrofit ?: buildClient(BASE_URL)
 
         private fun buildClient(path: String): Retrofit {
+
+            val gson = GsonBuilder()
+                .registerTypeAdapter(Instant::class.java, object : JsonDeserializer<Instant> {
+                    override fun deserialize(json: JsonElement?, typeOfT: Type?, context: JsonDeserializationContext?): Instant {
+                        return Instant.parse(json!!.asString)
+                    }
+                })
+                .registerTypeAdapter(Instant::class.java, object : JsonSerializer<Instant> {
+                    override fun serialize(src: Instant?, typeOfSrc: Type?, context: JsonSerializationContext?): JsonElement {
+                        return JsonPrimitive(src?.toString())
+                    }
+                })
+                .create()
+
             val client = OkHttpClient.Builder()
                 .connectTimeout(5, TimeUnit.SECONDS)
                 .readTimeout(3, TimeUnit.SECONDS)
@@ -184,7 +232,7 @@ class DataSource(private val context: Context) {
             retrofit = Retrofit.Builder()
                 .baseUrl(path)
                 .client(client)
-                .addConverterFactory(GsonConverterFactory.create())
+                .addConverterFactory(GsonConverterFactory.create(gson))
                 .build()
 
             return retrofit!!

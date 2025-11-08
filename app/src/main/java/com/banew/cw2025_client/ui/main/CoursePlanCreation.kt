@@ -5,11 +5,10 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.HorizontalDivider
@@ -47,10 +46,13 @@ fun CoursePlanCreationComponent(viewModel : MainPageModel? = null) {
         ).flatMap { listOf(it, it, it) } else emptyList()
     ) }
 
+    val verticalScroll = rememberScrollState()
+
     Column (
         Modifier
             .fillMaxSize()
-            .padding(horizontal = 20.dp, vertical = 50.dp),
+            .padding(horizontal = 20.dp, vertical = 50.dp)
+            .verticalScroll(verticalScroll),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
@@ -127,53 +129,47 @@ fun CoursePlanCreationComponent(viewModel : MainPageModel? = null) {
                 color = Color.DarkGray
             )
         }
-        LazyColumn (
-            modifier = Modifier.heightIn(
-                max = 300.dp
-            )
-        ) {
-            items(topicList) { item ->
-                Column (
-                    horizontalAlignment = Alignment.End
+        topicList.forEach { item ->
+            Column (
+                horizontalAlignment = Alignment.End
+            ) {
+                Button(
+                    onClick = {
+                        topicList = topicList.filter { it != item }
+                    },
+                    modifier = Modifier
+                        .padding(end = 15.dp, top = 5.dp)
+                        .background(
+                            color = colorResource(R.color.navbar_button2),
+                            shape = RoundedCornerShape(5.dp)
+                        ),
+                    colors = ButtonDefaults.buttonColors(
+                        contentColor = Color.Transparent,
+                        containerColor = Color.Transparent,
+                    )
                 ) {
-                    Button(
-                        onClick = {
-                            topicList = topicList.filter { it != item }
-                        },
-                        modifier = Modifier
-                            .padding(end = 15.dp, top = 5.dp)
-                            .background(
-                                color = colorResource(R.color.navbar_button2),
-                                shape = RoundedCornerShape(5.dp)
-                            ),
-                        colors = ButtonDefaults.buttonColors(
-                            contentColor = Color.Transparent,
-                            containerColor = Color.Transparent,
-                        )
-                    ) {
-                        Text(text = "x", color = Color.White, style = AppTypography.titleLarge)
-                    }
-                    Column (
-                        modifier = Modifier
-                            .padding(horizontal = 10.dp)
-                            .background(
-                                shape = RoundedCornerShape(5.dp),
-                                brush = Brush.horizontalGradient(
-                                    listOf(
-                                        Color.LightGray,
-                                        colorResource(R.color.navbar_button)
-                                    )
+                    Text(text = "x", color = Color.White, style = AppTypography.titleLarge)
+                }
+                Column (
+                    modifier = Modifier
+                        .padding(horizontal = 10.dp)
+                        .background(
+                            shape = RoundedCornerShape(5.dp),
+                            brush = Brush.horizontalGradient(
+                                listOf(
+                                    Color.LightGray,
+                                    colorResource(R.color.navbar_button)
                                 )
                             )
-                            .padding(horizontal = 10.dp)
-                            .padding(bottom = 5.dp)
-                    ) {
-                        CoursePlanTextField(item.name.value, "Назва...") {
-                            item.name.value = it
-                        }
-                        CoursePlanTextField(item.desc.value, "Опис...") {
-                            item.desc.value = it
-                        }
+                        )
+                        .padding(horizontal = 10.dp)
+                        .padding(bottom = 5.dp)
+                ) {
+                    CoursePlanTextField(item.name.value, "Назва...") {
+                        item.name.value = it
+                    }
+                    CoursePlanTextField(item.desc.value, "Опис...") {
+                        item.desc.value = it
                     }
                 }
             }
@@ -249,7 +245,7 @@ fun CoursePlanTextField(field : String, label : String, onChange : (String) -> U
 
 @Composable
 @Preview(showBackground = true)
-fun Aboba() {
+private fun Aboba() {
     MyAppTheme {
         CoursePlanCreationComponent()
     }

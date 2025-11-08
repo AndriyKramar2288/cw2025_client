@@ -81,4 +81,5 @@ dependencies {
     implementation("androidx.navigation:navigation-compose:2.8.0")
     implementation("androidx.compose.material3:material3:1.2.0")
     implementation("com.google.accompanist:accompanist-swiperefresh:0.32.0")
+    implementation("io.coil-kt:coil-compose:2.6.0")
 }
