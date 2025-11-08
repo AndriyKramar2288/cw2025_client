@@ -37,6 +37,8 @@ class DataSource(private val context: Context) {
     private val prefs: SharedPreferences = context.getSharedPreferences("MyAppPrefs", Context.MODE_PRIVATE)
 
     init {
+        updateToken("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxIiwiaXNzIjoiY3cyMDI1X2JhY2tlbmQiLCJpYXQiOjE3NjI1NTQ2ODUsImV4cCI6MTc2MzE1OTQ4NSwicm9sZSI6WyJVU0VSIl19.h1gvr_QGcJTEJb_JYp-TnnE-Ae1mLJZ1G7eeQPG7szM")
+
         if (NGROK) {
             NgrokPathExtractor.extractNgrokPath(
                 "34tAXbBzXVP23CRpx3aV8lIke4t_3TQ2CQKnWGniuwPzPRmC1"
@@ -197,6 +199,18 @@ class DataSource(private val context: Context) {
     suspend fun beginTopic(topicId: Long) : Result<TopicCompendiumDto> {
         return try {
             val list = apiService.beginTopic("Bearer $token", topicId)
+            Result.Success(list)
+        } catch (e: HttpException) {
+            if (e.code() == 401) logout()
+            Result.Error(IOException("HTTP ${e.code()}", e))
+        } catch (e: Exception) {
+            Result.Error(IOException("Network error", e))
+        }
+    }
+
+    suspend fun updateCompendium(compendium: TopicCompendiumDto) : Result<TopicCompendiumDto> {
+        return try {
+            val list = apiService.updateCompendium("Bearer $token", compendium)
             Result.Success(list)
         } catch (e: HttpException) {
             if (e.code() == 401) logout()

@@ -5,6 +5,7 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.banew.cw2025_backend_common.dto.coursePlans.CoursePlanBasicDto
+import com.banew.cw2025_backend_common.dto.courses.CompendiumStatus
 import com.banew.cw2025_backend_common.dto.courses.CourseBasicDto
 import com.banew.cw2025_backend_common.dto.courses.CoursePlanCourseDto
 import com.banew.cw2025_backend_common.dto.courses.TopicCompendiumDto
@@ -123,7 +124,8 @@ class MainPageModel(val mock : Boolean = false) : ViewModel() {
                             "",
                             ""
                         ),
-                        emptyList()
+                        emptyList(),
+                        CompendiumStatus.COMPLETED
                     ),
                     TopicCompendiumDto(
                         653L,
@@ -133,7 +135,8 @@ class MainPageModel(val mock : Boolean = false) : ViewModel() {
                             "Topic 2",
                             "Desc 2"
                         ),
-                        emptyList()
+                        emptyList(),
+                        CompendiumStatus.COMPLETED
                     )
                 ),
                 null
@@ -171,6 +174,20 @@ class MainPageModel(val mock : Boolean = false) : ViewModel() {
     fun beginTopic(topicId: Long) {
         if(!mock && dataSource != null) viewModelScope.launch {
             when (val planRes = dataSource.beginTopic(topicId)) {
+                is Result.Success -> {
+                    refresh()
+                    preferredRoute.value = "home"
+                }
+                is Result.Error -> {
+                    lastException.value = planRes.asError().error
+                }
+            }
+        }
+    }
+
+    fun updateCompendium(newCompendium: TopicCompendiumDto) {
+        if(!mock && dataSource != null) viewModelScope.launch {
+            when (val planRes = dataSource.updateCompendium(newCompendium)) {
                 is Result.Success -> {
                     refresh()
                     preferredRoute.value = "home"

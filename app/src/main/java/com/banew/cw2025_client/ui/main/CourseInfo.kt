@@ -34,7 +34,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
@@ -44,6 +43,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.banew.cw2025_backend_common.dto.courses.CompendiumStatus
 import com.banew.cw2025_backend_common.dto.courses.CourseBasicDto
 import com.banew.cw2025_backend_common.dto.courses.TopicCompendiumDto
 import com.banew.cw2025_client.R
@@ -99,31 +99,9 @@ fun CourseInfo(id: Long, viewModel: MainPageModel) {
 
         // Теми з прогресом
         course.compendiums.forEachIndexed { index, compendium ->
-
-            val currentIndex = course.currentCompendiumId?.let { currentId ->
-                course.compendiums.indexOfFirst { it.id == currentId }
-            }
-
-            val isCurrent = compendium.id == course.currentCompendiumId
-
-            val isCompleted = currentIndex?.let {
-                index < it
-            } ?: false
-
-            val isCanStart = if (currentIndex != null) {
-                index == currentIndex + 1
-            } else {
-                index == 0
-            }
-
             TopicProgressCard(
                 compendium = compendium,
-                type = when {
-                    isCurrent -> TopicProgressType.CURRENT
-                    isCompleted -> TopicProgressType.COMPLETED
-                    isCanStart -> TopicProgressType.CAN_START
-                    else -> TopicProgressType.LOCKED
-                },
+                type = compendium.status.toProgressType(),
                 viewModel
             )
 
@@ -134,7 +112,7 @@ fun CourseInfo(id: Long, viewModel: MainPageModel) {
                         .width(4.dp)
                         .height(24.dp)
                         .background(
-                            if (isCompleted) Color(0xFF4CAF50) else Color.LightGray,
+                            if (compendium.status == CompendiumStatus.COMPLETED) Color(0xFF4CAF50) else Color.LightGray,
                             shape = RoundedCornerShape(2.dp)
                         )
                 )
@@ -293,6 +271,12 @@ enum class TopicProgressType(
     );
 }
 
+fun CompendiumStatus.toProgressType() = when (this) {
+    CompendiumStatus.COMPLETED -> TopicProgressType.COMPLETED
+    CompendiumStatus.CAN_START -> TopicProgressType.CAN_START
+    CompendiumStatus.LOCKED -> TopicProgressType.LOCKED
+    CompendiumStatus.CURRENT -> TopicProgressType.CURRENT
+}
 
 @Composable
 fun TopicProgressCard(
@@ -384,10 +368,10 @@ fun TopicProgressCard(
                         TopicProgressType.CAN_START ->
                             viewModel.beginTopic(compendium.topic.id)
                         TopicProgressType.CURRENT -> {
-
+                            viewModel.preferredRoute.value = "compendium/${compendium.topic.id}"
                         }
                         TopicProgressType.COMPLETED -> {
-
+                            viewModel.preferredRoute.value = "compendium/${compendium.topic.id}"
                         }
                         else -> {}
                     }

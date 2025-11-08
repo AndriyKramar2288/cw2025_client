@@ -164,6 +164,14 @@ fun MainScreen(viewModel : MainPageModel = viewModel()) {
                                 CourseInfo(it, viewModel)
                             }
                         }
+                        composable(
+                            route = "compendium/{topicId}",
+                            arguments = listOf(navArgument("topicId") { type = NavType.LongType })
+                        ) { backStackEntry ->
+                            backStackEntry.arguments?.getLong("topicId")?.let {
+                                CompendiumScreen(it, viewModel)
+                            }
+                        }
                     }
                     Box(
                         modifier = Modifier
