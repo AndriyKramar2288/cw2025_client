@@ -13,9 +13,10 @@ import com.banew.cw2025_backend_common.dto.courses.CourseBasicDto
 import com.banew.cw2025_backend_common.dto.courses.TopicCompendiumDto
 import com.banew.cw2025_backend_common.dto.users.UserLoginForm
 import com.banew.cw2025_backend_common.dto.users.UserProfileBasicDto
+import com.banew.cw2025_backend_common.dto.users.UserRegisterForm
 import com.banew.cw2025_backend_common.dto.users.UserTokenFormResult
 import com.banew.cw2025_client.data.api.ApiService
-import com.banew.cw2025_client.ui.greetings.GreetingsActivity
+import com.banew.cw2025_client.ui.start.StartActivity
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonDeserializationContext
@@ -37,7 +38,7 @@ class DataSource(private val context: Context) {
     private val prefs: SharedPreferences = context.getSharedPreferences("MyAppPrefs", Context.MODE_PRIVATE)
 
     init {
-        updateToken("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxIiwiaXNzIjoiY3cyMDI1X2JhY2tlbmQiLCJpYXQiOjE3NjI1NTQ2ODUsImV4cCI6MTc2MzE1OTQ4NSwicm9sZSI6WyJVU0VSIl19.h1gvr_QGcJTEJb_JYp-TnnE-Ae1mLJZ1G7eeQPG7szM")
+        prefs.edit().remove("jwt_token").apply()
 
         if (NGROK) {
             NgrokPathExtractor.extractNgrokPath(
@@ -163,9 +164,9 @@ class DataSource(private val context: Context) {
         }
     }
 
-    suspend fun login(username: String, password: String): Result<UserTokenFormResult> {
+    suspend fun login(email: String, password: String): Result<UserTokenFormResult> {
 
-        val form = UserLoginForm(username, password)
+        val form = UserLoginForm(email, password)
 
         return try {
             val list = apiService.login(form)
@@ -179,10 +180,33 @@ class DataSource(private val context: Context) {
         }
     }
 
+    suspend fun register(
+        email: String,
+        username: String,
+        photoSrc: String,
+        password: String
+    ): Result<UserTokenFormResult>? {
+
+        val form = UserRegisterForm(
+            email, username, photoSrc.ifBlank { "" }, password
+        )
+
+        return try {
+            val list = apiService.register(form)
+            updateToken(list.token)
+            Result.Success(list)
+        } catch (e: HttpException) {
+            if (e.code() == 401) logout()
+            Result.Error(IOException("HTTP ${e.code()}", e))
+        } catch (e: Exception) {
+            Result.Error(IOException("Network error", e))
+        }
+    }
+
     fun logout() {
         // TODO
         // так робити, казали, нізя
-        val intent = Intent(context, GreetingsActivity::class.java)
+        val intent = Intent(context, StartActivity::class.java)
         intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
         context.startActivity(intent)
     }

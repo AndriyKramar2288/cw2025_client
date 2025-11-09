@@ -112,7 +112,7 @@ fun CourseInfo(id: Long, viewModel: MainPageModel) {
                         .width(4.dp)
                         .height(24.dp)
                         .background(
-                            if (compendium.status == CompendiumStatus.COMPLETED) Color(0xFF4CAF50) else Color.LightGray,
+                            Color.LightGray,
                             shape = RoundedCornerShape(2.dp)
                         )
                 )

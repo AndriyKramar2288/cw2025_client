@@ -16,6 +16,11 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Cw2025_client">
         <activity
+            android:name=".ui.start.StartActivity"
+            android:exported="false"
+            android:label="@string/title_activity_start"
+            android:theme="@style/Theme.Cw2025_client" />
+        <activity
             android:name=".ui.main.MainActivity"
             android:exported="true"
             android:label="@string/title_activity_main"
@@ -31,9 +36,6 @@
             android:exported="false"
             android:label="@string/title_activity_test_jetpack"
             android:theme="@style/Theme.Cw2025_client" />
-        <activity
-            android:name=".ui.greetings.GreetingsActivity"
-            android:exported="true" />
 
         <meta-data
             android:name="preloaded_fonts"

@@ -48,7 +48,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.banew.cw2025_client.R
-import com.banew.cw2025_client.ui.greetings.GreetingsActivity
+import com.banew.cw2025_client.ui.start.StartActivity
 import com.banew.cw2025_client.ui.theme.MyAppTheme
 
 class MainActivity : AppCompatActivity() {
@@ -78,7 +78,7 @@ fun MainScreen(viewModel : MainPageModel = viewModel()) {
     val context = LocalContext.current
 
     if (viewModel.isShouldToSwitchToLogin) {
-        val intent = Intent(context, GreetingsActivity::class.java)
+        val intent = Intent(context, StartActivity::class.java)
         context.startActivity(intent)
     }
 

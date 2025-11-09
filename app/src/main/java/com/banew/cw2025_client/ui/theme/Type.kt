@@ -2,6 +2,7 @@ package com.banew.cw2025_client.ui.theme
 
 import androidx.compose.material3.Typography
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
@@ -14,6 +15,12 @@ val StandardFont = FontFamily(
 )
 
 val AppTypography = Typography(
+    headlineLarge = TextStyle(
+        color = Color(0xFFA56139),
+        fontFamily = StandardFont,
+        fontWeight = FontWeight.SemiBold,
+        fontSize = 30.sp
+    ),
     bodySmall = TextStyle(
         color = Color.Gray,
         fontFamily = StandardFont,
