@@ -186,5 +186,5 @@ fun formatDate(instant: Instant): String {
 @Composable
 @Preview(showBackground = true)
 private fun Content2() {
-    CourseScreen(viewModel = MainPageModel(true))
+    CourseScreen(viewModel = MainPageModelMock())
 }

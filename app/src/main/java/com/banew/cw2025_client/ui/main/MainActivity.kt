@@ -66,11 +66,11 @@ class MainActivity : AppCompatActivity() {
 @Composable
 @Preview(showBackground = true)
 private fun Content() {
-    MainScreen(viewModel = MainPageModel(true))
+    MainScreen(viewModel = MainPageModelMock())
 }
 
 @Composable
-fun MainScreen(viewModel : MainPageModel = viewModel()) {
+fun MainScreen(viewModel : MainPageModel = viewModel<MainPageModelReal>()) {
     val navController = rememberNavController()
 
     var isRefreshing by remember { mutableStateOf(false) }

@@ -218,6 +218,6 @@ fun UserProfileCard(userProfile: UserProfileBasicDto) {
 @Preview(showBackground = true)
 private fun Aboba() {
     MyAppTheme {
-        CoursePlanInfo(3, MainPageModel(mock = true))
+        CoursePlanInfo(3, MainPageModelMock())
     }
 }

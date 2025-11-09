@@ -53,7 +53,7 @@ import com.banew.cw2025_client.ui.theme.AppTypography
 @Composable
 @Preview(showBackground = true)
 private fun Preview() {
-    CourseInfo(1603L, MainPageModel(mock = true))
+    CourseInfo(1603L, MainPageModelMock())
 }
 
 @Composable

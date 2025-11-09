@@ -24,7 +24,7 @@ public class ProfilePageFragment extends Fragment {
     public void onStart() {
         super.onStart();
 
-        var mainPageModel = new ViewModelProvider(requireActivity()).get(MainPageModel.class);
+        //var mainPageModel = new ViewModelProvider(requireActivity()).get(MainPageModel.class);
 
 //        mainPageModel.getCurrentUser().observe(getViewLifecycleOwner(), u -> {
 //            ((TextView) requireActivity().findViewById(R.id.profile_email)).setText(

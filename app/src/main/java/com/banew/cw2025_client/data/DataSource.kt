@@ -38,8 +38,6 @@ class DataSource(private val context: Context) {
     private val prefs: SharedPreferences = context.getSharedPreferences("MyAppPrefs", Context.MODE_PRIVATE)
 
     init {
-        prefs.edit().remove("jwt_token").apply()
-
         if (NGROK) {
             NgrokPathExtractor.extractNgrokPath(
                 "34tAXbBzXVP23CRpx3aV8lIke4t_3TQ2CQKnWGniuwPzPRmC1"

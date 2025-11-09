@@ -1,5 +1,7 @@
 package com.banew.cw2025_client.ui.main
 
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModel
@@ -18,80 +20,31 @@ import com.banew.cw2025_client.data.Result
 import kotlinx.coroutines.launch
 import java.time.Instant
 
-class MainPageModel(val mock : Boolean = false) : ViewModel() {
-    private val dataSource: DataSource? = GlobalApplication.getInstance()?.dataSource
+interface MainPageModel {
+    val currentUser: State<UserProfileBasicDto?>
+    val currentCoursePlans: State<List<CoursePlanBasicDto>>
+    val currentCourses: State<List<CourseBasicDto>>
+    val lastException: State<Exception?>
+    val preferredRoute: MutableState<String>
+    fun beginCourse(coursePLanId: Long) {}
+    fun createCoursePlan(name: String, desc: String, topics: List<TopicForm>) {}
+    fun refresh(callback: () -> Unit = {}) {}
+    fun beginTopic(topicId: Long) {}
+    fun updateCompendium(newCompendium: TopicCompendiumDto) {}
+    val isShouldToSwitchToLogin: Boolean
+        get() = false
+}
 
-    var currentUser = mutableStateOf<UserProfileBasicDto?>(null)
-        private set
-    var currentCoursePlans =
-        mutableStateOf<List<CoursePlanBasicDto>>(ArrayList())
-        private set
-
-    var currentCourses =
-        mutableStateOf<List<CourseBasicDto>>(ArrayList())
-        private set
-
-    var lastException = mutableStateOf<Exception?>(null)
-        private set
-
-    var preferredRoute = mutableStateOf("home")
-        private set
-
-    private val networkMonitor: NetworkMonitor? = if (!mock) NetworkMonitor.getInstance(
-        GlobalApplication.getInstance().applicationContext
-    ) else null
-
-    private val networkObserver = Observer { connected: Boolean ->
-        if (connected) refresh()
-    }
-
-    init {
-        refresh()
-        networkMonitor?.observeForever(networkObserver)
-    }
-
-    override fun onCleared() {
-        super.onCleared()
-
-        networkMonitor?.removeObserver(networkObserver)
-    }
-
-    fun beginCourse(coursePLanId: Long) {
-        if(!mock && dataSource != null) viewModelScope.launch {
-            val result = dataSource.beginCourse(coursePLanId)
-
-            if (result.isSuccess) {
-                currentCourses.value += listOf(result.asSuccess().data)
-                preferredRoute.value = "courses"
-            }
-            else {
-                lastException.value = result.asError().error
-            }
-        }
-    }
-
-    fun createCoursePlan(
-        name: String,
-        desc: String,
-        topics: List<TopicForm>
-    ) {
-        if(!mock && dataSource != null) viewModelScope.launch {
-            when (val planRes = dataSource.createCoursePlan(name, desc, topics)) {
-                is Result.Success -> {
-                    refresh()
-                    preferredRoute.value = "home"
-                }
-                is Result.Error -> {
-                    lastException.value = planRes.asError().error
-                }
-            }
-        }
-    }
-
-    fun refresh(callback: () -> Unit = {}) {
-
-        if (mock) {
-            currentCoursePlans.value = listOf(
+class MainPageModelMock: ViewModel(), MainPageModel {
+    override val currentUser: State<UserProfileBasicDto?>
+        get() = mutableStateOf(
+            UserProfileBasicDto(
+                "Користувач", "aboba@gmail.com", "qwewqweq"
+            )
+        )
+    override val currentCoursePlans: State<List<CoursePlanBasicDto>>
+        get() = mutableStateOf(
+            listOf(
                 CoursePlanBasicDto(
                     3, "Курс", UserProfileBasicDto(
                         "Користувач", "aboba@gmail.com", "qwewqweq"
@@ -102,8 +55,10 @@ class MainPageModel(val mock : Boolean = false) : ViewModel() {
                     )
                 )
             ).flatMap { listOf(it, it, it, it, it) }.flatMap { listOf(it, it, it) }
-
-            val mockCourse = CourseBasicDto(
+        )
+    override val currentCourses: State<List<CourseBasicDto>>
+        get() = mutableStateOf(listOf(
+            CourseBasicDto(
                 Instant.parse("2025-11-07T22:28:26.935362Z"),
                 CoursePlanCourseDto(
                     1603L,
@@ -118,7 +73,7 @@ class MainPageModel(val mock : Boolean = false) : ViewModel() {
                 listOf(
                     TopicCompendiumDto(
                         652L,
-                         null,
+                        null,
                         CoursePlanBasicDto.TopicBasicDto(
                             1703L,
                             "",
@@ -141,14 +96,86 @@ class MainPageModel(val mock : Boolean = false) : ViewModel() {
                 ),
                 null
             )
+        ).flatMap { listOf(it, it, it) })
+    override val lastException: State<Exception?>
+        get() = mutableStateOf(null)
+    override val preferredRoute: MutableState<String>
+        get() = mutableStateOf("home")
+}
 
-            currentCourses.value = listOf(mockCourse, mockCourse, mockCourse)
+class MainPageModelReal : ViewModel(), MainPageModel {
+    private val dataSource: DataSource = GlobalApplication.getInstance()!!.dataSource
 
-            return
-        }
+    override var currentUser = mutableStateOf<UserProfileBasicDto?>(null)
+        private set
+    override var currentCoursePlans =
+        mutableStateOf<List<CoursePlanBasicDto>>(ArrayList())
+        private set
 
+    override var currentCourses =
+        mutableStateOf<List<CourseBasicDto>>(ArrayList())
+        private set
+
+    override var lastException = mutableStateOf<Exception?>(null)
+        private set
+
+    override var preferredRoute = mutableStateOf("home")
+        private set
+
+    private val networkMonitor: NetworkMonitor? = NetworkMonitor.getInstance(
+        GlobalApplication.getInstance().applicationContext
+    )
+
+    private val networkObserver = Observer { connected: Boolean ->
+        if (connected) refresh()
+    }
+
+    init {
+        refresh()
+        networkMonitor?.observeForever(networkObserver)
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+
+        networkMonitor?.removeObserver(networkObserver)
+    }
+
+    override fun beginCourse(coursePLanId: Long) {
         viewModelScope.launch {
-            val userRes = dataSource!!.currentUserProfile()
+            val result = dataSource.beginCourse(coursePLanId)
+
+            if (result.isSuccess) {
+                currentCourses.value += listOf(result.asSuccess().data)
+                preferredRoute.value = "courses"
+            }
+            else {
+                lastException.value = result.asError().error
+            }
+        }
+    }
+
+    override fun createCoursePlan(
+        name: String,
+        desc: String,
+        topics: List<TopicForm>
+    ) {
+        viewModelScope.launch {
+            when (val planRes = dataSource.createCoursePlan(name, desc, topics)) {
+                is Result.Success -> {
+                    refresh()
+                    preferredRoute.value = "home"
+                }
+                is Result.Error -> {
+                    lastException.value = planRes.asError().error
+                }
+            }
+        }
+    }
+
+    override fun refresh(callback: () -> Unit) {
+        viewModelScope.launch {
+            val userRes = dataSource.currentUserProfile()
             val plansRes = dataSource.currentCoursePlanList()
             val coursesRes = dataSource.currentCourseList()
 
@@ -171,8 +198,8 @@ class MainPageModel(val mock : Boolean = false) : ViewModel() {
         }
     }
 
-    fun beginTopic(topicId: Long) {
-        if(!mock && dataSource != null) viewModelScope.launch {
+    override fun beginTopic(topicId: Long) {
+        viewModelScope.launch {
             when (val planRes = dataSource.beginTopic(topicId)) {
                 is Result.Success -> {
                     refresh()
@@ -185,8 +212,8 @@ class MainPageModel(val mock : Boolean = false) : ViewModel() {
         }
     }
 
-    fun updateCompendium(newCompendium: TopicCompendiumDto) {
-        if(!mock && dataSource != null) viewModelScope.launch {
+    override fun updateCompendium(newCompendium: TopicCompendiumDto) {
+        viewModelScope.launch {
             when (val planRes = dataSource.updateCompendium(newCompendium)) {
                 is Result.Success -> {
                     refresh()
@@ -199,6 +226,6 @@ class MainPageModel(val mock : Boolean = false) : ViewModel() {
         }
     }
 
-    val isShouldToSwitchToLogin: Boolean
-        get() = dataSource?.token == null
+    override val isShouldToSwitchToLogin: Boolean
+        get() = dataSource.token == null
 }
