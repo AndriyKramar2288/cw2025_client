@@ -84,10 +84,22 @@ fun CourseInfo(id: Long, viewModel: MainPageModel) {
             style = AppTypography.titleLarge,
             fontWeight = FontWeight.Bold,
             textAlign = TextAlign.Center,
-            modifier = Modifier.padding(bottom = 8.dp)
+            modifier = Modifier.padding(vertical = 8.dp)
         )
 
+        // Автор курсу
+        Spacer(modifier = Modifier.height(16.dp))
+        Text(
+            text = "Автор курсу",
+            style = AppTypography.bodyMedium,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 10.dp)
+        )
+        UserProfileCard(course.coursePlan.author, Modifier.padding(horizontal = 20.dp))
+
         // Статистика курсу
+        Spacer(modifier = Modifier.height(8.dp))
         CourseStats(course)
 
         Spacer(modifier = Modifier.height(24.dp))

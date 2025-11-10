@@ -163,9 +163,9 @@ fun CoursePlanInfo(id: Long, viewModel: MainPageModel) {
 }
 
 @Composable
-fun UserProfileCard(userProfile: UserProfileBasicDto) {
+fun UserProfileCard(userProfile: UserProfileBasicDto, modifier: Modifier = Modifier) {
     Card(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .padding(vertical = 10.dp)
             .background(
