@@ -47,19 +47,24 @@ class DataSource(private val context: Context) {
         }
     }
 
+    private suspend fun <T> resolveResult(successCallback: (T) -> Unit = {}, resultSource: (suspend () -> T)) = try {
+        val result = resultSource()
+        successCallback(result)
+        Result.Success(result)
+    } catch (e: HttpException) {
+        Result.Error(IOException(resolveHttpException(e)))
+    } catch (e: Exception) {
+        Result.Error(IOException("Network error", e))
+    }
+
     suspend fun beginCourse(coursePlanId: Long): Result<CourseBasicDto> {
         if (token == null) {
             logout()
             return Result.Error(IOException("Not authorized!"))
         }
 
-        return try {
-            val result = apiService.beginCourse("Bearer $token", coursePlanId)
-            Result.Success(result)
-        } catch (e: HttpException) {
-            Result.Error(IOException(resolveHttpException(e)))
-        } catch (e: Exception) {
-            Result.Error(IOException("Network error", e))
+        return resolveResult {
+            apiService.beginCourse("Bearer $token", coursePlanId)
         }
     }
 
@@ -74,8 +79,8 @@ class DataSource(private val context: Context) {
             return Result.Error(IOException("Not authorized!"))
         }
 
-        return try {
-            val result = apiService.createCoursePlan("Bearer $token", CoursePlanBasicDto(
+        return resolveResult {
+            apiService.createCoursePlan("Bearer $token", CoursePlanBasicDto(
                 null,
                 name,
                 null,
@@ -84,11 +89,6 @@ class DataSource(private val context: Context) {
                     null, it.name.value, it.desc.value
                 ) }
             ))
-            Result.Success(result)
-        } catch (e: HttpException) {
-            Result.Error(IOException(resolveHttpException(e)))
-        } catch (e: Exception) {
-            Result.Error(IOException("Network error", e))
         }
     }
 
@@ -123,24 +123,14 @@ class DataSource(private val context: Context) {
         }
 
     suspend fun currentCourseList(): Result<List<CourseBasicDto>> {
-        return try {
-            val list = apiService.getUserCourses("Bearer $token")
-            Result.Success(list)
-        } catch (e: HttpException) {
-            Result.Error(IOException(resolveHttpException(e)))
-        } catch (e: Exception) {
-            Result.Error(IOException("Network error", e))
+        return resolveResult {
+            apiService.getUserCourses("Bearer $token")
         }
     }
 
     suspend fun currentCoursePlanList(): Result<List<CoursePlanBasicDto>> {
-        return try {
-            val list = apiService.currentCoursePlanList("Bearer $token")
-            Result.Success(list)
-        } catch (e: HttpException) {
-            Result.Error(IOException(resolveHttpException(e)))
-        } catch (e: Exception) {
-            Result.Error(IOException("Network error", e))
+        return resolveResult {
+            apiService.currentCoursePlanList("Bearer $token")
         }
     }
 
@@ -151,14 +141,8 @@ class DataSource(private val context: Context) {
             return Result.Error(IOException("Not authorized!"))
         }
 
-        return try {
-            val list = apiService.currentUser("Bearer $token")
-            Result.Success(list)
-        } catch (e: HttpException) {
-            if (e.code() == 401) logout()
-            Result.Error(IOException("HTTP ${e.code()}", e))
-        } catch (e: Exception) {
-            Result.Error(IOException("Network error", e))
+        return resolveResult {
+            apiService.currentUser("Bearer $token")
         }
     }
 
@@ -166,15 +150,10 @@ class DataSource(private val context: Context) {
 
         val form = UserLoginForm(email, password)
 
-        return try {
-            val list = apiService.login(form)
-            updateToken(list.token)
-            Result.Success(list)
-        } catch (e: HttpException) {
-            if (e.code() == 401) logout()
-            Result.Error(IOException("HTTP ${e.code()}", e))
-        } catch (e: Exception) {
-            Result.Error(IOException("Network error", e))
+        return resolveResult({
+            updateToken(it.token)
+        }) {
+            apiService.login(form)
         }
     }
 
@@ -189,21 +168,17 @@ class DataSource(private val context: Context) {
             email, username, photoSrc.ifBlank { "" }, password
         )
 
-        return try {
-            val list = apiService.register(form)
-            updateToken(list.token)
-            Result.Success(list)
-        } catch (e: HttpException) {
-            if (e.code() == 401) logout()
-            Result.Error(IOException("HTTP ${e.code()}", e))
-        } catch (e: Exception) {
-            Result.Error(IOException("Network error", e))
+        return resolveResult({
+            updateToken(it.token)
+        }) {
+            apiService.register(form)
         }
     }
 
     fun logout() {
         // TODO
         // так робити, казали, нізя
+        return
         val intent = Intent(context, StartActivity::class.java)
         intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
         context.startActivity(intent)
@@ -219,26 +194,14 @@ class DataSource(private val context: Context) {
     }
 
     suspend fun beginTopic(topicId: Long) : Result<TopicCompendiumDto> {
-        return try {
-            val list = apiService.beginTopic("Bearer $token", topicId)
-            Result.Success(list)
-        } catch (e: HttpException) {
-            if (e.code() == 401) logout()
-            Result.Error(IOException("HTTP ${e.code()}", e))
-        } catch (e: Exception) {
-            Result.Error(IOException("Network error", e))
+        return resolveResult {
+            apiService.beginTopic("Bearer $token", topicId)
         }
     }
 
     suspend fun updateCompendium(compendium: TopicCompendiumDto) : Result<TopicCompendiumDto> {
-        return try {
-            val list = apiService.updateCompendium("Bearer $token", compendium)
-            Result.Success(list)
-        } catch (e: HttpException) {
-            if (e.code() == 401) logout()
-            Result.Error(IOException("HTTP ${e.code()}", e))
-        } catch (e: Exception) {
-            Result.Error(IOException("Network error", e))
+        return resolveResult {
+            apiService.updateCompendium("Bearer $token", compendium)
         }
     }
 

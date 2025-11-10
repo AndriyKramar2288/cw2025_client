@@ -85,6 +85,7 @@ fun MainScreen(viewModel : MainPageModel = viewModel<MainPageModelReal>()) {
     LaunchedEffect(viewModel.lastException.value) {
         viewModel.lastException.value?.let { e ->
             Toast.makeText(context, e.message ?: "Помилка", Toast.LENGTH_SHORT).show()
+            viewModel.lastException.value = null
         }
     }
 

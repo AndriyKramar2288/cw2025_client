@@ -16,6 +16,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.requiredSize
+import androidx.compose.foundation.layout.requiredWidth
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
@@ -25,6 +27,8 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -35,6 +39,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -70,7 +75,7 @@ fun CourseInfo(id: Long, viewModel: MainPageModel) {
         modifier = Modifier
             .fillMaxSize()
             .verticalScroll(verticalScroll)
-            .padding(horizontal = 20.dp, vertical = 30.dp),
+            .padding(vertical = 30.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         // Назва курсу
@@ -91,17 +96,16 @@ fun CourseInfo(id: Long, viewModel: MainPageModel) {
         Text(
             text = "Прогрес навчання",
             style = AppTypography.bodyLarge,
-            fontWeight = FontWeight.Bold,
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(bottom = 12.dp)
+                .padding(vertical = 12.dp, horizontal = 10.dp)
         )
 
         // Теми з прогресом
         course.compendiums.forEachIndexed { index, compendium ->
             TopicProgressCard(
                 compendium = compendium,
-                type = compendium.status.toProgressType(),
+                type = compendium.status?.toProgressType() ?: TopicProgressType.LOCKED,
                 viewModel
             )
 
@@ -141,15 +145,18 @@ fun CourseStats(course: CourseBasicDto) {
     val totalConcepts = course.compendiums.sumOf { it.concepts.size }
     val progress = if (totalTopics > 0) completedTopics.toFloat() / totalTopics else 0f
 
+    HorizontalDivider(
+        thickness = 2.dp,
+        color = colorResource(R.color.navbar_button2)
+    )
     Card(
-        shape = RoundedCornerShape(12.dp),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
         colors = CardDefaults.cardColors(
-            containerColor = colorResource(R.color.navbar_button).copy(alpha = 0.1f)
+            containerColor = colorResource(R.color.navbar_button)
         ),
+        shape = RectangleShape,
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 16.dp)
+            .padding(vertical = 5.dp)
     ) {
         Column(
             modifier = Modifier.padding(16.dp),
@@ -160,6 +167,7 @@ fun CourseStats(course: CourseBasicDto) {
                 Text(
                     text = "Загальний прогрес",
                     style = AppTypography.bodyMedium,
+                    color = Color.White,
                     fontWeight = FontWeight.SemiBold,
                     modifier = Modifier.padding(bottom = 8.dp)
                 )
@@ -168,8 +176,11 @@ fun CourseStats(course: CourseBasicDto) {
                     progress = { progress },
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(12.dp)
-                        .clip(RoundedCornerShape(6.dp)),
+                        .height(10.dp)
+                        .background(
+                            color = Color.LightGray,
+                            shape = RoundedCornerShape(3.dp)
+                        ),
                     color = Color(0xFF4CAF50),
                     trackColor = Color.LightGray
                 )
@@ -177,7 +188,7 @@ fun CourseStats(course: CourseBasicDto) {
                 Text(
                     text = "${(progress * 100).toInt()}%",
                     style = AppTypography.bodySmall,
-                    color = Color.Gray,
+                    color = Color.White,
                     modifier = Modifier.padding(top = 4.dp)
                 )
             }
@@ -192,38 +203,67 @@ fun CourseStats(course: CourseBasicDto) {
                 StatItem(
                     label = "Завершено",
                     value = "$completedTopics/$totalTopics",
-                    icon = "✓"
+                    icon = R.drawable.fact_check_40px
                 )
 
                 StatItem(
                     label = "Концептів",
                     value = totalConcepts.toString(),
-                    icon = "📚"
+                    icon = R.drawable.award_star_40px
                 )
             }
         }
     }
+    HorizontalDivider(
+        thickness = 2.dp,
+        color = colorResource(R.color.navbar_button2)
+    )
 }
 
 @Composable
-fun StatItem(label: String, value: String, icon: String) {
+fun StatItem(label: String, value: String, icon: Int) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Text(
-            text = icon,
-            style = AppTypography.titleMedium,
-            modifier = Modifier.padding(bottom = 4.dp)
+        Icon(
+            painter = painterResource(icon),
+            contentDescription = "statItemIcon",
+            Modifier
+                .background(
+                    shape = RoundedCornerShape(3.dp),
+                    color = Color(0x07000000)
+                )
+                .padding(7.dp)
+                .requiredSize(30.dp),
+            tint = Color.White
         )
-        Text(
-            text = value,
-            style = AppTypography.titleMedium,
-            fontWeight = FontWeight.Bold
-        )
-        Text(
-            text = label,
-            style = AppTypography.bodySmall,
-            color = Color.Gray
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier
+                .padding(2.dp)
+                .background(
+                    shape = RoundedCornerShape(3.dp),
+                    color = Color(0x11000000)
+                )
+                .padding(5.dp)
+        ) {
+            Text(
+                text = value,
+                style = AppTypography.titleMedium,
+                fontWeight = FontWeight.Bold,
+                color = Color.White
+            )
+            Text(
+                text = label,
+                style = AppTypography.bodySmall,
+                color = Color.LightGray
+            )
+        }
+        HorizontalDivider(
+            color = Color.LightGray,
+            thickness = 4.dp,
+            modifier = Modifier
+                .requiredWidth(50.dp)
         )
     }
 }
@@ -242,7 +282,7 @@ enum class TopicProgressType(
         backgroundColor = Color(0xFFBDBDBD).copy(alpha = 0.1f), // світло-сірий
         borderColor = Color(0xFF9E9E9E),                        // середньо-сірий
         buttonColor = Color(0xFF9E9E9E),                        // сірий
-        buttonIconId = R.drawable.ic_launcher_foreground,
+        buttonIconId = R.drawable.lock_40px,
         isLocked = true
     ),
 
@@ -250,21 +290,21 @@ enum class TopicProgressType(
         backgroundColor = Color(0xFF4CAF50).copy(alpha = 0.1f), // зеленкуватий
         borderColor = Color(0xFF4CAF50),                        // насичений зелений
         buttonColor = Color(0xFF4CAF50),                        // зелений
-        buttonIconId = R.drawable.ic_launcher_foreground
+        buttonIconId = R.drawable.new_label_40px
     ),
 
     COMPLETED(
         backgroundColor = Color(0xFF8D6E63).copy(alpha = 0.1f), // м’який коричневий
         borderColor = Color(0xFF6D4C41),                        // темніший коричневий
         buttonColor = Color(0xFF8D6E63),                        // теплий коричневий
-        buttonIconId = R.drawable.ic_launcher_foreground
+        buttonIconId = R.drawable.all_match_40px
     ),
 
     CURRENT(
         backgroundColor = Color(0xFFB0BEC5).copy(alpha = 0.1f), // сіро-блакитний
         borderColor = Color(0xFF607D8B),                        // холодний сірий
         buttonColor = Color(0xFF607D8B),                        // той самий
-        buttonIconId = R.drawable.ic_launcher_foreground,
+        buttonIconId = R.drawable.label_24px,
         elavulationSize = 6.dp,
         borderWidth = 3.dp,
         isCurrent = true
@@ -285,17 +325,18 @@ fun TopicProgressCard(
     viewModel: MainPageModel
 ) {
     Card(
-        shape = RoundedCornerShape(12.dp),
+        shape = RoundedCornerShape(7.dp),
         elevation = CardDefaults.cardElevation(
             defaultElevation = type.elavulationSize
         ),
         colors = CardDefaults.cardColors(containerColor = Color.White),
         modifier = Modifier
             .fillMaxWidth()
+            .padding(horizontal = 20.dp)
             .border(
                 width = type.borderWidth,
                 color = type.borderColor,
-                shape = RoundedCornerShape(12.dp)
+                shape = RoundedCornerShape(7.dp)
             )
     ) {
         Row(
@@ -334,7 +375,7 @@ fun TopicProgressCard(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Text(
-                            text = "📝 ${compendium.concepts.size} концептів",
+                            text = "${compendium.concepts.size} концептів",
                             style = AppTypography.bodySmall,
                             color = if (type.isLocked) Color.LightGray else Color.Gray
                         )
@@ -378,7 +419,7 @@ fun TopicProgressCard(
                 }
             ) {
                 Image(
-                    modifier = Modifier.size(50.dp),
+                    modifier = Modifier.requiredSize(30.dp),
                     painter = painterResource(type.buttonIconId),
                     contentDescription = ""
                 )

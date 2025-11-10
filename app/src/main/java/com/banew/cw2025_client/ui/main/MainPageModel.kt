@@ -24,10 +24,10 @@ interface MainPageModel {
     val currentUser: State<UserProfileBasicDto?>
     val currentCoursePlans: State<List<CoursePlanBasicDto>>
     val currentCourses: State<List<CourseBasicDto>>
-    val lastException: State<Exception?>
+    val lastException: MutableState<Exception?>
     val preferredRoute: MutableState<String>
     fun beginCourse(coursePLanId: Long) {}
-    fun createCoursePlan(name: String, desc: String, topics: List<TopicForm>) {}
+    fun confirmCoursePlanCreation(dto: CoursePlanBasicDto) {}
     fun refresh(callback: () -> Unit = {}) {}
     fun beginTopic(topicId: Long) {}
     fun updateCompendium(newCompendium: TopicCompendiumDto) {}
@@ -97,7 +97,7 @@ class MainPageModelMock: ViewModel(), MainPageModel {
                 null
             )
         ).flatMap { listOf(it, it, it) })
-    override val lastException: State<Exception?>
+    override val lastException: MutableState<Exception?>
         get() = mutableStateOf(null)
     override val preferredRoute: MutableState<String>
         get() = mutableStateOf("home")
@@ -105,22 +105,13 @@ class MainPageModelMock: ViewModel(), MainPageModel {
 
 class MainPageModelReal : ViewModel(), MainPageModel {
     private val dataSource: DataSource = GlobalApplication.getInstance()!!.dataSource
-
-    override var currentUser = mutableStateOf<UserProfileBasicDto?>(null)
-        private set
-    override var currentCoursePlans =
+    override val currentUser = mutableStateOf<UserProfileBasicDto?>(null)
+    override val currentCoursePlans =
         mutableStateOf<List<CoursePlanBasicDto>>(ArrayList())
-        private set
-
-    override var currentCourses =
+    override val currentCourses =
         mutableStateOf<List<CourseBasicDto>>(ArrayList())
-        private set
-
-    override var lastException = mutableStateOf<Exception?>(null)
-        private set
-
-    override var preferredRoute = mutableStateOf("home")
-        private set
+    override val lastException = mutableStateOf<Exception?>(null)
+    override val preferredRoute = mutableStateOf("home")
 
     private val networkMonitor: NetworkMonitor? = NetworkMonitor.getInstance(
         GlobalApplication.getInstance().applicationContext
@@ -155,22 +146,10 @@ class MainPageModelReal : ViewModel(), MainPageModel {
         }
     }
 
-    override fun createCoursePlan(
-        name: String,
-        desc: String,
-        topics: List<TopicForm>
-    ) {
-        viewModelScope.launch {
-            when (val planRes = dataSource.createCoursePlan(name, desc, topics)) {
-                is Result.Success -> {
-                    refresh()
-                    preferredRoute.value = "home"
-                }
-                is Result.Error -> {
-                    lastException.value = planRes.asError().error
-                }
-            }
-        }
+    override fun confirmCoursePlanCreation(dto: CoursePlanBasicDto) {
+        currentCoursePlans.value += listOf(dto)
+        //refresh()
+        preferredRoute.value = "home"
     }
 
     override fun refresh(callback: () -> Unit) {

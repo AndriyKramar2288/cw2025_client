@@ -6,7 +6,6 @@ import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -19,15 +18,12 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -63,6 +59,8 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import com.banew.cw2025_client.R
+import com.banew.cw2025_client.ui.components.ErrorBox
+import com.banew.cw2025_client.ui.components.LoadingBox
 import com.banew.cw2025_client.ui.theme.AppTypography
 
 @Composable
@@ -172,11 +170,11 @@ fun GreetingsStep2(
                 "Електронна скринька",
                 "example@email.com",
                 android.R.drawable.ic_dialog_email,
+                viewModel.email,
                 viewModel.email.isNotEmpty() && !Patterns.EMAIL_ADDRESS.matcher(
                     viewModel.email
                 ).matches(),
                 "Введіть коректну email адресу",
-                viewModel.email
             ) { viewModel.email = it }
 
             if (!isLogin) {
@@ -185,17 +183,15 @@ fun GreetingsStep2(
                     "Ім'я користувача",
                     "Введіть псевдонім...",
                     android.R.drawable.star_on,
+                    viewModel.username,
                     viewModel.username.isNotEmpty() && viewModel.username.length <= 5,
                     "Псевдо має бути не менше 5 символів",
-                    viewModel.username
                 ) { viewModel.username = it }
                 // Photo Field
                 FormField(
                     "Посилання на аватар користувача",
                     "Вставте посилання на фото...",
                     android.R.drawable.ic_menu_mapmode,
-                    false,
-                    ":)",
                     viewModel.photoSrc
                 ) { viewModel.photoSrc = it }
 
@@ -216,9 +212,9 @@ fun GreetingsStep2(
                 "Пароль",
                 "Введіть пароль",
                 android.R.drawable.ic_lock_idle_lock,
+                viewModel.password,
                 viewModel.password.isNotEmpty() && viewModel.password.length < 8,
                 "Пароль повинен містити більше 8 символів",
-                viewModel.password,
                 isPassword = true,
             ) { viewModel.password = it }
 
@@ -227,32 +223,10 @@ fun GreetingsStep2(
             // Login Error Message
             viewModel.loginResult?.let { result ->
                 if (result.isError) {
-                    Card(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(bottom = 16.dp),
-                        colors = CardDefaults.cardColors(
-                            containerColor = MaterialTheme.colorScheme.errorContainer
-                        ),
-                        shape = RoundedCornerShape(8.dp)
-                    ) {
-                        Row(
-                            modifier = Modifier.padding(12.dp),
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Icon(
-                                painter = painterResource(id = android.R.drawable.ic_dialog_alert),
-                                contentDescription = "Error",
-                                tint = MaterialTheme.colorScheme.error
-                            )
-                            Spacer(modifier = Modifier.width(8.dp))
-                            Text(
-                                text = "Невірний email або пароль",
-                                color = MaterialTheme.colorScheme.onErrorContainer,
-                                style = AppTypography.bodyMedium
-                            )
-                        }
-                    }
+                    ErrorBox(
+                        text = "Невірний email або пароль",
+                        modifier = Modifier.padding(bottom = 16.dp)
+                    )
                 }
             }
 
@@ -293,33 +267,7 @@ fun GreetingsStep2(
 
         // Loading Overlay
         if (viewModel.isLoading) {
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .background(Color.Black.copy(alpha = 0.3f))
-                    .clickable(enabled = false) { },
-                contentAlignment = Alignment.Center
-            ) {
-                Card (
-                    shape = RoundedCornerShape(16.dp),
-                    elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
-                ) {
-                    Column (
-                        modifier = Modifier.padding(32.dp),
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        CircularProgressIndicator(
-                            modifier = Modifier.size(48.dp),
-                            color = Color(0xFF2196F3)
-                        )
-                        Spacer(modifier = Modifier.height(16.dp))
-                        Text(
-                            text = "Вхід...",
-                            style = AppTypography.bodyLarge
-                        )
-                    }
-                }
-            }
+            LoadingBox("Вхід...")
         }
     }
 }
@@ -327,8 +275,9 @@ fun GreetingsStep2(
 @Composable
 private fun FormField(
     text: String, placeholder: String,
-    iconId: Int, isError: Boolean, errorMessage: String,
-    value: String, isPassword: Boolean = false, onChange: (String) -> Unit
+    iconId: Int, value: String,
+    isError: Boolean = false, errorMessage: String = "",
+    isPassword: Boolean = false, onChange: (String) -> Unit
 ) {
     var passwordVisible by remember { mutableStateOf(false) }
 
