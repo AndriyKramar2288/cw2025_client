@@ -5,6 +5,7 @@ import com.banew.cw2025_backend_common.dto.courses.CourseBasicDto
 import com.banew.cw2025_backend_common.dto.courses.TopicCompendiumDto
 import com.banew.cw2025_backend_common.dto.users.UserLoginForm
 import com.banew.cw2025_backend_common.dto.users.UserProfileBasicDto
+import com.banew.cw2025_backend_common.dto.users.UserProfileDetailedDto
 import com.banew.cw2025_backend_common.dto.users.UserRegisterForm
 import com.banew.cw2025_backend_common.dto.users.UserTokenFormResult
 import retrofit2.Call
@@ -29,7 +30,13 @@ interface ApiService {
     @GET("users/")
     suspend fun currentUser(
         @Header("Authorization") token: String
-    ): UserProfileBasicDto
+    ): UserProfileDetailedDto
+
+    @GET("users/{userId}")
+    suspend fun userProfileById(
+        @Path("userId") userId: Long,
+        @Header("Authorization") token: String
+    ): UserProfileDetailedDto
 
 
     // --- COURSE PLAN ---

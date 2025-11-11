@@ -9,6 +9,9 @@ fun MyAppTheme(content: @Composable () -> Unit) {
     MaterialTheme(
         typography = AppTypography,
         content = content,
-        colorScheme = MaterialTheme.colorScheme.copy(primary = Color.White)
+        colorScheme = MaterialTheme.colorScheme.copy(
+            primary = Color.Black,
+            background = Color(0x0FFFFFFF)
+        )
     )
 }

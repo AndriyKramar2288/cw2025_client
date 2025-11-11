@@ -12,16 +12,16 @@ import com.banew.cw2025_backend_common.dto.courses.CourseBasicDto
 import com.banew.cw2025_backend_common.dto.courses.CoursePlanCourseDto
 import com.banew.cw2025_backend_common.dto.courses.TopicCompendiumDto
 import com.banew.cw2025_backend_common.dto.users.UserProfileBasicDto
+import com.banew.cw2025_backend_common.dto.users.UserProfileDetailedDto
 import com.banew.cw2025_client.GlobalApplication
 import com.banew.cw2025_client.data.DataSource
-import com.banew.cw2025_client.data.DataSource.TopicForm
 import com.banew.cw2025_client.data.NetworkMonitor
 import com.banew.cw2025_client.data.Result
 import kotlinx.coroutines.launch
 import java.time.Instant
 
 interface MainPageModel {
-    val currentUser: State<UserProfileBasicDto?>
+    val currentUser: State<UserProfileDetailedDto?>
     val currentCoursePlans: State<List<CoursePlanBasicDto>>
     val currentCourses: State<List<CourseBasicDto>>
     val lastException: MutableState<Exception?>
@@ -31,15 +31,19 @@ interface MainPageModel {
     fun refresh(callback: () -> Unit = {}) {}
     fun beginTopic(topicId: Long) {}
     fun updateCompendium(newCompendium: TopicCompendiumDto) {}
-    val isShouldToSwitchToLogin: Boolean
-        get() = false
+    fun logout() {}
+    val isShouldToSwitchToLogin: State<Boolean>
+        get() = mutableStateOf(false)
+    val isRefreshing: State<Boolean>
+        get() = mutableStateOf(false)
 }
 
 class MainPageModelMock: ViewModel(), MainPageModel {
-    override val currentUser: State<UserProfileBasicDto?>
+    override val currentUser: State<UserProfileDetailedDto?>
         get() = mutableStateOf(
-            UserProfileBasicDto(
-                "Користувач", "aboba@gmail.com", "qwewqweq"
+            UserProfileDetailedDto(
+                1L,
+                "Користувач", "aboba@gmail.com", "qwewqweq", listOf()
             )
         )
     override val currentCoursePlans: State<List<CoursePlanBasicDto>>
@@ -47,6 +51,7 @@ class MainPageModelMock: ViewModel(), MainPageModel {
             listOf(
                 CoursePlanBasicDto(
                     3, "Курс", UserProfileBasicDto(
+                        44L,
                         "Користувач", "aboba@gmail.com", "qwewqweq"
                     ), "wqeqeqwwq", listOf(
                         CoursePlanBasicDto.TopicBasicDto(
@@ -64,6 +69,7 @@ class MainPageModelMock: ViewModel(), MainPageModel {
                     1603L,
                     "First normal Course",
                     UserProfileBasicDto(
+                        2L,
                         "Banewko",
                         "andriykramar465@gmail.com",
                         "https://cdn.omlet.com/images/originals/breed_abyssinian_cat.jpg"
@@ -105,7 +111,8 @@ class MainPageModelMock: ViewModel(), MainPageModel {
 
 class MainPageModelReal : ViewModel(), MainPageModel {
     private val dataSource: DataSource = GlobalApplication.getInstance()!!.dataSource
-    override val currentUser = mutableStateOf<UserProfileBasicDto?>(null)
+    override val isRefreshing = mutableStateOf(false)
+    override val currentUser = mutableStateOf<UserProfileDetailedDto?>(null)
     override val currentCoursePlans =
         mutableStateOf<List<CoursePlanBasicDto>>(ArrayList())
     override val currentCourses =
@@ -132,6 +139,11 @@ class MainPageModelReal : ViewModel(), MainPageModel {
         networkMonitor?.removeObserver(networkObserver)
     }
 
+    override fun logout() {
+        dataSource.logout()
+        isShouldToSwitchToLogin.value = true
+    }
+
     override fun beginCourse(coursePLanId: Long) {
         viewModelScope.launch {
             val result = dataSource.beginCourse(coursePLanId)
@@ -154,7 +166,9 @@ class MainPageModelReal : ViewModel(), MainPageModel {
 
     override fun refresh(callback: () -> Unit) {
         viewModelScope.launch {
-            val userRes = dataSource.currentUserProfile()
+            isRefreshing.value = true
+
+            val userRes = dataSource.userProfileDetailed()
             val plansRes = dataSource.currentCoursePlanList()
             val coursesRes = dataSource.currentCourseList()
 
@@ -174,6 +188,8 @@ class MainPageModelReal : ViewModel(), MainPageModel {
             }
 
             callback()
+
+            isRefreshing.value = false
         }
     }
 
@@ -205,6 +221,5 @@ class MainPageModelReal : ViewModel(), MainPageModel {
         }
     }
 
-    override val isShouldToSwitchToLogin: Boolean
-        get() = dataSource.token == null
+    override val isShouldToSwitchToLogin = mutableStateOf(dataSource.token == null)
 }

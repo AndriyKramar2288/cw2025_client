@@ -7,6 +7,7 @@ import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -29,6 +30,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.colorResource
@@ -70,7 +72,7 @@ fun GreetingsStep1(onClick: () -> Unit) {
     )
 
     val imageTranslationY by animateDpAsState(
-        targetValue = if (startAnimation && !exitAnimation) 0.dp else 200.dp,
+        targetValue = if (startAnimation && !exitAnimation) 0.dp else 100.dp,
         animationSpec = tween(
             durationMillis = 700,
             delayMillis = if (!exitAnimation) 1700 else 0,
@@ -119,92 +121,86 @@ fun GreetingsStep1(onClick: () -> Unit) {
         }
     )
 
-    Box(
+    // Основний контент
+    Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color.White),
-        contentAlignment = Alignment.Center
+            .alpha(if (!exitAnimation) 1f else 0f),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
     ) {
-        // Основний контент
+        // Logo Image
+        Image(
+            painter = painterResource(id = R.drawable.cw2025_logo),
+            contentDescription = stringResource(R.string.greetings_app_real_name),
+            modifier = Modifier
+                .fillMaxWidth()
+                .scale(2f)
+                .offset(y = imageTranslationY)
+                .alpha(imageAlpha),
+            contentScale = ContentScale.Fit
+        )
+
+        // Logo Block
         Column(
             modifier = Modifier
-                .fillMaxSize()
-                .alpha(if (!exitAnimation) 1f else 0f),
+                .width(366.dp)
+                .alpha(logoBlockAlpha),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            // Logo Image
-            Image(
-                painter = painterResource(id = R.drawable.cw2025_logo),
-                contentDescription = stringResource(R.string.greetings_app_real_name),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(548.dp)
-                    .offset(y = imageTranslationY)
-                    .alpha(imageAlpha),
-                contentScale = ContentScale.Fit
+            // Logo Text
+            Text(
+                style = AppTypography.titleLarge,
+                fontWeight = FontWeight.ExtraLight,
+                text = stringResource(R.string.greetings_app_real_name),
+                fontSize = 30.sp,
+                color = Color.DarkGray,
+                modifier = Modifier.padding(vertical = 30.dp),
+                textAlign = TextAlign.Center
             )
 
-            // Logo Block
-            Column(
+            // Logo Info Box
+            Box(
                 modifier = Modifier
-                    .width(366.dp)
-                    .offset(y = (-150).dp)
-                    .alpha(logoBlockAlpha),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                // Logo Text
-                Text(
-                    style = AppTypography.titleLarge,
-                    fontWeight = FontWeight.Light,
-                    text = stringResource(R.string.greetings_app_real_name),
-                    fontSize = 30.sp,
-                    modifier = Modifier.padding(vertical = 30.dp),
-                    textAlign = TextAlign.Center
-                )
-
-                // Logo Info Box
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 20.dp)
-                        .background(
-                            color = colorResource(R.color.navbar_button),
-                            shape = RoundedCornerShape(12.dp)
-                        )
-                        .padding(10.dp)
-                ) {
-                    Text(
-                        style = AppTypography.bodyLarge,
-                        text = stringResource(R.string.greetings_app_desc),
-                        textAlign = TextAlign.Center,
-                        modifier = Modifier.fillMaxWidth(),
-                        color = Color.White
+                    .fillMaxWidth()
+                    .padding(horizontal = 20.dp)
+                    .background(
+                        color = colorResource(R.color.navbar_button),
+                        shape = RoundedCornerShape(12.dp)
                     )
-                }
-            }
-
-            Spacer(modifier = Modifier.height(32.dp))
-
-            // Continue Button
-            Button (
-                onClick = {
-                    exitAnimation = true
-                },
-                modifier = Modifier
-                    .alpha(buttonAlpha)
-                    .padding(horizontal = 20.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = Color.LightGray.copy(alpha = 0.5f)
-                ),
-                shape = RoundedCornerShape(8.dp)
+                    .padding(10.dp)
             ) {
                 Text(
-                    style = AppTypography.titleLarge,
-                    text = stringResource(R.string.greetings_continue),
-                    color = colorResource(R.color.navbar_button),
-                    modifier = Modifier.padding(horizontal = 20.dp)
+                    style = AppTypography.bodyMedium,
+                    text = stringResource(R.string.greetings_app_desc),
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.fillMaxWidth(),
+                    color = Color.White
                 )
             }
+        }
+
+        Spacer(modifier = Modifier.height(32.dp))
+
+        // Continue Button
+        Button (
+            onClick = {
+                exitAnimation = true
+            },
+            modifier = Modifier
+                .alpha(buttonAlpha)
+                .padding(horizontal = 20.dp),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = Color.LightGray.copy(alpha = 0.5f)
+            ),
+            shape = RoundedCornerShape(8.dp)
+        ) {
+            Text(
+                style = AppTypography.titleLarge,
+                text = stringResource(R.string.greetings_continue),
+                color = colorResource(R.color.navbar_button),
+                modifier = Modifier.padding(horizontal = 20.dp)
+            )
         }
     }
 }

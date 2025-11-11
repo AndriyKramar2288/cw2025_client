@@ -1,7 +1,6 @@
 package com.banew.cw2025_client.data
 
 import android.content.Context
-import android.content.Intent
 import android.content.SharedPreferences
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
@@ -12,11 +11,10 @@ import com.banew.cw2025_backend_common.dto.coursePlans.CoursePlanBasicDto
 import com.banew.cw2025_backend_common.dto.courses.CourseBasicDto
 import com.banew.cw2025_backend_common.dto.courses.TopicCompendiumDto
 import com.banew.cw2025_backend_common.dto.users.UserLoginForm
-import com.banew.cw2025_backend_common.dto.users.UserProfileBasicDto
+import com.banew.cw2025_backend_common.dto.users.UserProfileDetailedDto
 import com.banew.cw2025_backend_common.dto.users.UserRegisterForm
 import com.banew.cw2025_backend_common.dto.users.UserTokenFormResult
 import com.banew.cw2025_client.data.api.ApiService
-import com.banew.cw2025_client.ui.start.StartActivity
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonDeserializationContext
@@ -34,7 +32,7 @@ import java.lang.reflect.Type
 import java.time.Instant
 import java.util.concurrent.TimeUnit
 
-class DataSource(private val context: Context) {
+class DataSource(context: Context) {
     private val prefs: SharedPreferences = context.getSharedPreferences("MyAppPrefs", Context.MODE_PRIVATE)
 
     init {
@@ -134,7 +132,7 @@ class DataSource(private val context: Context) {
         }
     }
 
-    suspend fun currentUserProfile(): Result<UserProfileBasicDto> {
+    suspend fun userProfileDetailed(userId: Long? = null): Result<UserProfileDetailedDto> {
 
         if (token == null) {
             logout()
@@ -142,7 +140,10 @@ class DataSource(private val context: Context) {
         }
 
         return resolveResult {
-            apiService.currentUser("Bearer $token")
+            if (userId == null)
+                apiService.currentUser("Bearer $token")
+            else
+                apiService.userProfileById(userId, "Bearer $token")
         }
     }
 
@@ -176,16 +177,17 @@ class DataSource(private val context: Context) {
     }
 
     fun logout() {
-        // TODO
-        // так робити, казали, нізя
-        return
-        val intent = Intent(context, StartActivity::class.java)
-        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
-        context.startActivity(intent)
+        clearToken()
     }
 
     val token: String?
         get() = prefs.getString("jwt_token", null)
+
+    private fun clearToken() {
+        prefs.edit {
+            remove("jwt_token")
+        }
+    }
 
     private fun updateToken(token: String) {
         prefs.edit {
@@ -217,7 +219,7 @@ class DataSource(private val context: Context) {
     companion object {
         private var retrofit: Retrofit? = null
         private const val BASE_URL = "http://10.0.2.2:8080/api/"
-        private const val NGROK = false
+        private const val NGROK = true
         private val client: Retrofit?
             get() = retrofit ?: buildClient(BASE_URL)
 

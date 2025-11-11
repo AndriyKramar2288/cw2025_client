@@ -48,6 +48,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.banew.cw2025_client.R
+import com.banew.cw2025_client.ui.components.LoadingBox
 import com.banew.cw2025_client.ui.start.StartActivity
 import com.banew.cw2025_client.ui.theme.MyAppTheme
 
@@ -73,13 +74,12 @@ private fun Content() {
 fun MainScreen(viewModel : MainPageModel = viewModel<MainPageModelReal>()) {
     val navController = rememberNavController()
 
-    var isRefreshing by remember { mutableStateOf(false) }
-
     val context = LocalContext.current
 
-    if (viewModel.isShouldToSwitchToLogin) {
+    if (viewModel.isShouldToSwitchToLogin.value) {
         val intent = Intent(context, StartActivity::class.java)
         context.startActivity(intent)
+        return
     }
 
     LaunchedEffect(viewModel.lastException.value) {
@@ -135,50 +135,57 @@ fun MainScreen(viewModel : MainPageModel = viewModel<MainPageModelReal>()) {
                 }
             }
         ) { paddingValues ->
-            Column(modifier = Modifier.padding(paddingValues)) {
-                Box(
-                    modifier = Modifier
-                        .weight(1f),
-                    contentAlignment = Alignment.BottomCenter
+            Box(
+                modifier = Modifier
+                    .padding(paddingValues),
+                contentAlignment = Alignment.BottomCenter
+            ) {
+                NavHost(
+                    navController = navController,
+                    startDestination = "home"
                 ) {
-                    NavHost(
-                        navController = navController,
-                        startDestination = "home"
-                    ) {
-                        composable("home") { MainPageScreen(viewModel) }
-                        composable("courses") { CourseScreen(viewModel) }
-                        composable("profile") { ProfilePageScreen() }
-                        composable("coursePlanCreationRoute") { CoursePlanCreationComponent(viewModel) }
-                        composable(
-                            route = "coursePlan/{courseId}",
-                            arguments = listOf(navArgument("courseId") { type = NavType.LongType })
-                        ) { backStackEntry ->
-                            backStackEntry.arguments?.getLong("courseId")?.let {
-                                CoursePlanInfo(it, viewModel)
-                            }
-                        }
-                        composable(
-                            route = "course/{courseId}",
-                            arguments = listOf(navArgument("courseId") { type = NavType.LongType })
-                        ) { backStackEntry ->
-                            backStackEntry.arguments?.getLong("courseId")?.let {
-                                CourseInfo(it, viewModel)
-                            }
-                        }
-                        composable(
-                            route = "compendium/{topicId}",
-                            arguments = listOf(navArgument("topicId") { type = NavType.LongType })
-                        ) { backStackEntry ->
-                            backStackEntry.arguments?.getLong("topicId")?.let {
-                                CompendiumScreen(it, viewModel)
-                            }
+                    composable("home") { MainPageScreen(viewModel) }
+                    composable("courses") { CourseScreen(viewModel) }
+                    composable("profile") { ProfilePageScreen(viewModel) }
+                    composable(
+                        route = "profile/{userId}",
+                        arguments = listOf(navArgument("userId") { type = NavType.LongType })
+                    ) { backStackEntry ->
+                        backStackEntry.arguments?.getLong("userId")?.let {
+                            ProfilePageScreen(viewModel, userId = it)
                         }
                     }
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(100.dp)
-                            .background(
+                    composable("coursePlanCreationRoute") { CoursePlanCreationComponent(viewModel) }
+                    composable(
+                        route = "coursePlan/{courseId}",
+                        arguments = listOf(navArgument("courseId") { type = NavType.LongType })
+                    ) { backStackEntry ->
+                        backStackEntry.arguments?.getLong("courseId")?.let {
+                            CoursePlanInfo(it, viewModel)
+                        }
+                    }
+                    composable(
+                        route = "course/{courseId}",
+                        arguments = listOf(navArgument("courseId") { type = NavType.LongType })
+                    ) { backStackEntry ->
+                        backStackEntry.arguments?.getLong("courseId")?.let {
+                            CourseInfo(it, viewModel)
+                        }
+                    }
+                    composable(
+                        route = "compendium/{topicId}",
+                        arguments = listOf(navArgument("topicId") { type = NavType.LongType })
+                    ) { backStackEntry ->
+                        backStackEntry.arguments?.getLong("topicId")?.let {
+                            CompendiumScreen(it, viewModel)
+                        }
+                    }
+                }
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(100.dp)
+                        .background(
                             brush = Brush.verticalGradient(
                                 listOf(
                                     Color.Transparent,
@@ -186,7 +193,9 @@ fun MainScreen(viewModel : MainPageModel = viewModel<MainPageModelReal>()) {
                                 )
                             )
                         )
-                    )
+                )
+                if (viewModel.isRefreshing.value) {
+                    LoadingBox("Завантаження...")
                 }
             }
         }

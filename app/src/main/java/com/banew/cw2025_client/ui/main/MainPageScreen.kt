@@ -53,7 +53,7 @@ fun MainPageScreen(viewModel : MainPageModel) {
         item {
             Text(
                 text = "Популярні плани навчання",
-                style = MaterialTheme.typography.titleMedium,
+                style = AppTypography.titleMedium,
                 modifier = Modifier.padding(5.dp)
             )
         }
@@ -120,8 +120,7 @@ fun MainPageScreen(viewModel : MainPageModel) {
                     .padding(horizontal = 10.dp, vertical = 20.dp)
             ) {
                 Text(
-                    fontFamily = StandardFont,
-                    textAlign = TextAlign.Center,
+                    style = AppTypography.bodyMedium,
                     text = "Не знайшли бажаний курс?\nCтворіть власний!",
                     color = colorResource(R.color.navbar_back)
                 )

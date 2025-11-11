@@ -116,7 +116,7 @@ fun CoursePlanCreationComponent(contextViewModel : MainPageModel? = null) {
                     .padding(vertical = 10.dp),
                 textAlign = TextAlign.Center,
                 text = "Створення курсу",
-                style = AppTypography.titleLarge,
+                style = AppTypography.titleMedium,
                 color = colorResource(R.color.navbar_back)
             )
             HorizontalDivider(
@@ -175,7 +175,7 @@ fun CoursePlanCreationComponent(contextViewModel : MainPageModel? = null) {
                         )
                         .padding(vertical = 10.dp, horizontal = 50.dp),
                     text = "Додати тему",
-                    style = AppTypography.titleMedium,
+                    style = AppTypography.bodyMedium,
                     color = Color.DarkGray
                 )
             }
@@ -281,6 +281,7 @@ fun CoursePlanTextField(
     onChange : (String) -> Unit
 ) {
     TextField(
+        textStyle = AppTypography.bodyMedium,
         modifier = Modifier
             .fillMaxWidth()
             .padding(top = 5.dp)
@@ -296,7 +297,7 @@ fun CoursePlanTextField(
         value = field,
         onValueChange = onChange,
         label = {
-            Text(text = label)
+            Text(text = label, style = AppTypography.bodySmall)
         },
         colors = TextFieldDefaults.colors(
             unfocusedContainerColor = Color.Transparent,

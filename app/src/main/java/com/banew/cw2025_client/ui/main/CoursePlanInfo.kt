@@ -38,6 +38,7 @@ import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.banew.cw2025_backend_common.dto.users.UserProfileBasicDto
 import com.banew.cw2025_client.R
+import com.banew.cw2025_client.ui.components.UserProfileCard
 import com.banew.cw2025_client.ui.theme.AppTypography
 import com.banew.cw2025_client.ui.theme.MyAppTheme
 
@@ -69,7 +70,7 @@ fun CoursePlanInfo(id: Long, viewModel: MainPageModel) {
         )
 
         // Автор
-        UserProfileCard(coursePlan.author)
+        UserProfileCard(coursePlan.author, viewModel)
 
         // Опис курсу
         if (!coursePlan.description.isNullOrBlank()) {
@@ -158,57 +159,6 @@ fun CoursePlanInfo(id: Long, viewModel: MainPageModel) {
                 style = AppTypography.labelMedium,
                 color = Color.White
             )
-        }
-    }
-}
-
-@Composable
-fun UserProfileCard(userProfile: UserProfileBasicDto, modifier: Modifier = Modifier) {
-    Card(
-        modifier = modifier
-            .fillMaxWidth()
-            .padding(vertical = 10.dp)
-            .background(
-                Brush.horizontalGradient(
-                    colors = listOf(
-                        colorResource(R.color.navbar_back),
-                        colorResource(R.color.navbar_button2).copy(alpha = 0.3f)
-                    )
-                ),
-                shape = RoundedCornerShape(10.dp)
-            ),
-        shape = RoundedCornerShape(12.dp),
-        colors = CardDefaults.cardColors(
-            contentColor = Color.Transparent,
-            containerColor = Color.Transparent
-        )
-    ) {
-        Row(
-            modifier = Modifier
-                .padding(16.dp)
-                .fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            AsyncImage( // coil-compose
-                model = userProfile.photoSrc ?: "",
-                contentDescription = "Автор",
-                modifier = Modifier
-                    .size(60.dp)
-                    .clip(CircleShape)
-                    .background(Color.LightGray),
-                contentScale = ContentScale.Crop
-            )
-            Column(modifier = Modifier.padding(start = 12.dp)) {
-                Text(
-                    text = userProfile.username,
-                    style = AppTypography.bodyMedium,
-                )
-                Text(
-                    text = userProfile.email,
-                    style = AppTypography.bodyMedium,
-                    color = Color.Gray.copy(alpha = 0.7f)
-                )
-            }
         }
     }
 }

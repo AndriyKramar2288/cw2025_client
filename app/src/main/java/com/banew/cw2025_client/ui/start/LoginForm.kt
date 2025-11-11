@@ -104,171 +104,158 @@ fun GreetingsStep2(
         label = "contentOffsetY"
     )
 
-    Box(
+    Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(
-                Brush.verticalGradient(
-                    colors = listOf(
-                        Color(0xFFF5F5F5),
-                        Color.White
-                    )
-                )
-            )
+            .alpha(contentAlpha)
+            .offset(y = contentOffsetY)
+            .verticalScroll(rememberScrollState()),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
     ) {
+        // Logo/Title Section
         Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .alpha(contentAlpha)
-                .offset(y = contentOffsetY)
-                .verticalScroll(rememberScrollState()),
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
         ) {
-            // Logo/Title Section
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-            ) {
-                Text(
-                    text = "Вітаємо!",
-                    style = AppTypography.headlineLarge,
-                )
-
-                Spacer(modifier = Modifier.height(8.dp))
-
-                Text(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .background(
-                            colorResource(R.color.navbar_button).copy(alpha = 0.7f)
-                        ).padding(10.dp),
-                    textAlign = TextAlign.Center,
-                    text = "Увійдіть до свого акаунту",
-                    style = AppTypography.bodyLarge,
-                    color = Color.White
-                )
-            }
-            Row(
-                modifier = Modifier.padding(bottom = 48.dp)
-            ) {
-                SwitchButton(
-                    text = "Увійти",
-                    isEnabled = !isLogin,
-                ) {
-                    isLogin = true
-                }
-                SwitchButton(
-                    text = "Зареєструватись",
-                    isEnabled = isLogin,
-                ) {
-                    isLogin = false
-                }
-            }
-
-            // Email Field
-            FormField(
-                "Електронна скринька",
-                "example@email.com",
-                android.R.drawable.ic_dialog_email,
-                viewModel.email,
-                viewModel.email.isNotEmpty() && !Patterns.EMAIL_ADDRESS.matcher(
-                    viewModel.email
-                ).matches(),
-                "Введіть коректну email адресу",
-            ) { viewModel.email = it }
-
-            if (!isLogin) {
-                // Username Field
-                FormField(
-                    "Ім'я користувача",
-                    "Введіть псевдонім...",
-                    android.R.drawable.star_on,
-                    viewModel.username,
-                    viewModel.username.isNotEmpty() && viewModel.username.length <= 5,
-                    "Псевдо має бути не менше 5 символів",
-                ) { viewModel.username = it }
-                // Photo Field
-                FormField(
-                    "Посилання на аватар користувача",
-                    "Вставте посилання на фото...",
-                    android.R.drawable.ic_menu_mapmode,
-                    viewModel.photoSrc
-                ) { viewModel.photoSrc = it }
-
-                AsyncImage( // coil-compose
-                    model = viewModel.photoSrc,
-                    contentDescription = "Фото",
-                    modifier = Modifier
-                        .padding(bottom = 16.dp)
-                        .size(80.dp)
-                        .clip(RoundedCornerShape(10.dp))
-                        .background(Color.LightGray),
-                    contentScale = ContentScale.Crop
-                )
-            }
-
-            // Password Field
-            FormField(
-                "Пароль",
-                "Введіть пароль",
-                android.R.drawable.ic_lock_idle_lock,
-                viewModel.password,
-                viewModel.password.isNotEmpty() && viewModel.password.length < 8,
-                "Пароль повинен містити більше 8 символів",
-                isPassword = true,
-            ) { viewModel.password = it }
+            Text(
+                text = "Вітаємо!",
+                style = AppTypography.headlineLarge,
+            )
 
             Spacer(modifier = Modifier.height(8.dp))
 
-            // Login Error Message
-            viewModel.loginResult?.let { result ->
-                if (result.isError) {
-                    ErrorBox(
-                        text = "Невірний email або пароль",
-                        modifier = Modifier.padding(bottom = 16.dp)
-                    )
-                }
-            }
-
-            // Login Button
-            Button(
-                onClick = {
-                    if (isLogin)
-                        viewModel.login()
-                    else
-                        viewModel.register()
-                },
+            Text(
                 modifier = Modifier
-                    .padding(horizontal = 30.dp)
                     .fillMaxWidth()
-                    .padding(vertical = 20.dp),
-                shape = RoundedCornerShape(5.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = Color(0xFF3E2F2F),
-                    disabledContainerColor = Color.LightGray
-                ),
-                enabled = isLoginEnabled(viewModel, isLogin) && !viewModel.isLoading
+                    .background(
+                        colorResource(R.color.navbar_button).copy(alpha = 0.7f)
+                    ).padding(10.dp),
+                textAlign = TextAlign.Center,
+                text = "Увійдіть до свого акаунту",
+                style = AppTypography.bodyLarge,
+                color = Color.White
+            )
+        }
+        Row(
+            modifier = Modifier.padding(bottom = 48.dp)
+        ) {
+            SwitchButton(
+                text = "Увійти",
+                isEnabled = !isLogin,
             ) {
-                if (viewModel.isLoading) {
-                    CircularProgressIndicator(
-                        modifier = Modifier.size(24.dp),
-                        color = Color.White,
-                        strokeWidth = 2.dp
-                    )
-                } else {
-                    Text(
-                        text = if (isLogin) "Увійти" else "Зареєструватись",
-                        fontSize = 18.sp,
-                        fontWeight = FontWeight.SemiBold
-                    )
-                }
+                isLogin = true
+            }
+            SwitchButton(
+                text = "Зареєструватись",
+                isEnabled = isLogin,
+            ) {
+                isLogin = false
             }
         }
 
-        // Loading Overlay
-        if (viewModel.isLoading) {
-            LoadingBox("Вхід...")
+        // Email Field
+        FormField(
+            "Електронна скринька",
+            "example@email.com",
+            android.R.drawable.ic_dialog_email,
+            viewModel.email,
+            viewModel.email.isNotEmpty() && !Patterns.EMAIL_ADDRESS.matcher(
+                viewModel.email
+            ).matches(),
+            "Введіть коректну email адресу",
+        ) { viewModel.email = it }
+
+        if (!isLogin) {
+            // Username Field
+            FormField(
+                "Ім'я користувача",
+                "Введіть псевдонім...",
+                android.R.drawable.star_on,
+                viewModel.username,
+                viewModel.username.isNotEmpty() && viewModel.username.length <= 5,
+                "Псевдо має бути не менше 5 символів",
+            ) { viewModel.username = it }
+            // Photo Field
+            FormField(
+                "Посилання на аватар користувача",
+                "Вставте посилання на фото...",
+                android.R.drawable.ic_menu_mapmode,
+                viewModel.photoSrc
+            ) { viewModel.photoSrc = it }
+
+            AsyncImage( // coil-compose
+                model = viewModel.photoSrc,
+                contentDescription = "Фото",
+                modifier = Modifier
+                    .padding(bottom = 16.dp)
+                    .size(80.dp)
+                    .clip(RoundedCornerShape(10.dp))
+                    .background(Color.LightGray),
+                contentScale = ContentScale.Crop
+            )
         }
+
+        // Password Field
+        FormField(
+            "Пароль",
+            "Введіть пароль",
+            android.R.drawable.ic_lock_idle_lock,
+            viewModel.password,
+            viewModel.password.isNotEmpty() && viewModel.password.length < 8,
+            "Пароль повинен містити більше 8 символів",
+            isPassword = true,
+        ) { viewModel.password = it }
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        // Login Error Message
+        viewModel.loginResult?.let { result ->
+            if (result.isError) {
+                ErrorBox(
+                    text = "Невірний email або пароль",
+                    modifier = Modifier.padding(bottom = 16.dp)
+                )
+            }
+        }
+
+        // Login Button
+        Button(
+            onClick = {
+                if (isLogin)
+                    viewModel.login()
+                else
+                    viewModel.register()
+            },
+            modifier = Modifier
+                .padding(horizontal = 30.dp)
+                .fillMaxWidth()
+                .padding(vertical = 20.dp),
+            shape = RoundedCornerShape(5.dp),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = Color(0xFF3E2F2F),
+                disabledContainerColor = Color.LightGray
+            ),
+            enabled = isLoginEnabled(viewModel, isLogin) && !viewModel.isLoading
+        ) {
+            if (viewModel.isLoading) {
+                CircularProgressIndicator(
+                    modifier = Modifier.size(24.dp),
+                    color = Color.White,
+                    strokeWidth = 2.dp
+                )
+            } else {
+                Text(
+                    text = if (isLogin) "Увійти" else "Зареєструватись",
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.SemiBold
+                )
+            }
+        }
+    }
+
+    // Loading Overlay
+    if (viewModel.isLoading) {
+        LoadingBox("Вхід...")
     }
 }
 
