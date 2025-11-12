@@ -6,17 +6,17 @@
 
     <fragment
         android:id="@+id/homeFragment"
-        android:name="com.banew.cw2025_client.ui.main.MainPageFragment"
+        android:name="com.banew.cw2025_client.ui.grave.MainPageFragment"
         android:label="Головна">
     </fragment>
 
     <fragment
         android:id="@+id/profileFragment"
-        android:name="com.banew.cw2025_client.ui.main.ProfilePageFragment"
+        android:name="com.banew.cw2025_client.ui.grave.ProfilePageFragment"
         android:label="Профіль" />
 
     <fragment
         android:id="@+id/createCoursePlanFragment"
-        android:name="com.banew.cw2025_client.ui.main.CreateCoursePlanFragment"
+        android:name="com.banew.cw2025_client.ui.grave.CreateCoursePlanFragment"
         android:label="Створити план курсу" />
 </navigation>

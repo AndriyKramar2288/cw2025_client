@@ -1,4 +1,4 @@
-package com.banew.cw2025_client.ui.main;
+package com.banew.cw2025_client.ui.grave;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
