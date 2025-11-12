@@ -162,7 +162,7 @@ private fun CourseCard(course: CourseBasicDto, viewModel: MainPageModel) {
                 )
 
                 ProgressBlock(
-                    text = "Концептів: ${course.compendiums.size}",
+                    text = "Концептів: ${course.compendiums.flatMap { it.concepts }.size}",
                     iconId = R.drawable.award_star_40px
                 )
             }

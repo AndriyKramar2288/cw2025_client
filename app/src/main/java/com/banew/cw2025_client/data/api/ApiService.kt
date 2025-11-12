@@ -40,6 +40,12 @@ interface ApiService {
 
 
     // --- COURSE PLAN ---
+    @GET("course-plan/{courseId}")
+    suspend fun loadCoursePlanById(
+        @Header("Authorization") token: String,
+        @Path("courseId") courseId: Long
+    ): CoursePlanBasicDto
+
     @GET("course-plan/")
     suspend fun currentCoursePlanList(
         @Header("Authorization") token: String

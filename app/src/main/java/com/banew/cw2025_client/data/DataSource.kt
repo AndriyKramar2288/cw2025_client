@@ -207,6 +207,12 @@ class DataSource(context: Context) {
         }
     }
 
+    suspend fun loadCoursePlanById(id: Long): Result<CoursePlanBasicDto> {
+        return resolveResult {
+            apiService.loadCoursePlanById("Bearer $token", id)
+        }
+    }
+
     data class TopicForm(
         var name : MutableState<String> = mutableStateOf(""),
         var desc : MutableState<String> = mutableStateOf("")
@@ -219,7 +225,7 @@ class DataSource(context: Context) {
     companion object {
         private var retrofit: Retrofit? = null
         private const val BASE_URL = "http://10.0.2.2:8080/api/"
-        private const val NGROK = true
+        private const val NGROK = false
         private val client: Retrofit?
             get() = retrofit ?: buildClient(BASE_URL)
 

@@ -34,7 +34,7 @@ interface MainPageModel {
     fun logout() {}
     val isShouldToSwitchToLogin: State<Boolean>
         get() = mutableStateOf(false)
-    val isRefreshing: State<Boolean>
+    val isRefreshing: MutableState<Boolean>
         get() = mutableStateOf(false)
 }
 

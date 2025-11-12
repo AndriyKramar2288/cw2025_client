@@ -87,9 +87,6 @@ class ProfileScreenViewModel(val isMock: Boolean = false): ViewModel() {
     )
         private set
 
-    var isLoading by mutableStateOf(false)
-        private set
-
     fun initProfile(contextModel: MainPageModel, userId: Long? = null) {
         if (isMock) return
 
@@ -98,7 +95,7 @@ class ProfileScreenViewModel(val isMock: Boolean = false): ViewModel() {
         }
         else {
             viewModelScope.launch {
-                isLoading = true
+                contextModel.isRefreshing.value = true
                 val result = dataSource!!.userProfileDetailed(userId)
                 when {
                     result.isSuccess -> profile = result.asSuccess().data
@@ -106,7 +103,7 @@ class ProfileScreenViewModel(val isMock: Boolean = false): ViewModel() {
                         contextModel.preferredRoute.value = "home"
                     }
                 }
-                isLoading = false
+                contextModel.isRefreshing.value = false
             }
         }
     }
@@ -131,164 +128,159 @@ fun ProfilePageScreen(
         model.initProfile(contextModel, userId)
     }
 
-    Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-        model.profile?.let { profile ->
-            LazyColumn (
-                Modifier
-                    .fillMaxSize()
-                    .padding(vertical = 30.dp, horizontal = 10.dp),
-                horizontalAlignment = Alignment.CenterHorizontally,
-            ) {
-                item {
-                    Column(horizontalAlignment = Alignment.End) {
-                        Row {
-                            Box (
-                                contentAlignment = Alignment.Center,
-                                modifier = Modifier
-                                    .background(Color.Transparent)
-                                    .size(100.dp)
-                                    .border(
-                                        2.dp, colorResource(R.color.navbar_button),
-                                        RoundedCornerShape(10.dp)
-                                    ),
-                            ) {
-                                AsyncImage( // coil-compose
-                                    model = profile.photoSrc ?: "",
-                                    contentDescription = "Автор",
-                                    modifier = Modifier
-                                        .size(80.dp)
-                                        .clip(RoundedCornerShape(10.dp))
-                                        .background(Color.LightGray),
-                                    contentScale = ContentScale.Crop
-                                )
-                            }
-                            Spacer(Modifier.width(10.dp))
-                            Column {
-                                Text(
-                                    style = AppTypography.titleMedium,
-                                    text = profile.username,
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .background(
-                                            brush = Brush.horizontalGradient(listOf(
-                                                colorResource(R.color.navbar_back),
-                                                colorResource(R.color.navbar_back2)
-                                            )),
-                                            RoundedCornerShape(5.dp)
-                                        )
-                                        .padding(horizontal = 30.dp, vertical = 20.dp)
-                                )
-                                Row (
-                                    verticalAlignment = Alignment.CenterVertically,
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .padding(top = 5.dp)
-                                        .background(
-                                            brush = Brush.horizontalGradient(listOf(
-                                                colorResource(R.color.navbar_button),
-                                                colorResource(R.color.navbar_button2)
-                                            )),
-                                            RoundedCornerShape(5.dp)
-                                        )
-                                        .padding(5.dp)
-                                ) {
-                                    Icon(
-                                        painterResource(R.drawable.mail_24px),
-                                        contentDescription = "email-icon",
-                                        tint = Color.White,
-                                        modifier = Modifier.requiredSize(20.dp)
-                                    )
-                                    Spacer(Modifier.width(5.dp))
-                                    Text(
-                                        text = profile.email,
-                                        style = AppTypography.bodySmall,
-                                        color = Color.White,
-                                    )
-                                }
-                            }
-                        }
-                        userId ?: Button(
-                            contentPadding = PaddingValues(horizontal = 40.dp),
-                            colors = ButtonDefaults.buttonColors(
-                                contentColor = Color.Transparent,
-                                containerColor = Color.Gray,
-                            ),
-                            shape = RoundedCornerShape(5.dp),
-                            onClick = {
-                                contextModel.logout()
-                            }
+    model.profile?.let { profile ->
+        LazyColumn (
+            Modifier
+                .fillMaxSize()
+                .padding(vertical = 30.dp, horizontal = 10.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+        ) {
+            item {
+                Column(horizontalAlignment = Alignment.End) {
+                    Row {
+                        Box (
+                            contentAlignment = Alignment.Center,
+                            modifier = Modifier
+                                .background(Color.Transparent)
+                                .size(100.dp)
+                                .border(
+                                    2.dp, colorResource(R.color.navbar_button),
+                                    RoundedCornerShape(10.dp)
+                                ),
                         ) {
-                            Text(
-                                text = "Вийти",
-                                style = AppTypography.bodyLarge,
-                                textAlign = TextAlign.Center,
-                                color = Color.White,
+                            AsyncImage( // coil-compose
+                                model = profile.photoSrc ?: "",
+                                contentDescription = "Автор",
+                                modifier = Modifier
+                                    .size(80.dp)
+                                    .clip(RoundedCornerShape(10.dp))
+                                    .background(Color.LightGray),
+                                contentScale = ContentScale.Crop
                             )
+                        }
+                        Spacer(Modifier.width(10.dp))
+                        Column {
+                            Text(
+                                style = AppTypography.titleMedium,
+                                text = profile.username,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .background(
+                                        brush = Brush.horizontalGradient(listOf(
+                                            colorResource(R.color.navbar_back),
+                                            colorResource(R.color.navbar_back2)
+                                        )),
+                                        RoundedCornerShape(5.dp)
+                                    )
+                                    .padding(horizontal = 30.dp, vertical = 20.dp)
+                            )
+                            Row (
+                                verticalAlignment = Alignment.CenterVertically,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(top = 5.dp)
+                                    .background(
+                                        brush = Brush.horizontalGradient(listOf(
+                                            colorResource(R.color.navbar_button),
+                                            colorResource(R.color.navbar_button2)
+                                        )),
+                                        RoundedCornerShape(5.dp)
+                                    )
+                                    .padding(5.dp)
+                            ) {
+                                Icon(
+                                    painterResource(R.drawable.mail_24px),
+                                    contentDescription = "email-icon",
+                                    tint = Color.White,
+                                    modifier = Modifier.requiredSize(20.dp)
+                                )
+                                Spacer(Modifier.width(5.dp))
+                                Text(
+                                    text = profile.email,
+                                    style = AppTypography.bodySmall,
+                                    color = Color.White,
+                                )
+                            }
                         }
                     }
-                    userId ?: HorizontalDivider(
-                        Modifier.fillMaxWidth(),
-                        2.dp, colorResource(R.color.navbar_button)
-                    )
-                }
-                item {
-                    Spacer(Modifier.height(20.dp))
-                    Text(
-                        style = AppTypography.bodyLarge,
-                        text = "Створені користувачем курси"
-                    )
-                }
-                items(profile.coursePlans) { item ->
-                    Spacer(Modifier.height(5.dp))
-                    Card (
-                        shape = RoundedCornerShape(3.dp),
-                        colors = CardDefaults.cardColors(
-                            containerColor = Color.Gray.copy(alpha = 0.1f)
+                    userId ?: Button(
+                        contentPadding = PaddingValues(horizontal = 40.dp),
+                        colors = ButtonDefaults.buttonColors(
+                            contentColor = Color.Transparent,
+                            containerColor = Color.Gray,
                         ),
-                        modifier = Modifier
-                            .fillMaxWidth(),
+                        shape = RoundedCornerShape(5.dp),
                         onClick = {
-                            contextModel.preferredRoute.value = "coursePlan/${item.id}"
+                            contextModel.logout()
                         }
                     ) {
-                        Row (
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(vertical = 5.dp, horizontal = 20.dp),
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.SpaceBetween
-                        ) {
-                            Text(
-                                modifier = Modifier.widthIn(max = 170.dp),
-                                text = item.name,
-                                style = AppTypography.titleMedium,
+                        Text(
+                            text = "Вийти",
+                            style = AppTypography.bodyLarge,
+                            textAlign = TextAlign.Center,
+                            color = Color.White,
+                        )
+                    }
+                }
+                userId ?: HorizontalDivider(
+                    Modifier.fillMaxWidth(),
+                    2.dp, colorResource(R.color.navbar_button)
+                )
+            }
+            item {
+                Spacer(Modifier.height(20.dp))
+                Text(
+                    style = AppTypography.bodyLarge,
+                    text = "Створені користувачем курси"
+                )
+            }
+            items(profile.coursePlans) { item ->
+                Spacer(Modifier.height(5.dp))
+                Card (
+                    shape = RoundedCornerShape(3.dp),
+                    colors = CardDefaults.cardColors(
+                        containerColor = Color.Gray.copy(alpha = 0.1f)
+                    ),
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                    onClick = {
+                        contextModel.preferredRoute.value = "coursePlan/${item.id}"
+                    }
+                ) {
+                    Row (
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 5.dp, horizontal = 20.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Text(
+                            modifier = Modifier.widthIn(max = 170.dp),
+                            text = item.name,
+                            style = AppTypography.titleMedium,
+                            color = colorResource(R.color.navbar_button)
+                        )
+                        Row (verticalAlignment = Alignment.CenterVertically) {
+                            VerticalDivider(
+                                Modifier.requiredHeight(30.dp),
+                                thickness = 2.dp,
                                 color = colorResource(R.color.navbar_button)
                             )
-                            Row (verticalAlignment = Alignment.CenterVertically) {
-                                VerticalDivider(
-                                    Modifier.requiredHeight(30.dp),
-                                    thickness = 2.dp,
-                                    color = colorResource(R.color.navbar_button)
-                                )
-                                Icon(
-                                    modifier = Modifier.padding(horizontal = 10.dp),
-                                    painter = painterResource(R.drawable.label_24px),
-                                    contentDescription = "topic-icon",
-                                    tint = colorResource(R.color.navbar_button)
-                                )
-                                Text(
-                                    text = "Тем: ${item.topics.size} штучок",
-                                    style = AppTypography.bodyMedium,
-                                    color = colorResource(R.color.navbar_button)
-                                )
-                            }
+                            Icon(
+                                modifier = Modifier.padding(horizontal = 10.dp),
+                                painter = painterResource(R.drawable.label_24px),
+                                contentDescription = "topic-icon",
+                                tint = colorResource(R.color.navbar_button)
+                            )
+                            Text(
+                                text = "Тем: ${item.topics.size} штучок",
+                                style = AppTypography.bodyMedium,
+                                color = colorResource(R.color.navbar_button)
+                            )
                         }
                     }
                 }
             }
-        }
-        if (model.isLoading) {
-            LoadingBox("Завантаження...")
         }
     }
 }
