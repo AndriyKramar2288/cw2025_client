@@ -48,6 +48,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.banew.cw2025_client.R
+import com.banew.cw2025_client.ui.components.DeathBox
 import com.banew.cw2025_client.ui.components.LoadingBox
 import com.banew.cw2025_client.ui.start.StartActivity
 import com.banew.cw2025_client.ui.theme.MyAppTheme
@@ -196,6 +197,12 @@ fun MainScreen(viewModel : MainPageModel = viewModel<MainPageModelReal>()) {
                 )
                 if (viewModel.isRefreshing.value) {
                     LoadingBox("Завантаження...")
+                }
+                if (viewModel.isConnectionError.value) {
+                    DeathBox("Помилка з'єднання!", "Спробувати ще раз") {
+                        viewModel.isConnectionError.value = false
+                        viewModel.refresh()
+                    }
                 }
             }
         }

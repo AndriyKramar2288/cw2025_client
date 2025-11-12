@@ -90,7 +90,7 @@ class ProfileScreenViewModel(val isMock: Boolean = false): ViewModel() {
     fun initProfile(contextModel: MainPageModel, userId: Long? = null) {
         if (isMock) return
 
-        if (userId == null) {
+        if (userId == null || userId == contextModel.currentUser.value?.id) {
             profile = contextModel.currentUser.value
         }
         else {

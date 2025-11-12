@@ -36,6 +36,8 @@ interface MainPageModel {
         get() = mutableStateOf(false)
     val isRefreshing: MutableState<Boolean>
         get() = mutableStateOf(false)
+    val isConnectionError: MutableState<Boolean>
+        get() = mutableStateOf(false)
 }
 
 class MainPageModelMock: ViewModel(), MainPageModel {
@@ -86,7 +88,7 @@ class MainPageModelMock: ViewModel(), MainPageModel {
                             ""
                         ),
                         emptyList(),
-                        CompendiumStatus.COMPLETED
+                        CompendiumStatus.CURRENT
                     ),
                     TopicCompendiumDto(
                         653L,
@@ -159,8 +161,7 @@ class MainPageModelReal : ViewModel(), MainPageModel {
     }
 
     override fun confirmCoursePlanCreation(dto: CoursePlanBasicDto) {
-        currentCoursePlans.value += listOf(dto)
-        //refresh()
+        refresh()
         preferredRoute.value = "home"
     }
 
@@ -186,6 +187,8 @@ class MainPageModelReal : ViewModel(), MainPageModel {
                 is Result.Success -> currentCourses.value = coursesRes.data
                 is Result.Error -> lastException.value = coursesRes.error
             }
+
+            isConnectionError.value = userRes.isError && plansRes.isError && coursesRes.isError
 
             callback()
 
@@ -222,4 +225,5 @@ class MainPageModelReal : ViewModel(), MainPageModel {
     }
 
     override val isShouldToSwitchToLogin = mutableStateOf(dataSource.token == null)
+    override val isConnectionError = mutableStateOf(dataSource.token == null)
 }

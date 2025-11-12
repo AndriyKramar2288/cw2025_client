@@ -51,6 +51,12 @@ private fun LoadingPreview() {
 }
 
 @Composable
+@Preview(showBackground = true)
+private fun DeathPreview() {
+    DeathBox("Помилка!", "Спробувати ще раz") {}
+}
+
+@Composable
 fun ErrorBox(text: String, modifier: Modifier = Modifier) {
     Card(
         modifier = modifier
@@ -127,6 +133,61 @@ fun UserProfileCard(userProfile: UserProfileBasicDto, model: MainPageModel, modi
                     text = userProfile.email,
                     style = AppTypography.bodyMedium,
                     color = Color.Gray.copy(alpha = 0.7f)
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun DeathBox(text1: String, text2: String, onClick: () -> Unit) {
+    Box (
+        modifier = Modifier
+            .fillMaxSize()
+            .background(brush = Brush.verticalGradient(colors = listOf(
+                Color.Black.copy(alpha = 0.3f),
+                Color(0x8B973232),
+                Color(0x8B973232),
+                Color.Transparent,
+            )))
+            .clickable(enabled = false) { },
+        contentAlignment = Alignment.Center
+    ) {
+        Card (
+            shape = RoundedCornerShape(10.dp),
+            elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
+            colors = CardDefaults.cardColors(
+                containerColor = colorResource(R.color.navbar_button2)
+            )
+        ) {
+            Column (
+                modifier = Modifier.padding(20.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text(
+                    text1,
+                    style = AppTypography.bodyLarge,
+                    color = Color.White
+                )
+                Button(
+                    onClick = onClick,
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color.Gray
+                    ),
+                    shape = RoundedCornerShape(3.dp)
+                ) {
+                    Text(
+                        text2,
+                        style = AppTypography.bodyLarge,
+                        color = Color.White
+                    )
+                }
+                HorizontalDivider(
+                    Modifier
+                        .padding(top = 20.dp)
+                        .requiredWidth(100.dp),
+                    thickness = 2.dp,
+                    color = Color.LightGray
                 )
             }
         }
