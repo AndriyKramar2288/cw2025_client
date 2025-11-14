@@ -3,49 +3,68 @@ package com.banew.cw2025_client.ui.main
 import android.annotation.SuppressLint
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.gestures.snapping.rememberSnapFlingBehavior
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.requiredHeight
+import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.banew.cw2025_backend_common.dto.courses.TopicCompendiumDto
+import com.banew.cw2025_client.R
 import com.banew.cw2025_client.ui.theme.AppTypography
 
 @SuppressLint("ViewModelConstructorInComposable")
@@ -55,28 +74,67 @@ private fun Preview() {
     CompendiumScreen(1703L, MainPageModelMock())
 }
 
+class ConceptForm (
+    nameInit: String = "",
+    descInit: String = ""
+) {
+    var id by mutableStateOf<Long?>(null)
+    var name by mutableStateOf(nameInit)
+    var desc by mutableStateOf(descInit)
+
+    override fun equals(other: Any?) =
+        if (other is ConceptForm)
+            name == other.name && desc == other.desc
+        else
+            false
+
+    constructor(concept: TopicCompendiumDto.ConceptBasicDto)
+            : this(concept.name, concept.description) {
+                id = concept.id
+            }
+}
+
 @Composable
 fun CompendiumScreen(topicId: Long, viewModel: MainPageModel) {
     val verticalScroll = rememberScrollState()
 
-    var compendium by remember {
-        mutableStateOf(
-            viewModel.currentCourses.value.flatMap { it.compendiums }.first { it.topic.id == topicId }
-        )
-    }
+    var compendium = viewModel.currentCourses.value
+        .flatMap { it.compendiums }
+        .first { it.topic.id == topicId }
 
     val type: TopicProgressType = compendium.status.toProgressType()
 
-    // Стан для редагування нотаток
-    var isEditingNotes by remember { mutableStateOf(false) }
+    var isEditingAnything by remember { mutableStateOf(false) }
     var notesText by remember { mutableStateOf(compendium.notes ?: "") }
-    var showSaveDialog by remember { mutableStateOf(false) }
+    val concepts = remember { mutableStateListOf<ConceptForm>() }
+
+    val isUnsavedChanges = notesText != compendium.notes
+            || compendium.concepts.map { ConceptForm(it) } != concepts
+
+    LaunchedEffect(compendium) {
+        concepts.clear()
+        compendium.concepts.map { concepts.add(ConceptForm(it)) }
+    }
+
+    val onClickListenerMotherfucker = {
+        val updatedCompendium = TopicCompendiumDto(
+            compendium.id, notesText.ifBlank { null },
+            compendium.topic, concepts.map {
+                TopicCompendiumDto.ConceptBasicDto(
+                    it.id, it.name, it.desc
+                )
+            }, compendium.status
+        )
+        viewModel.updateCompendium(updatedCompendium)
+        compendium = updatedCompendium
+        isEditingAnything = false
+    }
 
     Column(
         modifier = Modifier
             .fillMaxSize()
             .verticalScroll(verticalScroll)
-            .padding(horizontal = 20.dp, vertical = 30.dp),
+            .padding(vertical = 30.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         // Статус теми
@@ -95,6 +153,10 @@ fun CompendiumScreen(topicId: Long, viewModel: MainPageModel) {
 
         // Опис теми
         if (!compendium.topic.description.isNullOrBlank()) {
+            HorizontalDivider(
+                thickness = 3.dp,
+                color = colorResource(R.color.navbar_button)
+            )
             Text(
                 text = compendium.topic.description,
                 style = AppTypography.bodyMedium,
@@ -102,15 +164,13 @@ fun CompendiumScreen(topicId: Long, viewModel: MainPageModel) {
                 color = Color.DarkGray,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(vertical = 16.dp)
                     .background(
                         brush = Brush.verticalGradient(
                             listOf(
-                                type.backgroundColor,
+                                Color.Gray.copy(alpha = 0.1f),
                                 Color.Transparent
                             )
-                        ),
-                        shape = RoundedCornerShape(8.dp)
+                        )
                     )
                     .padding(16.dp)
             )
@@ -118,73 +178,57 @@ fun CompendiumScreen(topicId: Long, viewModel: MainPageModel) {
 
         Spacer(modifier = Modifier.height(24.dp))
 
-        // Секція концептів
-        ConceptsSection(
-            concepts = compendium.concepts,
-            type = type
-        )
+        CompendiumTextField(
+            notesText, "Власні нотатки",
+            largeText = true
+        ) { notesText = it }
 
         Spacer(modifier = Modifier.height(24.dp))
 
-        // Секція нотаток (тільки для CURRENT)
-        if (type == TopicProgressType.CURRENT) {
-            NotesSection(
-                notes = notesText,
-                isEditing = isEditingNotes,
-                onEditClick = { isEditingNotes = true },
-                onNotesChange = { notesText = it },
-                onSaveClick = { showSaveDialog = true },
-                onCancelClick = {
-                    isEditingNotes = false
-                    notesText = compendium.notes ?: ""
-                },
-                borderColor = type.borderColor
-            )
-        } else if (!compendium.notes.isNullOrBlank()) {
-            // Показати нотатки тільки для перегляду
-            NotesReadOnly(
-                notes = compendium.notes,
-                borderColor = type.borderColor
-            )
+        // Секція концептів
+        ConceptsSection(
+            concepts,
+            type = type
+        ) {
+            concepts.add(ConceptForm())
+        }
+
+        if (isUnsavedChanges) {
+            Spacer(Modifier.height(10.dp))
+            Row(
+                Modifier
+                    .fillMaxWidth()
+                    .background(
+                        Color.Gray.copy(alpha = 0.05f)
+                    ),
+                horizontalArrangement = Arrangement.Center,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    "У вас є незбережені зміни!",
+                    style = AppTypography.bodySmall,
+                )
+                Spacer(Modifier.width(5.dp))
+                Button(
+                    onClick = onClickListenerMotherfucker,
+                    shape = RoundedCornerShape(3.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = type.backgroundColor.copy(alpha = 0.5f)
+                    ),
+                    contentPadding = PaddingValues(horizontal = 10.dp)
+                ) {
+                    Text(
+                        style = AppTypography.bodySmall,
+                        text = "Зберегти"
+                    )
+                }
+            }
         }
 
         Spacer(modifier = Modifier.height(24.dp))
 
         // Інформаційна панель
         InfoPanel(compendium = compendium, type = type)
-    }
-
-    // Діалог підтвердження збереження
-    if (showSaveDialog) {
-        AlertDialog(
-            onDismissRequest = { showSaveDialog = false },
-            title = { Text("Зберегти зміни?") },
-            text = { Text("Ви впевнені, що хочете зберегти оновлені нотатки?") },
-            confirmButton = {
-                Button(
-                    onClick = {
-                        val updatedCompendium = TopicCompendiumDto(
-                            compendium.id, notesText.ifBlank { null },
-                            compendium.topic, compendium.concepts, compendium.status
-                        )
-                        viewModel.updateCompendium(updatedCompendium)
-                        compendium = updatedCompendium
-                        isEditingNotes = false
-                        showSaveDialog = false
-                    },
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = type.buttonColor
-                    )
-                ) {
-                    Text("Зберегти")
-                }
-            },
-            dismissButton = {
-                TextButton (onClick = { showSaveDialog = false }) {
-                    Text("Скасувати")
-                }
-            }
-        )
     }
 }
 
@@ -198,26 +242,43 @@ fun StatusBadge(type: TopicProgressType) {
     }
 
     val statusIcon = when (type) {
-        TopicProgressType.LOCKED -> "🔒"
-        TopicProgressType.CAN_START -> "▶️"
-        TopicProgressType.COMPLETED -> "✅"
-        TopicProgressType.CURRENT -> "📍"
+        TopicProgressType.LOCKED -> R.drawable.lock_40px
+        TopicProgressType.CAN_START -> R.drawable.new_label_40px
+        TopicProgressType.COMPLETED -> R.drawable.all_match_40px
+        TopicProgressType.CURRENT -> R.drawable.label_24px
     }
 
-    Surface (
-        shape = RoundedCornerShape(20.dp),
-        color = type.backgroundColor,
-        border = BorderStroke(2.dp, type.borderColor),
-        shadowElevation = type.elavulationSize
+    Row (
+        horizontalArrangement = Arrangement.Center,
+        modifier = Modifier
+            .fillMaxWidth()
+            .requiredHeight(40.dp)
+            .background(
+                brush = Brush.horizontalGradient(listOf(
+                    colorResource(R.color.navbar_button),
+                    colorResource(R.color.navbar_button2)
+                ))
+            )
     ) {
+        Spacer(Modifier.background(Color.White).fillMaxHeight().width(5.dp))
         Row(
-            modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
+            modifier = Modifier
+                .border(
+                    2.dp, type.borderColor,
+                    shape = RoundedCornerShape(3.dp)
+                )
+                .background(
+                    color = type.backgroundColor,
+                    shape = RoundedCornerShape(3.dp)
+                )
+                .padding(horizontal = 16.dp, vertical = 8.dp),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.Center
         ) {
-            Text(
-                text = statusIcon,
-                style = AppTypography.bodyMedium
+            Icon(
+                painterResource(type.buttonIconId),
+                contentDescription = "Topic status",
+                tint = type.borderColor
             )
             Spacer(modifier = Modifier.width(8.dp))
             Text(
@@ -227,36 +288,80 @@ fun StatusBadge(type: TopicProgressType) {
                 color = type.borderColor
             )
         }
+        Spacer(Modifier.background(Color.White).fillMaxHeight().width(5.dp))
     }
 }
 
 @Composable
-fun ConceptsSection(concepts: List<TopicCompendiumDto.ConceptBasicDto>, type: TopicProgressType) {
+fun ConceptsSection(concepts: SnapshotStateList<ConceptForm>, type: TopicProgressType, onClick: () -> Unit) {
+
+    val listState = rememberLazyListState()
+
+    val currentIndex = remember {
+        derivedStateOf {
+            val layoutInfo = listState.layoutInfo
+            val visibleItems = layoutInfo.visibleItemsInfo
+            if (visibleItems.isEmpty()) return@derivedStateOf 0
+
+            val viewportCenter = layoutInfo.viewportStartOffset + layoutInfo.viewportSize.width / 2
+            visibleItems.minByOrNull { item ->
+                val itemCenter = item.offset + item.size / 2
+                kotlin.math.abs(itemCenter - viewportCenter)
+            }?.index ?: 0
+        }
+    }
+
+    val edgeSize = 15 // момент, на якому воно переходе з кружочків на просто
+
     Column(
         modifier = Modifier.fillMaxWidth()
     ) {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
+        Column (
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 10.dp),
+
         ) {
-            Text(
-                text = "Концепти",
-                style = AppTypography.bodyLarge,
-                fontWeight = FontWeight.Bold
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = "Концепти",
+                    style = AppTypography.bodyLarge
+                )
+                Text(
+                    text = "${concepts.size} шт.",
+                    style = AppTypography.bodyMedium,
+                    color = Color.Gray
+                )
+            }
+            HorizontalDivider(
+                thickness = 1.dp,
+                color = Color.Gray.copy(alpha = 0.5f)
             )
-            Text(
-                text = "${concepts.size} шт.",
-                style = AppTypography.bodyMedium,
-                color = Color.Gray
-            )
+            Button(
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = colorResource(R.color.navbar_button)
+                ),
+                shape = RoundedCornerShape(5.dp),
+                onClick = onClick
+            ) {
+                Icon(
+                    painterResource(R.drawable.add_diamond_40px),
+                    contentDescription = "Add icon",
+                    Modifier.requiredSize(30.dp)
+                )
+            }
         }
 
         Spacer(modifier = Modifier.height(12.dp))
 
         if (concepts.isEmpty()) {
             Card(
-                shape = RoundedCornerShape(10.dp),
                 colors = CardDefaults.cardColors(
                     containerColor = Color.LightGray.copy(alpha = 0.2f)
                 ),
@@ -274,190 +379,156 @@ fun ConceptsSection(concepts: List<TopicCompendiumDto.ConceptBasicDto>, type: To
             }
         } else {
             Column(
-                verticalArrangement = Arrangement.spacedBy(8.dp)
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                concepts.forEach { concept ->
-                    ConceptCard(concept = concept, type = type)
-                }
-            }
-        }
-    }
-}
-
-@Composable
-fun ConceptCard(concept: TopicCompendiumDto.ConceptBasicDto, type: TopicProgressType) {
-    Card(
-        shape = RoundedCornerShape(10.dp),
-        elevation = CardDefaults.cardElevation(defaultElevation = 3.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.White),
-        border = BorderStroke(1.dp, type.borderColor.copy(alpha = 0.3f)),
-        modifier = Modifier.fillMaxWidth()
-    ) {
-        Column(
-            modifier = Modifier.padding(16.dp)
-        ) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Box(
-                    modifier = Modifier
-                        .size(8.dp)
-                        .background(type.borderColor, shape = CircleShape)
-                )
-                Spacer(modifier = Modifier.width(12.dp))
-                Text(
-                    text = concept.name,
-                    style = AppTypography.titleSmall,
-                    fontWeight = FontWeight.SemiBold,
-                    color = Color.Black
-                )
-            }
-
-            if (!concept.description.isNullOrBlank()) {
-                Spacer(modifier = Modifier.height(8.dp))
-                Text(
-                    text = concept.description,
-                    style = AppTypography.bodyMedium,
-                    color = Color.DarkGray,
-                    modifier = Modifier.padding(start = 20.dp)
-                )
-            }
-        }
-    }
-}
-
-@Composable
-fun NotesSection(
-    notes: String,
-    isEditing: Boolean,
-    onEditClick: () -> Unit,
-    onNotesChange: (String) -> Unit,
-    onSaveClick: () -> Unit,
-    onCancelClick: () -> Unit,
-    borderColor: Color
-) {
-    Column(
-        modifier = Modifier.fillMaxWidth()
-    ) {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text(
-                text = "Мої нотатки",
-                style = AppTypography.bodyLarge,
-                fontWeight = FontWeight.Bold
-            )
-
-            if (!isEditing) {
-                IconButton (onClick = onEditClick) {
-                    Icon(
-                        painter = painterResource(id = android.R.drawable.ic_menu_edit),
-                        contentDescription = "Редагувати нотатки",
-                        tint = borderColor
-                    )
-                }
-            }
-        }
-
-        Spacer(modifier = Modifier.height(12.dp))
-
-        if (isEditing) {
-            Card(
-                shape = RoundedCornerShape(10.dp),
-                border = BorderStroke(2.dp, borderColor),
-                colors = CardDefaults.cardColors(containerColor = Color.White),
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Column(
-                    modifier = Modifier.padding(16.dp)
+                LazyRow (
+                    Modifier.fillMaxWidth(),
+                    state = listState,
+                    flingBehavior = rememberSnapFlingBehavior(listState)
                 ) {
-                    OutlinedTextField(
-                        value = notes,
-                        onValueChange = onNotesChange,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(200.dp),
-                        placeholder = { Text("Додайте ваші нотатки тут...") },
-                        colors = OutlinedTextFieldDefaults.colors(
-                            focusedBorderColor = borderColor,
-                            unfocusedBorderColor = Color.LightGray
-                        ),
-                        textStyle = AppTypography.bodyMedium
-                    )
-
-                    Spacer(modifier = Modifier.height(12.dp))
-
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.End,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        TextButton(onClick = onCancelClick) {
-                            Text("Скасувати", color = Color.Gray)
-                        }
-
-                        Spacer(modifier = Modifier.width(8.dp))
-
-                        Button(
-                            onClick = onSaveClick,
-                            colors = ButtonDefaults.buttonColors(
-                                containerColor = borderColor
-                            )
-                        ) {
-                            Text("Зберегти")
+                    items(concepts) { concept ->
+                        ConceptCard(concept = concept, type = type) {
+                            concepts.remove(concept)
                         }
                     }
                 }
-            }
-        } else {
-            Card(
-                shape = RoundedCornerShape(10.dp),
-                border = BorderStroke(1.dp, borderColor.copy(alpha = 0.5f)),
-                colors = CardDefaults.cardColors(
-                    containerColor = borderColor.copy(alpha = 0.05f)
-                ),
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Text(
-                    text = notes.ifBlank { "Нотаток ще немає. Натисніть на іконку редагування, щоб додати." },
-                    style = AppTypography.bodyMedium,
-                    color = if (notes.isBlank()) Color.Gray else Color.Black,
-                    modifier = Modifier.padding(16.dp)
+                Spacer(Modifier.height(2.dp))
+                HorizontalDivider(
+                    thickness = 1.dp,
+                    color = Color.Gray.copy(alpha = 0.5f)
                 )
+                Row(
+                    Modifier
+                        .background(
+                            colorResource(R.color.navbar_button),
+                            RoundedCornerShape(2.dp)
+                        )
+                        .padding(10.dp)
+                ) {
+                    if (concepts.size >= edgeSize) Text(
+                        style = AppTypography.bodySmall,
+                        color = Color.White,
+                        text = "${currentIndex.value + 1} з ${concepts.size}"
+                    )
+                    else for (i in 0 until concepts.size) {
+                        Box(
+                            Modifier
+                                .padding(horizontal = 2.dp)
+                                .clip(CircleShape)
+                                .background(
+                                    if (i == currentIndex.value)
+                                        type.backgroundColor
+                                    else
+                                        Color.White
+                                )
+                                .requiredSize(10.dp)
+                        ) {}
+                    }
+                }
             }
         }
     }
 }
 
+@SuppressLint("ConfigurationScreenWidthHeight")
 @Composable
-fun NotesReadOnly(notes: String, borderColor: Color) {
-    Column(
-        modifier = Modifier.fillMaxWidth()
+fun ConceptCard(concept: ConceptForm, type: TopicProgressType, onDeleteClick: () -> Unit) {
+    Card(
+        shape = RoundedCornerShape(5.dp),
+        colors = CardDefaults.cardColors(containerColor = type.backgroundColor.copy(alpha = 0.05f)),
+        border = BorderStroke(1.dp, type.borderColor.copy(alpha = 0.1f)),
+        modifier = Modifier
+            .width(LocalConfiguration.current.screenWidthDp.dp)
+            .padding(horizontal = 10.dp)
     ) {
-        Text(
-            text = "Нотатки",
-            style = AppTypography.bodyLarge,
-            fontWeight = FontWeight.Bold,
-            modifier = Modifier.padding(bottom = 12.dp)
-        )
-
-        Card(
-            shape = RoundedCornerShape(10.dp),
-            border = BorderStroke(1.dp, borderColor.copy(alpha = 0.5f)),
-            colors = CardDefaults.cardColors(
-                containerColor = borderColor.copy(alpha = 0.05f)
+        Button(
+            onDeleteClick,
+            shape = RoundedCornerShape(3.dp),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = Color.Gray.copy(alpha = 0.2f)
             ),
-            modifier = Modifier.fillMaxWidth()
+            contentPadding = PaddingValues(0.dp)
         ) {
-            Text(
-                text = notes,
-                style = AppTypography.bodyMedium,
-                color = Color.Black,
-                modifier = Modifier.padding(16.dp)
+            Icon(
+                painterResource(R.drawable.disabled_by_default_40px),
+                contentDescription = "delete concept icon",
+                modifier = Modifier.requiredSize(30.dp)
             )
         }
+        Column(
+            modifier = Modifier.padding(horizontal = 16.dp)
+        ) {
+            CompendiumTextField(
+                concept.name, "Назва", { it.length < 5 },
+                errorMessage = "Назва має бути не меншою 5 символів!"
+            ) { concept.name = it }
+
+            CompendiumTextField(
+                concept.desc, "Опис",
+                largeText = true
+            ) { concept.desc = it }
+        }
+    }
+}
+
+@Composable
+fun CompendiumTextField(
+    field : String, label : String,
+    isError: (String) -> Boolean = { false }, errorMessage: String = "",
+    largeText: Boolean = false,
+    onChange : (String) -> Unit
+) {
+    TextField(
+        textStyle = AppTypography.bodyMedium,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(top = 5.dp)
+            .background(
+                shape = RoundedCornerShape(10.dp),
+                brush = Brush.horizontalGradient(
+                    listOf(
+                        colorResource(R.color.navbar_back),
+                        colorResource(R.color.navbar_back2)
+                    )
+                )
+            )
+            .then(
+                if (largeText)
+                    Modifier.heightIn(min = 120.dp)
+                else Modifier
+            ),
+        value = field,
+        onValueChange = onChange,
+        singleLine = !largeText,
+        maxLines = if (largeText) Int.MAX_VALUE else 1,
+
+        label = {
+            Text(text = label, style = AppTypography.bodySmall)
+        },
+        colors = TextFieldDefaults.colors(
+            unfocusedContainerColor = Color.Transparent,
+            unfocusedIndicatorColor = Color.Transparent,
+            focusedContainerColor = Color.Transparent,
+            focusedIndicatorColor = Color.Transparent,
+            unfocusedLabelColor = Color.Gray,
+            focusedLabelColor = Color.LightGray
+        )
+    )
+    if (field.isNotBlank() && isError(field)) {
+        Text(
+            textAlign = TextAlign.Center,
+            text = errorMessage,
+            color = MaterialTheme.colorScheme.error,
+            style = AppTypography.bodySmall,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 4.dp)
+                .background(
+                    Color.White.copy(alpha = 0.4f),
+                    shape = RoundedCornerShape(5.dp)
+                )
+                .padding(vertical = 8.dp)
+        )
     }
 }
 
@@ -465,12 +536,12 @@ fun NotesReadOnly(notes: String, borderColor: Color) {
 fun InfoPanel(compendium: TopicCompendiumDto, type: TopicProgressType) {
     Card(
         shape = RoundedCornerShape(12.dp),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
         colors = CardDefaults.cardColors(
-            containerColor = type.backgroundColor
+            containerColor = type.backgroundColor.copy(alpha = 0.075f)
         ),
-        border = BorderStroke(1.dp, type.borderColor.copy(alpha = 0.3f)),
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier
+            .padding(10.dp)
+            .fillMaxWidth()
     ) {
         Row(
             modifier = Modifier
@@ -479,9 +550,10 @@ fun InfoPanel(compendium: TopicCompendiumDto, type: TopicProgressType) {
             horizontalArrangement = Arrangement.SpaceEvenly
         ) {
             InfoItem(
-                icon = "📚",
+                iconId = R.drawable.award_star_40px,
                 label = "Концептів",
-                value = compendium.concepts.size.toString()
+                value = compendium.concepts.size.toString(),
+                isActive = compendium.concepts.isEmpty()
             )
 
             VerticalDivider(
@@ -491,28 +563,33 @@ fun InfoPanel(compendium: TopicCompendiumDto, type: TopicProgressType) {
             )
 
             InfoItem(
-                icon = "📝",
+                iconId = R.drawable.fact_check_40px,
                 label = "Нотатки",
-                value = if (compendium.notes.isNullOrBlank()) "Немає" else "Є"
+                value = if (compendium.notes.isNullOrBlank()) "Немає" else "Є",
+                isActive = compendium.notes.isNullOrBlank()
             )
         }
     }
 }
 
 @Composable
-fun InfoItem(icon: String, label: String, value: String) {
+fun InfoItem(iconId: Int, label: String, value: String, isActive: Boolean) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Text(
-            text = icon,
-            style = AppTypography.titleMedium
+        Icon(
+            tint = if (isActive)
+                        Color.LightGray
+                    else
+                        colorResource(R.color.navbar_button),
+            painter = painterResource(iconId),
+            contentDescription = "InfoItem-icon"
         )
         Spacer(modifier = Modifier.height(4.dp))
         Text(
             text = value,
             style = AppTypography.titleMedium,
-            fontWeight = FontWeight.Bold
+            color = Color.DarkGray
         )
         Text(
             text = label,

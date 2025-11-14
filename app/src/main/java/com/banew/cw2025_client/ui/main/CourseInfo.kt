@@ -290,7 +290,7 @@ enum class TopicProgressType(
     val isLocked: Boolean = false
 ) {
     LOCKED(
-        backgroundColor = Color(0xFFBDBDBD).copy(alpha = 0.1f), // світло-сірий
+        backgroundColor = Color(0xFFBDBDBD), // світло-сірий
         borderColor = Color(0xFF9E9E9E),                        // середньо-сірий
         buttonColor = Color(0xFF9E9E9E),                        // сірий
         buttonIconId = R.drawable.lock_40px,
@@ -298,21 +298,21 @@ enum class TopicProgressType(
     ),
 
     CAN_START(
-        backgroundColor = Color(0xFF4CAF50).copy(alpha = 0.1f), // зеленкуватий
+        backgroundColor = Color(0xFF4CAF50), // зеленкуватий
         borderColor = Color(0xFF4CAF50),                        // насичений зелений
         buttonColor = Color(0xFF4CAF50),                        // зелений
         buttonIconId = R.drawable.new_label_40px
     ),
 
     COMPLETED(
-        backgroundColor = Color(0xFF8D6E63).copy(alpha = 0.1f), // м’який коричневий
+        backgroundColor = Color(0xFF8D6E63), // м’який коричневий
         borderColor = Color(0xFF6D4C41),                        // темніший коричневий
         buttonColor = Color(0xFF8D6E63),                        // теплий коричневий
         buttonIconId = R.drawable.all_match_40px
     ),
 
     CURRENT(
-        backgroundColor = Color(0xFFB0BEC5).copy(alpha = 0.1f), // сіро-блакитний
+        backgroundColor = Color(0xFFB0BEC5), // сіро-блакитний
         borderColor = Color(0xFF607D8B),                        // холодний сірий
         buttonColor = Color(0xFF607D8B),                        // той самий
         buttonIconId = R.drawable.label_24px,

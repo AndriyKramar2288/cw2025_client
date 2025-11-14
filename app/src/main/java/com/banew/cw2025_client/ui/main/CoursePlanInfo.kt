@@ -175,11 +175,15 @@ fun CoursePlanInfo(id: Long, contextModel: MainPageModel, viewModel: CoursePlanI
                     }
                 }
             }
+            val isUserAdded = !contextModel.currentCourses.value
+                .any { it.coursePlan.id == coursePlan.id }
+
             Button(
                 contentPadding = PaddingValues(0.dp),
                 colors = ButtonDefaults.buttonColors(
                     contentColor = Color.Transparent,
                     containerColor = Color.Transparent,
+                    disabledContainerColor = Color.Transparent
                 ),
                 modifier = Modifier
                     .padding(start = 20.dp)
@@ -191,11 +195,14 @@ fun CoursePlanInfo(id: Long, contextModel: MainPageModel, viewModel: CoursePlanI
                     )
                     .padding( horizontal = 30.dp),
                 onClick = {
-                    contextModel.beginCourse(coursePlan.id)
+                    if (isUserAdded)
+                        contextModel.beginCourse(coursePlan.id)
+                    else
+                        contextModel.preferredRoute.value = "course/${coursePlan.id}"
                 }
             ) {
                 Text(
-                    text = "Доєднатись до курсу",
+                    text = if (isUserAdded) "Доєднатись до курсу" else "Перейти до прогресу",
                     style = AppTypography.labelMedium,
                     color = Color.White
                 )

@@ -81,13 +81,15 @@ class MainPageModelMock: ViewModel(), MainPageModel {
                 listOf(
                     TopicCompendiumDto(
                         652L,
-                        null,
+                        "ХУЙУЦЙКЛОЙШАЙЩУРРРЦГУРЦШАГУПЦШ",
                         CoursePlanBasicDto.TopicBasicDto(
                             1703L,
-                            "",
-                            ""
+                            "ТЕма!1",
+                            "ЙЦРВГАРГШЙУ"
                         ),
-                        emptyList(),
+                        listOf(
+                            TopicCompendiumDto.ConceptBasicDto(null, "Хуй", "Їбать")
+                        ),
                         CompendiumStatus.CURRENT
                     ),
                     TopicCompendiumDto(
@@ -212,13 +214,17 @@ class MainPageModelReal : ViewModel(), MainPageModel {
 
     override fun updateCompendium(newCompendium: TopicCompendiumDto) {
         viewModelScope.launch {
-            when (val planRes = dataSource.updateCompendium(newCompendium)) {
+            when (val newCompendium = dataSource.updateCompendium(newCompendium)) {
                 is Result.Success -> {
                     refresh()
-                    preferredRoute.value = "home"
+//                    currentCourses.value = currentCourses.value
+//                        .first {
+//                            it.currentCompendiumId == newCompendium.data.id
+//                        }
+//                    }
                 }
                 is Result.Error -> {
-                    lastException.value = planRes.asError().error
+                    lastException.value = newCompendium.asError().error
                 }
             }
         }
