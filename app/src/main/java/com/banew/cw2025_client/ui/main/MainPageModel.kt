@@ -203,7 +203,7 @@ class MainPageModelReal : ViewModel(), MainPageModel {
             when (val planRes = dataSource.beginTopic(topicId)) {
                 is Result.Success -> {
                     refresh()
-                    preferredRoute.value = "home"
+                    preferredRoute.value = "compendium/${topicId}"
                 }
                 is Result.Error -> {
                     lastException.value = planRes.asError().error

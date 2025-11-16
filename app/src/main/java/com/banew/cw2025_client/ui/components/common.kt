@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -25,7 +26,11 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -54,6 +59,15 @@ private fun LoadingPreview() {
 @Preview(showBackground = true)
 private fun DeathPreview() {
     DeathBox("Помилка!", "Спробувати ще раz") {}
+}
+
+@Composable
+@Preview(showBackground = true)
+private fun AlertWrapPreview() {
+    val isVisible = remember { mutableStateOf(true) }
+    Box(Modifier.fillMaxSize()) {
+        AlertDialogWrap(isVisible) {}
+    }
 }
 
 @Composable
@@ -238,5 +252,32 @@ fun LoadingBox(text: String) {
                 )
             }
         }
+    }
+}
+
+@Composable
+fun AlertDialogWrap(isVisible: MutableState<Boolean>, onClick: () -> Unit) {
+    if (isVisible.value) {
+        AlertDialog(
+            onDismissRequest = {
+                isVisible.value = false
+            },
+            confirmButton = {
+                TextButton(onClick = {
+                    isVisible.value = false
+                    onClick()
+                }) { Text("Так") }
+            },
+            dismissButton = {
+                TextButton(onClick = {
+                    isVisible.value = false
+                }) { Text("Скасувати") }
+            },
+            title = { Text("Підтвердження") },
+            text = { Text("Ви впевнені, що хочете продовжити?") },
+            shape = RoundedCornerShape(3.dp),
+            textContentColor = Color.DarkGray,
+            containerColor = colorResource(R.color.navbar_back)
+        )
     }
 }

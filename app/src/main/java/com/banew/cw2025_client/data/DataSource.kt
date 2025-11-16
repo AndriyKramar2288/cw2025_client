@@ -107,7 +107,7 @@ class DataSource(context: Context) {
                             "${obj.message()}\n${obj.fieldErrors.joinToString(separator = "\n")
                             { "${it.field} - ${it.message}" }}"
                         }
-                        catch (ex: NullPointerException) {
+                        catch (_: NullPointerException) {
                             Gson()
                                 .fromJson(stringObj, BasicResult::class.java)
                                 .message()
@@ -163,7 +163,7 @@ class DataSource(context: Context) {
         username: String,
         photoSrc: String,
         password: String
-    ): Result<UserTokenFormResult>? {
+    ): Result<UserTokenFormResult> {
 
         val form = UserRegisterForm(
             email, username, photoSrc.ifBlank { "" }, password
@@ -226,7 +226,7 @@ class DataSource(context: Context) {
         private var retrofit: Retrofit? = null
         private const val BASE_URL = "http://10.0.2.2:8080/api/"
         private const val NGROK = false
-        private val client: Retrofit?
+        private val client: Retrofit
             get() = retrofit ?: buildClient(BASE_URL)
 
         private fun buildClient(path: String): Retrofit {
@@ -259,7 +259,7 @@ class DataSource(context: Context) {
         }
 
         private val apiService: ApiService
-            get() = client!!.create<ApiService>(
+            get() = client.create<ApiService>(
                 ApiService::class.java
             )
     }

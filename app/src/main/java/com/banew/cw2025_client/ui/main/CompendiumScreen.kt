@@ -35,10 +35,7 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.VerticalDivider
@@ -65,6 +62,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.banew.cw2025_backend_common.dto.courses.TopicCompendiumDto
 import com.banew.cw2025_client.R
+import com.banew.cw2025_client.ui.components.AlertDialogWrap
 import com.banew.cw2025_client.ui.theme.AppTypography
 
 @SuppressLint("ViewModelConstructorInComposable")
@@ -92,6 +90,13 @@ class ConceptForm (
             : this(concept.name, concept.description) {
                 id = concept.id
             }
+
+    override fun hashCode(): Int {
+        var result = id?.hashCode() ?: 0
+        result = 31 * result + name.hashCode()
+        result = 31 * result + desc.hashCode()
+        return result
+    }
 }
 
 @Composable
@@ -102,9 +107,17 @@ fun CompendiumScreen(topicId: Long, viewModel: MainPageModel) {
         .flatMap { it.compendiums }
         .first { it.topic.id == topicId }
 
+    val course = viewModel.currentCourses.value
+        .first { it.compendiums.contains(compendium) }
+
+    val topics = course
+        .compendiums.map { it.topic }
+
+    val topicIndex = topics
+        .indexOfFirst { it.id == topicId }
+
     val type: TopicProgressType = compendium.status.toProgressType()
 
-    var isEditingAnything by remember { mutableStateOf(false) }
     var notesText by remember { mutableStateOf(compendium.notes ?: "") }
     val concepts = remember { mutableStateListOf<ConceptForm>() }
 
@@ -116,7 +129,7 @@ fun CompendiumScreen(topicId: Long, viewModel: MainPageModel) {
         compendium.concepts.map { concepts.add(ConceptForm(it)) }
     }
 
-    val onClickListenerMotherfucker = {
+    val onClickUpdate = {
         val updatedCompendium = TopicCompendiumDto(
             compendium.id, notesText.ifBlank { null },
             compendium.topic, concepts.map {
@@ -125,18 +138,31 @@ fun CompendiumScreen(topicId: Long, viewModel: MainPageModel) {
                 )
             }, compendium.status
         )
+
         viewModel.updateCompendium(updatedCompendium)
         compendium = updatedCompendium
-        isEditingAnything = false
     }
 
     Column(
         modifier = Modifier
             .fillMaxSize()
             .verticalScroll(verticalScroll)
-            .padding(vertical = 30.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
+            .padding(bottom = 30.dp),
+        horizontalAlignment = Alignment.Start
     ) {
+        IconButton (
+            onClick = {
+                viewModel.preferredRoute.value = "course/${course.coursePlan.id}"
+            }
+        ) {
+            Icon (
+                painterResource(R.drawable.arrow_circle_left_48px),
+                tint = Color.LightGray,
+                contentDescription = "return button",
+                modifier = Modifier.requiredSize(40.dp)
+            )
+        }
+
         // Статус теми
         StatusBadge(type = type)
 
@@ -148,7 +174,7 @@ fun CompendiumScreen(topicId: Long, viewModel: MainPageModel) {
             style = AppTypography.titleLarge,
             fontWeight = FontWeight.Bold,
             textAlign = TextAlign.Center,
-            modifier = Modifier.padding(bottom = 8.dp)
+            modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp)
         )
 
         // Опис теми
@@ -179,7 +205,7 @@ fun CompendiumScreen(topicId: Long, viewModel: MainPageModel) {
         Spacer(modifier = Modifier.height(24.dp))
 
         CompendiumTextField(
-            notesText, "Власні нотатки",
+            notesText, "Власні нотатки", type,
             largeText = true
         ) { notesText = it }
 
@@ -210,7 +236,7 @@ fun CompendiumScreen(topicId: Long, viewModel: MainPageModel) {
                 )
                 Spacer(Modifier.width(5.dp))
                 Button(
-                    onClick = onClickListenerMotherfucker,
+                    onClick = onClickUpdate,
                     shape = RoundedCornerShape(3.dp),
                     colors = ButtonDefaults.buttonColors(
                         containerColor = type.backgroundColor.copy(alpha = 0.5f)
@@ -229,6 +255,45 @@ fun CompendiumScreen(topicId: Long, viewModel: MainPageModel) {
 
         // Інформаційна панель
         InfoPanel(compendium = compendium, type = type)
+
+        // Перейти на наступну тему
+        val isNextOrEnd =
+            if (topics.size > topicIndex + 1)
+                if (course.currentCompendiumId == compendium.id)
+                    BottomElementType.START_NEXT
+                else
+                    BottomElementType.NEXT
+            else
+                BottomElementType.END
+        val showAlertNextTopic = remember { mutableStateOf(false) }
+        AlertDialogWrap(showAlertNextTopic) {
+            if (isNextOrEnd == BottomElementType.NEXT) {
+                viewModel.beginTopic(topics[topicIndex + 1].id)
+            }
+            else {
+                TODO("Завершення курсу!")
+            }
+        }
+        Row(
+            horizontalArrangement = Arrangement.SpaceBetween,
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            if (topicIndex - 1 >= 0) {
+                BottomPanelElement(BottomElementType.PREV) {
+                    viewModel.preferredRoute.value = "compendium/${topics[topicIndex - 1].id}"
+                }
+            } else Box {}
+            BottomPanelElement(isNextOrEnd) {
+                if (isNextOrEnd == BottomElementType.NEXT)
+                    viewModel.preferredRoute.value = "compendium/${topics[topicIndex + 1].id}"
+                else
+                    showAlertNextTopic.value = true
+            }
+        }
+        HorizontalDivider(
+            thickness = 2.dp,
+        )
+        Spacer(modifier = Modifier.height(48.dp))
     }
 }
 
@@ -241,26 +306,24 @@ fun StatusBadge(type: TopicProgressType) {
         TopicProgressType.CURRENT -> "Поточна тема"
     }
 
-    val statusIcon = when (type) {
-        TopicProgressType.LOCKED -> R.drawable.lock_40px
-        TopicProgressType.CAN_START -> R.drawable.new_label_40px
-        TopicProgressType.COMPLETED -> R.drawable.all_match_40px
-        TopicProgressType.CURRENT -> R.drawable.label_24px
-    }
-
     Row (
         horizontalArrangement = Arrangement.Center,
         modifier = Modifier
             .fillMaxWidth()
             .requiredHeight(40.dp)
             .background(
-                brush = Brush.horizontalGradient(listOf(
-                    colorResource(R.color.navbar_button),
-                    colorResource(R.color.navbar_button2)
-                ))
+                brush = Brush.horizontalGradient(
+                    listOf(
+                        colorResource(R.color.navbar_button),
+                        colorResource(R.color.navbar_button2)
+                    )
+                )
             )
     ) {
-        Spacer(Modifier.background(Color.White).fillMaxHeight().width(5.dp))
+        Spacer(Modifier
+            .background(Color.White)
+            .fillMaxHeight()
+            .width(5.dp))
         Row(
             modifier = Modifier
                 .border(
@@ -288,7 +351,10 @@ fun StatusBadge(type: TopicProgressType) {
                 color = type.borderColor
             )
         }
-        Spacer(Modifier.background(Color.White).fillMaxHeight().width(5.dp))
+        Spacer(Modifier
+            .background(Color.White)
+            .fillMaxHeight()
+            .width(5.dp))
     }
 }
 
@@ -343,18 +409,20 @@ fun ConceptsSection(concepts: SnapshotStateList<ConceptForm>, type: TopicProgres
                 thickness = 1.dp,
                 color = Color.Gray.copy(alpha = 0.5f)
             )
-            Button(
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = colorResource(R.color.navbar_button)
-                ),
-                shape = RoundedCornerShape(5.dp),
-                onClick = onClick
-            ) {
-                Icon(
-                    painterResource(R.drawable.add_diamond_40px),
-                    contentDescription = "Add icon",
-                    Modifier.requiredSize(30.dp)
-                )
+            if (type == TopicProgressType.CURRENT) {
+                Button(
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = colorResource(R.color.navbar_button)
+                    ),
+                    shape = RoundedCornerShape(5.dp),
+                    onClick = onClick
+                ) {
+                    Icon(
+                        painterResource(R.drawable.add_diamond_40px),
+                        contentDescription = "Add icon",
+                        Modifier.requiredSize(30.dp)
+                    )
+                }
             }
         }
 
@@ -397,7 +465,7 @@ fun ConceptsSection(concepts: SnapshotStateList<ConceptForm>, type: TopicProgres
                     thickness = 1.dp,
                     color = Color.Gray.copy(alpha = 0.5f)
                 )
-                Row(
+                if (concepts.size > 1) Row(
                     Modifier
                         .background(
                             colorResource(R.color.navbar_button),
@@ -441,7 +509,7 @@ fun ConceptCard(concept: ConceptForm, type: TopicProgressType, onDeleteClick: ()
             .width(LocalConfiguration.current.screenWidthDp.dp)
             .padding(horizontal = 10.dp)
     ) {
-        Button(
+        if (type == TopicProgressType.CURRENT) Button(
             onDeleteClick,
             shape = RoundedCornerShape(3.dp),
             colors = ButtonDefaults.buttonColors(
@@ -459,12 +527,11 @@ fun ConceptCard(concept: ConceptForm, type: TopicProgressType, onDeleteClick: ()
             modifier = Modifier.padding(horizontal = 16.dp)
         ) {
             CompendiumTextField(
-                concept.name, "Назва", { it.length < 5 },
-                errorMessage = "Назва має бути не меншою 5 символів!"
+                concept.name, "Назва", type
             ) { concept.name = it }
 
             CompendiumTextField(
-                concept.desc, "Опис",
+                concept.desc, "Опис", type,
                 largeText = true
             ) { concept.desc = it }
         }
@@ -473,12 +540,13 @@ fun ConceptCard(concept: ConceptForm, type: TopicProgressType, onDeleteClick: ()
 
 @Composable
 fun CompendiumTextField(
-    field : String, label : String,
+    field : String, label : String, type: TopicProgressType,
     isError: (String) -> Boolean = { false }, errorMessage: String = "",
     largeText: Boolean = false,
     onChange : (String) -> Unit
 ) {
     TextField(
+        readOnly = type != TopicProgressType.CURRENT,
         textStyle = AppTypography.bodyMedium,
         modifier = Modifier
             .fillMaxWidth()
@@ -595,6 +663,54 @@ fun InfoItem(iconId: Int, label: String, value: String, isActive: Boolean) {
             text = label,
             style = AppTypography.bodySmall,
             color = Color.Gray
+        )
+    }
+}
+
+private enum class BottomElementType {
+    PREV, NEXT, START_NEXT, END
+}
+
+@Composable
+private fun BottomPanelElement(type: BottomElementType, onClick: () -> Unit) {
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = Modifier
+            .background(
+                color = colorResource(R.color.navbar_back),
+                shape = RoundedCornerShape(10.dp)
+            )
+            .padding(horizontal = 20.dp, vertical = 5.dp)
+    ) {
+        IconButton(
+            onClick
+        ) {
+            Icon(
+                painterResource(when (type) {
+                    BottomElementType.PREV -> R.drawable.turn_slight_left_40px
+                    BottomElementType.NEXT -> R.drawable.turn_slight_right_40px
+                    BottomElementType.START_NEXT -> R.drawable.azm_40px
+                    BottomElementType.END -> R.drawable.book_2_24px
+                }),
+                contentDescription = "bottom panel element icon",
+                tint = colorResource(R.color.navbar_button2)
+            )
+        }
+        Box(
+            modifier = Modifier
+                .padding(bottom = 7.dp)
+                .requiredSize(30.dp, 2.dp)
+                .background(colorResource(R.color.navbar_button2))
+        )
+        Text(
+            textAlign = TextAlign.Center,
+            text = when (type) {
+                BottomElementType.PREV -> "Переглянути\nпопередню"
+                BottomElementType.NEXT -> "Переглянути\nнаступну"
+                BottomElementType.START_NEXT -> "Почати\nнаступну"
+                BottomElementType.END -> "Завершити\nкурс"
+            },
+            style = AppTypography.bodySmall
         )
     }
 }

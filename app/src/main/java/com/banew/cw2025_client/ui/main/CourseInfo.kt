@@ -305,7 +305,7 @@ enum class TopicProgressType(
     ),
 
     COMPLETED(
-        backgroundColor = Color(0xFF8D6E63), // м’який коричневий
+        backgroundColor = Color(0xC18D6E63), // м’який коричневий
         borderColor = Color(0xFF6D4C41),                        // темніший коричневий
         buttonColor = Color(0xFF8D6E63),                        // теплий коричневий
         buttonIconId = R.drawable.all_match_40px
