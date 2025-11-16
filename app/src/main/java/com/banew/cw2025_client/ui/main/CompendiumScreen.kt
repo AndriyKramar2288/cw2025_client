@@ -4,7 +4,6 @@ import android.annotation.SuppressLint
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.gestures.snapping.rememberSnapFlingBehavior
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -20,11 +19,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredHeight
 import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
@@ -41,7 +38,6 @@ import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
@@ -50,10 +46,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -63,13 +57,14 @@ import androidx.compose.ui.unit.dp
 import com.banew.cw2025_backend_common.dto.courses.TopicCompendiumDto
 import com.banew.cw2025_client.R
 import com.banew.cw2025_client.ui.components.AlertDialogWrap
+import com.banew.cw2025_client.ui.components.PagerIndicator
 import com.banew.cw2025_client.ui.theme.AppTypography
 
 @SuppressLint("ViewModelConstructorInComposable")
 @Composable
 @Preview(showBackground = true)
 private fun Preview() {
-    CompendiumScreen(1703L, MainPageModelMock())
+    CompendiumScreen(1703L, MainPageModelMock(), CourseViewModel(true))
 }
 
 class ConceptForm (
@@ -100,200 +95,193 @@ class ConceptForm (
 }
 
 @Composable
-fun CompendiumScreen(topicId: Long, viewModel: MainPageModel) {
+fun CompendiumScreen(topicId: Long, viewModel: MainPageModel, courseModel: CourseViewModel) {
     val verticalScroll = rememberScrollState()
 
-    var compendium = viewModel.currentCourses.value
-        .flatMap { it.compendiums }
-        .first { it.topic.id == topicId }
+    courseModel.course?.let { course ->
+        val topics = course.compendiums.map { it.topic }
 
-    val course = viewModel.currentCourses.value
-        .first { it.compendiums.contains(compendium) }
+        val topicIndex = topics
+            .indexOfFirst { it.id == topicId }
 
-    val topics = course
-        .compendiums.map { it.topic }
+        val compendium = course.compendiums.first { it.topic.id == topicId }
 
-    val topicIndex = topics
-        .indexOfFirst { it.id == topicId }
+        val type: TopicProgressType = compendium.status.toProgressType()
 
-    val type: TopicProgressType = compendium.status.toProgressType()
+        var notesText by remember { mutableStateOf(compendium.notes ?: "") }
+        val concepts = remember { mutableStateListOf<ConceptForm>() }
 
-    var notesText by remember { mutableStateOf(compendium.notes ?: "") }
-    val concepts = remember { mutableStateListOf<ConceptForm>() }
+        val isUnsavedChanges = notesText != compendium.notes
+                || compendium.concepts.map { ConceptForm(it) } != concepts
 
-    val isUnsavedChanges = notesText != compendium.notes
-            || compendium.concepts.map { ConceptForm(it) } != concepts
-
-    LaunchedEffect(compendium) {
-        concepts.clear()
-        compendium.concepts.map { concepts.add(ConceptForm(it)) }
-    }
-
-    val onClickUpdate = {
-        val updatedCompendium = TopicCompendiumDto(
-            compendium.id, notesText.ifBlank { null },
-            compendium.topic, concepts.map {
-                TopicCompendiumDto.ConceptBasicDto(
-                    it.id, it.name, it.desc
-                )
-            }, compendium.status
-        )
-
-        viewModel.updateCompendium(updatedCompendium)
-        compendium = updatedCompendium
-    }
-
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .verticalScroll(verticalScroll)
-            .padding(bottom = 30.dp),
-        horizontalAlignment = Alignment.Start
-    ) {
-        IconButton (
-            onClick = {
-                viewModel.preferredRoute.value = "course/${course.coursePlan.id}"
-            }
-        ) {
-            Icon (
-                painterResource(R.drawable.arrow_circle_left_48px),
-                tint = Color.LightGray,
-                contentDescription = "return button",
-                modifier = Modifier.requiredSize(40.dp)
-            )
+        LaunchedEffect(compendium) {
+            concepts.clear()
+            compendium.concepts.map { concepts.add(ConceptForm(it)) }
         }
 
-        // Статус теми
-        StatusBadge(type = type)
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        // Назва теми
-        Text(
-            text = compendium.topic.name,
-            style = AppTypography.titleLarge,
-            fontWeight = FontWeight.Bold,
-            textAlign = TextAlign.Center,
-            modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp)
-        )
-
-        // Опис теми
-        if (!compendium.topic.description.isNullOrBlank()) {
-            HorizontalDivider(
-                thickness = 3.dp,
-                color = colorResource(R.color.navbar_button)
+        val onClickUpdate = {
+            val updatedCompendium = TopicCompendiumDto(
+                compendium.id, notesText.ifBlank { null },
+                compendium.topic, concepts.map {
+                    TopicCompendiumDto.ConceptBasicDto(
+                        it.id, it.name, it.desc
+                    )
+                }, compendium.status
             )
+
+            courseModel.updateCompendium(updatedCompendium)
+        }
+
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .verticalScroll(verticalScroll)
+                .padding(bottom = 30.dp),
+            horizontalAlignment = Alignment.Start
+        ) {
+            IconButton (
+                onClick = {
+                    viewModel.preferredRoute.value = "course/${course.coursePlan.id}"
+                }
+            ) {
+                Icon (
+                    painterResource(R.drawable.arrow_circle_left_48px),
+                    tint = Color.LightGray,
+                    contentDescription = "return button",
+                    modifier = Modifier.requiredSize(40.dp)
+                )
+            }
+
+            // Статус теми
+            StatusBadge(type = type)
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            // Назва теми
             Text(
-                text = compendium.topic.description,
-                style = AppTypography.bodyMedium,
-                textAlign = TextAlign.Justify,
-                color = Color.DarkGray,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .background(
-                        brush = Brush.verticalGradient(
-                            listOf(
-                                Color.Gray.copy(alpha = 0.1f),
-                                Color.Transparent
+                text = compendium.topic.name,
+                style = AppTypography.titleLarge,
+                fontWeight = FontWeight.Bold,
+                textAlign = TextAlign.Center,
+                modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp)
+            )
+
+            // Опис теми
+            if (!compendium.topic.description.isNullOrBlank()) {
+                HorizontalDivider(
+                    thickness = 3.dp,
+                    color = colorResource(R.color.navbar_button)
+                )
+                Text(
+                    text = compendium.topic.description,
+                    style = AppTypography.bodyMedium,
+                    textAlign = TextAlign.Justify,
+                    color = Color.DarkGray,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .background(
+                            brush = Brush.verticalGradient(
+                                listOf(
+                                    Color.Gray.copy(alpha = 0.1f),
+                                    Color.Transparent
+                                )
                             )
                         )
-                    )
-                    .padding(16.dp)
-            )
-        }
-
-        Spacer(modifier = Modifier.height(24.dp))
-
-        CompendiumTextField(
-            notesText, "Власні нотатки", type,
-            largeText = true
-        ) { notesText = it }
-
-        Spacer(modifier = Modifier.height(24.dp))
-
-        // Секція концептів
-        ConceptsSection(
-            concepts,
-            type = type
-        ) {
-            concepts.add(ConceptForm())
-        }
-
-        if (isUnsavedChanges) {
-            Spacer(Modifier.height(10.dp))
-            Row(
-                Modifier
-                    .fillMaxWidth()
-                    .background(
-                        Color.Gray.copy(alpha = 0.05f)
-                    ),
-                horizontalArrangement = Arrangement.Center,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    "У вас є незбережені зміни!",
-                    style = AppTypography.bodySmall,
+                        .padding(16.dp)
                 )
-                Spacer(Modifier.width(5.dp))
-                Button(
-                    onClick = onClickUpdate,
-                    shape = RoundedCornerShape(3.dp),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = type.backgroundColor.copy(alpha = 0.5f)
-                    ),
-                    contentPadding = PaddingValues(horizontal = 10.dp)
+            }
+
+            Spacer(modifier = Modifier.height(24.dp))
+
+            CompendiumTextField(
+                notesText, "Власні нотатки", type,
+                largeText = true
+            ) { notesText = it }
+
+            Spacer(modifier = Modifier.height(24.dp))
+
+            // Секція концептів
+            ConceptsSection(
+                concepts,
+                type = type
+            ) {
+                concepts.add(ConceptForm())
+            }
+
+            if (isUnsavedChanges) {
+                Spacer(Modifier.height(10.dp))
+                Row(
+                    Modifier
+                        .fillMaxWidth()
+                        .background(
+                            Color.Gray.copy(alpha = 0.05f)
+                        ),
+                    horizontalArrangement = Arrangement.Center,
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
+                        "У вас є незбережені зміни!",
                         style = AppTypography.bodySmall,
-                        text = "Зберегти"
                     )
+                    Spacer(Modifier.width(5.dp))
+                    Button(
+                        onClick = onClickUpdate,
+                        shape = RoundedCornerShape(3.dp),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = type.backgroundColor.copy(alpha = 0.5f)
+                        ),
+                        contentPadding = PaddingValues(horizontal = 10.dp)
+                    ) {
+                        Text(
+                            style = AppTypography.bodySmall,
+                            text = "Зберегти"
+                        )
+                    }
                 }
             }
-        }
 
-        Spacer(modifier = Modifier.height(24.dp))
+            Spacer(modifier = Modifier.height(24.dp))
 
-        // Інформаційна панель
-        InfoPanel(compendium = compendium, type = type)
-
-        // Перейти на наступну тему
-        val isNextOrEnd =
-            if (topics.size > topicIndex + 1)
-                if (course.currentCompendiumId == compendium.id)
-                    BottomElementType.START_NEXT
+            // Перейти на наступну тему
+            val isNextOrEnd =
+                if (topics.size > topicIndex + 1)
+                    if (course.currentCompendiumId == compendium.id)
+                        BottomElementType.START_NEXT
+                    else
+                        BottomElementType.NEXT
                 else
-                    BottomElementType.NEXT
-            else
-                BottomElementType.END
-        val showAlertNextTopic = remember { mutableStateOf(false) }
-        AlertDialogWrap(showAlertNextTopic) {
-            if (isNextOrEnd == BottomElementType.NEXT) {
-                viewModel.beginTopic(topics[topicIndex + 1].id)
-            }
-            else {
-                TODO("Завершення курсу!")
-            }
-        }
-        Row(
-            horizontalArrangement = Arrangement.SpaceBetween,
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            if (topicIndex - 1 >= 0) {
-                BottomPanelElement(BottomElementType.PREV) {
-                    viewModel.preferredRoute.value = "compendium/${topics[topicIndex - 1].id}"
+                    BottomElementType.END
+            val showAlertNextTopic = remember { mutableStateOf(false) }
+            AlertDialogWrap(showAlertNextTopic) {
+                if (isNextOrEnd == BottomElementType.START_NEXT) {
+                    courseModel.beginTopic(topics[topicIndex + 1].id, viewModel)
                 }
-            } else Box {}
-            BottomPanelElement(isNextOrEnd) {
-                if (isNextOrEnd == BottomElementType.NEXT)
-                    viewModel.preferredRoute.value = "compendium/${topics[topicIndex + 1].id}"
-                else
-                    showAlertNextTopic.value = true
+                else {
+                    TODO("Завершення курсу!")
+                }
             }
+            Row(
+                horizontalArrangement = Arrangement.SpaceBetween,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                if (topicIndex - 1 >= 0) {
+                    BottomPanelElement(BottomElementType.PREV) {
+                        viewModel.preferredRoute.value = "compendium/${topics[topicIndex - 1].id}"
+                    }
+                } else Box {}
+                BottomPanelElement(isNextOrEnd) {
+                    if (isNextOrEnd == BottomElementType.NEXT)
+                        viewModel.preferredRoute.value = "compendium/${topics[topicIndex + 1].id}"
+                    else
+                        showAlertNextTopic.value = true
+                }
+            }
+
+            // Інформаційна панель
+            InfoPanel(compendium = compendium, type = type)
+
+            Spacer(modifier = Modifier.height(48.dp))
         }
-        HorizontalDivider(
-            thickness = 2.dp,
-        )
-        Spacer(modifier = Modifier.height(48.dp))
     }
 }
 
@@ -361,23 +349,7 @@ fun StatusBadge(type: TopicProgressType) {
 @Composable
 fun ConceptsSection(concepts: SnapshotStateList<ConceptForm>, type: TopicProgressType, onClick: () -> Unit) {
 
-    val listState = rememberLazyListState()
-
-    val currentIndex = remember {
-        derivedStateOf {
-            val layoutInfo = listState.layoutInfo
-            val visibleItems = layoutInfo.visibleItemsInfo
-            if (visibleItems.isEmpty()) return@derivedStateOf 0
-
-            val viewportCenter = layoutInfo.viewportStartOffset + layoutInfo.viewportSize.width / 2
-            visibleItems.minByOrNull { item ->
-                val itemCenter = item.offset + item.size / 2
-                kotlin.math.abs(itemCenter - viewportCenter)
-            }?.index ?: 0
-        }
-    }
-
-    val edgeSize = 15 // момент, на якому воно переходе з кружочків на просто
+    val pagerState = rememberPagerState { concepts.size }
 
     Column(
         modifier = Modifier.fillMaxWidth()
@@ -449,15 +421,11 @@ fun ConceptsSection(concepts: SnapshotStateList<ConceptForm>, type: TopicProgres
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                LazyRow (
-                    Modifier.fillMaxWidth(),
-                    state = listState,
-                    flingBehavior = rememberSnapFlingBehavior(listState)
+                HorizontalPager(
+                    state = pagerState
                 ) {
-                    items(concepts) { concept ->
-                        ConceptCard(concept = concept, type = type) {
-                            concepts.remove(concept)
-                        }
+                    ConceptCard(concept = concepts[it], type = type) {
+                        concepts.remove(concepts[it])
                     }
                 }
                 Spacer(Modifier.height(2.dp))
@@ -465,40 +433,12 @@ fun ConceptsSection(concepts: SnapshotStateList<ConceptForm>, type: TopicProgres
                     thickness = 1.dp,
                     color = Color.Gray.copy(alpha = 0.5f)
                 )
-                if (concepts.size > 1) Row(
-                    Modifier
-                        .background(
-                            colorResource(R.color.navbar_button),
-                            RoundedCornerShape(2.dp)
-                        )
-                        .padding(10.dp)
-                ) {
-                    if (concepts.size >= edgeSize) Text(
-                        style = AppTypography.bodySmall,
-                        color = Color.White,
-                        text = "${currentIndex.value + 1} з ${concepts.size}"
-                    )
-                    else for (i in 0 until concepts.size) {
-                        Box(
-                            Modifier
-                                .padding(horizontal = 2.dp)
-                                .clip(CircleShape)
-                                .background(
-                                    if (i == currentIndex.value)
-                                        type.backgroundColor
-                                    else
-                                        Color.White
-                                )
-                                .requiredSize(10.dp)
-                        ) {}
-                    }
-                }
+                PagerIndicator(pagerState.currentPage, concepts.size)
             }
         }
     }
 }
 
-@SuppressLint("ConfigurationScreenWidthHeight")
 @Composable
 fun ConceptCard(concept: ConceptForm, type: TopicProgressType, onDeleteClick: () -> Unit) {
     Card(
@@ -506,7 +446,6 @@ fun ConceptCard(concept: ConceptForm, type: TopicProgressType, onDeleteClick: ()
         colors = CardDefaults.cardColors(containerColor = type.backgroundColor.copy(alpha = 0.05f)),
         border = BorderStroke(1.dp, type.borderColor.copy(alpha = 0.1f)),
         modifier = Modifier
-            .width(LocalConfiguration.current.screenWidthDp.dp)
             .padding(horizontal = 10.dp)
     ) {
         if (type == TopicProgressType.CURRENT) Button(

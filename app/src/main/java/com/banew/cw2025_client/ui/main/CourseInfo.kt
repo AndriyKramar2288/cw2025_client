@@ -31,9 +31,10 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -46,108 +47,219 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.banew.cw2025_backend_common.dto.coursePlans.CoursePlanBasicDto
 import com.banew.cw2025_backend_common.dto.courses.CompendiumStatus
-import com.banew.cw2025_backend_common.dto.courses.CourseBasicDto
+import com.banew.cw2025_backend_common.dto.courses.CourseDetailedDto
+import com.banew.cw2025_backend_common.dto.courses.CoursePlanCourseDto
 import com.banew.cw2025_backend_common.dto.courses.TopicCompendiumDto
+import com.banew.cw2025_backend_common.dto.users.UserProfileBasicDto
+import com.banew.cw2025_client.GlobalApplication
 import com.banew.cw2025_client.R
+import com.banew.cw2025_client.data.DataSource
+import com.banew.cw2025_client.data.Result
 import com.banew.cw2025_client.ui.components.UserProfileCard
 import com.banew.cw2025_client.ui.theme.AppTypography
+import kotlinx.coroutines.launch
+import java.time.Instant
 
 @SuppressLint("ViewModelConstructorInComposable")
 @Composable
 @Preview(showBackground = true)
 private fun Preview() {
-    CourseInfo(1603L, MainPageModelMock())
+    CourseInfo(1603L, MainPageModelMock(), CourseViewModel(true))
 }
 
-@Composable
-fun CourseInfo(id: Long, viewModel: MainPageModel) {
-    val verticalScroll = rememberScrollState()
+class CourseViewModel(isMock: Boolean = false): ViewModel() {
+    private val dataSource: DataSource? = GlobalApplication.getInstance()?.dataSource
 
-    val course by remember {
-        mutableStateOf(
-            viewModel.currentCourses.value.first { it.coursePlan.id == id }
-        )
-    }
-
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .verticalScroll(verticalScroll)
-            .padding(vertical = 30.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        // Назва курсу
-        Text(
-            text = course.coursePlan.name,
-            style = AppTypography.titleLarge,
-            fontWeight = FontWeight.Bold,
-            textAlign = TextAlign.Center,
-            modifier = Modifier.padding(vertical = 8.dp)
-        )
-
-        // Автор курсу
-        Spacer(modifier = Modifier.height(16.dp))
-        Text(
-            text = "Автор курсу",
-            style = AppTypography.bodyMedium,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 10.dp)
-        )
-        UserProfileCard(course.coursePlan.author, viewModel, Modifier.padding(horizontal = 20.dp))
-
-        // Статистика курсу
-        Spacer(modifier = Modifier.height(8.dp))
-        CourseStats(course)
-
-        Spacer(modifier = Modifier.height(24.dp))
-
-        // Прогрес тем
-        Text(
-            text = "Прогрес навчання",
-            style = AppTypography.bodyLarge,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(vertical = 12.dp, horizontal = 10.dp)
-        )
-
-        // Теми з прогресом
-        course.compendiums.forEachIndexed { index, compendium ->
-            TopicProgressCard(
-                compendium = compendium,
-                type = compendium.status?.toProgressType() ?: TopicProgressType.LOCKED,
-                viewModel
-            )
-
-            // Сполучна лінія між темами
-            if (index < course.compendiums.size - 1) {
-                Box(
-                    modifier = Modifier
-                        .width(4.dp)
-                        .height(24.dp)
-                        .background(
-                            Color.LightGray,
-                            shape = RoundedCornerShape(2.dp)
-                        )
+    var course by mutableStateOf(
+        if (!isMock) null else CourseDetailedDto(
+            148228L,
+            Instant.parse("2025-11-07T22:28:26.935362Z"),
+            CoursePlanCourseDto(
+                1603L,
+                "First normal Course",
+                UserProfileBasicDto(
+                    2L,
+                    "Banewko",
+                    "andriykramar465@gmail.com",
+                    "https://cdn.omlet.com/images/originals/breed_abyssinian_cat.jpg"
+                ),
+                "Desc for the first normal course"
+            ),
+            listOf(
+                TopicCompendiumDto(
+                    652L,
+                    "ХУЙУЦЙКЛОЙШАЙЩУРРРЦГУРЦШАГУПЦШ",
+                    CoursePlanBasicDto.TopicBasicDto(
+                        1703L,
+                        "ТЕма!1",
+                        "ЙЦРВГАРГШЙУ"
+                    ),
+                    listOf(
+                        TopicCompendiumDto.ConceptBasicDto(null, "Хуй", "Їбать")
+                    ),
+                    CompendiumStatus.CURRENT
+                ),
+                TopicCompendiumDto(
+                    653L,
+                    null,
+                    CoursePlanBasicDto.TopicBasicDto(
+                        1704L,
+                        "Topic 2",
+                        "Desc 2"
+                    ),
+                    listOf(
+                        TopicCompendiumDto.ConceptBasicDto(null, "Хуй", "Їбать")
+                    ),
+                    CompendiumStatus.COMPLETED
                 )
+            ),
+            null
+        )
+    )
+        private set
+
+    fun init(coursePlanId: Long, contextModel: MainPageModel) {
+        dataSource?.let { dataSource ->
+            viewModelScope.launch {
+                contextModel.isRefreshing.value = true
+                val res = dataSource.courseDetailedById(coursePlanId)
+                when {
+                    res.isSuccess -> course = res.asSuccess().data
+                }
+                contextModel.isRefreshing.value = false
             }
         }
+    }
 
-        Spacer(modifier = Modifier.height(24.dp))
+    fun updateCompendium(updatedCompendium: TopicCompendiumDto) {
+        course!!.let { crs ->
+            dataSource?.let { dataSource ->
+                viewModelScope.launch {
+                    val res = dataSource
+                        .updateCompendium(updatedCompendium, crs.coursePlan.id)
+                    if (res.isSuccess) {
+                        val resSuccess = res.asSuccess().data
 
-        // Дата початку
-        Text(
-            text = "Розпочато: ${formatDate(course.startedAt)}",
-            style = AppTypography.bodySmall,
-            color = Color.Gray,
-            modifier = Modifier.padding(bottom = 16.dp)
-        )
+                        course = CourseDetailedDto(
+                            crs.id, crs.startedAt, crs.coursePlan,
+                            crs.compendiums.map {
+                                if (it.topic.id != resSuccess.topic.id) it
+                                else resSuccess
+                            },
+                            crs.currentCompendiumId
+                        )
+                    }
+                }
+            }
+        }
+    }
+
+    fun beginTopic(topicId: Long, contextModel: MainPageModel) {
+        dataSource?.let { dataSource ->
+            viewModelScope.launch {
+                when (dataSource.beginTopic(topicId, course!!.coursePlan.id)) {
+                    is Result.Success -> {
+                        init(course!!.coursePlan.id, contextModel)
+                        contextModel.preferredRoute.value = "compendium/${topicId}"
+                    }
+                }
+            }
+        }
     }
 }
 
 @Composable
-fun CourseStats(course: CourseBasicDto) {
+fun CourseInfo(id: Long, viewModel: MainPageModel, courseModel: CourseViewModel) {
+    val verticalScroll = rememberScrollState()
+
+    LaunchedEffect(id) {
+        courseModel.init(id, viewModel)
+    }
+
+    courseModel.course?.let { course ->
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .verticalScroll(verticalScroll)
+                .padding(vertical = 30.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            // Назва курсу
+            Text(
+                text = course.coursePlan.name,
+                style = AppTypography.titleLarge,
+                fontWeight = FontWeight.Bold,
+                textAlign = TextAlign.Center,
+                modifier = Modifier.padding(vertical = 8.dp)
+            )
+
+            // Автор курсу
+            Spacer(modifier = Modifier.height(16.dp))
+            Text(
+                text = "Автор курсу",
+                style = AppTypography.bodyMedium,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 10.dp)
+            )
+            UserProfileCard(course.coursePlan.author, viewModel, Modifier.padding(horizontal = 20.dp))
+
+            // Статистика курсу
+            Spacer(modifier = Modifier.height(8.dp))
+            CourseStats(course)
+
+            Spacer(modifier = Modifier.height(24.dp))
+
+            // Прогрес тем
+            Text(
+                text = "Прогрес навчання",
+                style = AppTypography.bodyLarge,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 12.dp, horizontal = 10.dp)
+            )
+
+            // Теми з прогресом
+            course.compendiums.forEachIndexed { index, compendium ->
+                TopicProgressCard(
+                    compendium = compendium,
+                    type = compendium.status?.toProgressType() ?: TopicProgressType.LOCKED,
+                    courseModel, viewModel
+                )
+
+                // Сполучна лінія між темами
+                if (index < course.compendiums.size - 1) {
+                    Box(
+                        modifier = Modifier
+                            .width(4.dp)
+                            .height(24.dp)
+                            .background(
+                                Color.LightGray,
+                                shape = RoundedCornerShape(2.dp)
+                            )
+                    )
+                }
+            }
+
+            Spacer(modifier = Modifier.height(24.dp))
+
+            // Дата початку
+            Text(
+                text = "Розпочато: ${formatDate(course.startedAt)}",
+                style = AppTypography.bodySmall,
+                color = Color.Gray,
+                modifier = Modifier.padding(bottom = 16.dp)
+            )
+        }
+    }
+}
+
+@Composable
+fun CourseStats(course: CourseDetailedDto) {
     val totalTopics = course.compendiums.size
     val currentTopicIndex = course.currentCompendiumId?.let { currentId ->
         course.compendiums.indexOfFirst { it.id == currentId }
@@ -333,7 +445,8 @@ fun CompendiumStatus.toProgressType() = when (this) {
 fun TopicProgressCard(
     compendium: TopicCompendiumDto,
     type: TopicProgressType,
-    viewModel: MainPageModel
+    courseModel: CourseViewModel,
+    contextModel: MainPageModel
 ) {
     Card(
         shape = RoundedCornerShape(7.dp),
@@ -418,12 +531,12 @@ fun TopicProgressCard(
                 onClick = {
                     when (type) {
                         TopicProgressType.CAN_START ->
-                            viewModel.beginTopic(compendium.topic.id)
+                            courseModel.beginTopic(compendium.topic.id, contextModel)
                         TopicProgressType.CURRENT -> {
-                            viewModel.preferredRoute.value = "compendium/${compendium.topic.id}"
+                            contextModel.preferredRoute.value = "compendium/${compendium.topic.id}"
                         }
                         TopicProgressType.COMPLETED -> {
-                            viewModel.preferredRoute.value = "compendium/${compendium.topic.id}"
+                            contextModel.preferredRoute.value = "compendium/${compendium.topic.id}"
                         }
                         else -> {}
                     }

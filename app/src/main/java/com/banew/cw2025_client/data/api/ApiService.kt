@@ -2,13 +2,12 @@ package com.banew.cw2025_client.data.api
 
 import com.banew.cw2025_backend_common.dto.coursePlans.CoursePlanBasicDto
 import com.banew.cw2025_backend_common.dto.courses.CourseBasicDto
+import com.banew.cw2025_backend_common.dto.courses.CourseDetailedDto
 import com.banew.cw2025_backend_common.dto.courses.TopicCompendiumDto
 import com.banew.cw2025_backend_common.dto.users.UserLoginForm
-import com.banew.cw2025_backend_common.dto.users.UserProfileBasicDto
 import com.banew.cw2025_backend_common.dto.users.UserProfileDetailedDto
 import com.banew.cw2025_backend_common.dto.users.UserRegisterForm
 import com.banew.cw2025_backend_common.dto.users.UserTokenFormResult
-import retrofit2.Call
 import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.Header
@@ -64,21 +63,29 @@ interface ApiService {
         @Header("Authorization") token: String
     ): List<CourseBasicDto>
 
+    @GET("course/by-plan/{courseId}")
+    suspend fun getCourse(
+        @Header("Authorization") token: String,
+        @Path("courseId") courseId: Long
+    ): CourseDetailedDto
+
     @POST("course/by-plan/{courseId}/start")
     suspend fun beginCourse(
         @Header("Authorization") token: String,
         @Path("courseId") courseId: Long
     ): CourseBasicDto
 
-    @POST("course/topic/{topicId}/start")
+    @POST("course/by-plan/{courseId}/topic/{topicId}/start")
     suspend fun beginTopic(
         @Header("Authorization") token: String,
-        @Path("topicId") topicId: Long
+        @Path("topicId") topicId: Long,
+        @Path("courseId") courseId: Long
     ): TopicCompendiumDto
 
-    @PUT("course/topic/")
+    @PUT("course/by-plan/{courseId}/topic")
     suspend fun updateCompendium(
         @Header("Authorization") token: String,
+        @Path("courseId") courseId: Long,
         @Body body: TopicCompendiumDto
     ): TopicCompendiumDto
 }

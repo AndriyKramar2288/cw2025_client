@@ -9,6 +9,7 @@ import com.banew.cw2025_backend_common.dto.BasicResult
 import com.banew.cw2025_backend_common.dto.FieldExceptionResult
 import com.banew.cw2025_backend_common.dto.coursePlans.CoursePlanBasicDto
 import com.banew.cw2025_backend_common.dto.courses.CourseBasicDto
+import com.banew.cw2025_backend_common.dto.courses.CourseDetailedDto
 import com.banew.cw2025_backend_common.dto.courses.TopicCompendiumDto
 import com.banew.cw2025_backend_common.dto.users.UserLoginForm
 import com.banew.cw2025_backend_common.dto.users.UserProfileDetailedDto
@@ -126,6 +127,12 @@ class DataSource(context: Context) {
         }
     }
 
+    suspend fun courseDetailedById(coursePlanId: Long): Result<CourseDetailedDto> {
+        return resolveResult {
+            apiService.getCourse("Bearer $token", coursePlanId)
+        }
+    }
+
     suspend fun currentCoursePlanList(): Result<List<CoursePlanBasicDto>> {
         return resolveResult {
             apiService.currentCoursePlanList("Bearer $token")
@@ -195,15 +202,15 @@ class DataSource(context: Context) {
         }
     }
 
-    suspend fun beginTopic(topicId: Long) : Result<TopicCompendiumDto> {
+    suspend fun beginTopic(topicId: Long, courseId: Long) : Result<TopicCompendiumDto> {
         return resolveResult {
-            apiService.beginTopic("Bearer $token", topicId)
+            apiService.beginTopic("Bearer $token", topicId, courseId)
         }
     }
 
-    suspend fun updateCompendium(compendium: TopicCompendiumDto) : Result<TopicCompendiumDto> {
+    suspend fun updateCompendium(compendium: TopicCompendiumDto, courseId: Long) : Result<TopicCompendiumDto> {
         return resolveResult {
-            apiService.updateCompendium("Bearer $token", compendium)
+            apiService.updateCompendium("Bearer $token", courseId, compendium)
         }
     }
 

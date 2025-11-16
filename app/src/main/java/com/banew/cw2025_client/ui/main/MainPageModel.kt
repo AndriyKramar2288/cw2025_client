@@ -7,10 +7,8 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.banew.cw2025_backend_common.dto.coursePlans.CoursePlanBasicDto
-import com.banew.cw2025_backend_common.dto.courses.CompendiumStatus
 import com.banew.cw2025_backend_common.dto.courses.CourseBasicDto
 import com.banew.cw2025_backend_common.dto.courses.CoursePlanCourseDto
-import com.banew.cw2025_backend_common.dto.courses.TopicCompendiumDto
 import com.banew.cw2025_backend_common.dto.users.UserProfileBasicDto
 import com.banew.cw2025_backend_common.dto.users.UserProfileDetailedDto
 import com.banew.cw2025_client.GlobalApplication
@@ -29,8 +27,6 @@ interface MainPageModel {
     fun beginCourse(coursePLanId: Long) {}
     fun confirmCoursePlanCreation(dto: CoursePlanBasicDto) {}
     fun refresh(callback: () -> Unit = {}) {}
-    fun beginTopic(topicId: Long) {}
-    fun updateCompendium(newCompendium: TopicCompendiumDto) {}
     fun logout() {}
     val isShouldToSwitchToLogin: State<Boolean>
         get() = mutableStateOf(false)
@@ -66,6 +62,7 @@ class MainPageModelMock: ViewModel(), MainPageModel {
     override val currentCourses: State<List<CourseBasicDto>>
         get() = mutableStateOf(listOf(
             CourseBasicDto(
+                148228L,
                 Instant.parse("2025-11-07T22:28:26.935362Z"),
                 CoursePlanCourseDto(
                     1603L,
@@ -78,33 +75,8 @@ class MainPageModelMock: ViewModel(), MainPageModel {
                     ),
                     "Desc for the first normal course"
                 ),
-                listOf(
-                    TopicCompendiumDto(
-                        652L,
-                        "ХУЙУЦЙКЛОЙШАЙЩУРРРЦГУРЦШАГУПЦШ",
-                        CoursePlanBasicDto.TopicBasicDto(
-                            1703L,
-                            "ТЕма!1",
-                            "ЙЦРВГАРГШЙУ"
-                        ),
-                        listOf(
-                            TopicCompendiumDto.ConceptBasicDto(null, "Хуй", "Їбать")
-                        ),
-                        CompendiumStatus.CURRENT
-                    ),
-                    TopicCompendiumDto(
-                        653L,
-                        null,
-                        CoursePlanBasicDto.TopicBasicDto(
-                            1704L,
-                            "Topic 2",
-                            "Desc 2"
-                        ),
-                        emptyList(),
-                        CompendiumStatus.COMPLETED
-                    )
-                ),
-                null
+                "qwewq",
+                4233, 13
             )
         ).flatMap { listOf(it, it, it) })
     override val lastException: MutableState<Exception?>
@@ -195,38 +167,6 @@ class MainPageModelReal : ViewModel(), MainPageModel {
             callback()
 
             isRefreshing.value = false
-        }
-    }
-
-    override fun beginTopic(topicId: Long) {
-        viewModelScope.launch {
-            when (val planRes = dataSource.beginTopic(topicId)) {
-                is Result.Success -> {
-                    refresh()
-                    preferredRoute.value = "compendium/${topicId}"
-                }
-                is Result.Error -> {
-                    lastException.value = planRes.asError().error
-                }
-            }
-        }
-    }
-
-    override fun updateCompendium(newCompendium: TopicCompendiumDto) {
-        viewModelScope.launch {
-            when (val newCompendium = dataSource.updateCompendium(newCompendium)) {
-                is Result.Success -> {
-                    refresh()
-//                    currentCourses.value = currentCourses.value
-//                        .first {
-//                            it.currentCompendiumId == newCompendium.data.id
-//                        }
-//                    }
-                }
-                is Result.Error -> {
-                    lastException.value = newCompendium.asError().error
-                }
-            }
         }
     }
 

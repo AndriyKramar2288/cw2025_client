@@ -7,15 +7,14 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredHeight
 import androidx.compose.foundation.layout.requiredSize
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -39,12 +38,16 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.banew.cw2025_backend_common.dto.courses.CourseBasicDto
 import com.banew.cw2025_client.R
+import com.banew.cw2025_client.ui.components.PagerIndicator
 import com.banew.cw2025_client.ui.theme.AppTypography
 import java.time.Instant
 
 @Composable
 fun CourseScreen(viewModel: MainPageModel) {
-    LazyColumn (
+
+    val pagerState = rememberPagerState { viewModel.currentCourses.value.size }
+
+    Column (
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier
             .fillMaxSize()
@@ -61,21 +64,25 @@ fun CourseScreen(viewModel: MainPageModel) {
             )
             .padding(vertical = 15.dp)
     ) {
-        item {
-            Text(
-                text = "Мої курси",
-                style = AppTypography.titleMedium,
-                modifier = Modifier.padding(5.dp)
-            )
-            HorizontalDivider(
-                modifier = Modifier
-                    .padding(horizontal = 20.dp),
-                color = colorResource(R.color.navbar_button),
-                thickness = 2.dp
-            )
-        }
-        items(viewModel.currentCourses.value) { course ->
-            CourseCard(course, viewModel)
+        Text(
+            text = "Мої курси",
+            style = AppTypography.titleMedium,
+            modifier = Modifier.padding(5.dp)
+        )
+        HorizontalDivider(
+            modifier = Modifier
+                .padding(horizontal = 20.dp),
+            color = colorResource(R.color.navbar_button),
+            thickness = 2.dp
+        )
+        PagerIndicator(
+            pagerState.currentPage,
+            viewModel.currentCourses.value.size
+        )
+        HorizontalPager(
+            state = pagerState
+        ) {
+            CourseCard(viewModel.currentCourses.value[it], viewModel)
         }
     }
 }
@@ -88,7 +95,7 @@ private fun CourseCard(course: CourseBasicDto, viewModel: MainPageModel) {
             viewModel.preferredRoute.value = "course/${course.coursePlan.id}"
         },
         modifier = Modifier
-            .padding(top = 30.dp)
+            .padding(top = 10.dp)
             .fillMaxWidth()
             .padding(vertical = 8.dp),
         colors = CardDefaults.cardColors(
@@ -157,36 +164,31 @@ private fun CourseCard(course: CourseBasicDto, viewModel: MainPageModel) {
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 ProgressBlock(
-                    text = "Тем: ${course.compendiums.size}",
+                    text = "Тем: ${course.totalTopics}",
                     iconId = R.drawable.fact_check_40px
                 )
 
                 ProgressBlock(
-                    text = "Концептів: ${course.compendiums.flatMap { it.concepts }.size}",
+                    text = "Концептів: ${course.totalConcepts}",
                     iconId = R.drawable.award_star_40px
                 )
             }
 
             // Поточна тема
-            course.currentCompendiumId?.let { currentId ->
-                val currentCompendium = course.compendiums.find { it.id == currentId }
-                currentCompendium?.let { compendium ->
-                    Spacer(modifier = Modifier.height(8.dp))
-                    HorizontalDivider(thickness = 1.dp)
-                    Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(8.dp))
+            HorizontalDivider(thickness = 1.dp)
+            Spacer(modifier = Modifier.height(8.dp))
 
-                    Text(
-                        text = "Поточна тема:",
-                        style = AppTypography.labelMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                    Text(
-                        text = compendium.topic.name,
-                        style = AppTypography.bodyMedium,
-                        fontWeight = FontWeight.SemiBold
-                    )
-                }
-            }
+            Text(
+                text = "Поточна тема:",
+                style = AppTypography.labelMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+            Text(
+                text = course.currentTopic,
+                style = AppTypography.bodyMedium,
+                fontWeight = FontWeight.SemiBold
+            )
 
             // Дата початку
             Spacer(modifier = Modifier.height(8.dp))

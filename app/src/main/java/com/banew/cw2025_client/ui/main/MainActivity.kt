@@ -9,7 +9,6 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -26,10 +25,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
@@ -83,6 +78,8 @@ fun MainScreen(viewModel : MainPageModel = viewModel<MainPageModelReal>()) {
         return
     }
 
+    val courseModel = viewModel<CourseViewModel>()
+
     LaunchedEffect(viewModel.lastException.value) {
         viewModel.lastException.value?.let { e ->
             Toast.makeText(context, e.message ?: "Помилка", Toast.LENGTH_SHORT).show()
@@ -124,7 +121,7 @@ fun MainScreen(viewModel : MainPageModel = viewModel<MainPageModelReal>()) {
                     MyNavigationItem(
                         "courses",
                         R.drawable.book_2_24px,
-                        "Мої курси",
+                        "Прогрес",
                         viewModel
                     )
                     MyNavigationItem(
@@ -170,7 +167,7 @@ fun MainScreen(viewModel : MainPageModel = viewModel<MainPageModelReal>()) {
                         arguments = listOf(navArgument("courseId") { type = NavType.LongType })
                     ) { backStackEntry ->
                         backStackEntry.arguments?.getLong("courseId")?.let {
-                            CourseInfo(it, viewModel)
+                            CourseInfo(it, viewModel, courseModel)
                         }
                     }
                     composable(
@@ -178,7 +175,7 @@ fun MainScreen(viewModel : MainPageModel = viewModel<MainPageModelReal>()) {
                         arguments = listOf(navArgument("topicId") { type = NavType.LongType })
                     ) { backStackEntry ->
                         backStackEntry.arguments?.getLong("topicId")?.let {
-                            CompendiumScreen(it, viewModel)
+                            CompendiumScreen(it, viewModel, courseModel)
                         }
                     }
                 }
