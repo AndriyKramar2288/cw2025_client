@@ -177,18 +177,21 @@ private fun CourseCard(course: CourseBasicDto, viewModel: MainPageModel) {
             // Поточна тема
             Spacer(modifier = Modifier.height(8.dp))
             HorizontalDivider(thickness = 1.dp)
-            Spacer(modifier = Modifier.height(8.dp))
 
-            Text(
-                text = "Поточна тема:",
-                style = AppTypography.labelMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
-            Text(
-                text = course.currentTopic,
-                style = AppTypography.bodyMedium,
-                fontWeight = FontWeight.SemiBold
-            )
+            course.currentTopic?.let { topic ->
+                Spacer(modifier = Modifier.height(8.dp))
+
+                Text(
+                    text = "Поточна тема:",
+                    style = AppTypography.labelMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+                Text(
+                    text = topic,
+                    style = AppTypography.bodyMedium,
+                    fontWeight = FontWeight.SemiBold
+                )
+            }
 
             // Дата початку
             Spacer(modifier = Modifier.height(8.dp))
