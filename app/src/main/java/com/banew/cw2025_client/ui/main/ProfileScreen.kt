@@ -8,11 +8,9 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredHeight
 import androidx.compose.foundation.layout.requiredSize
@@ -21,13 +19,11 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.CardElevation
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
@@ -40,18 +36,14 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -62,14 +54,13 @@ import com.banew.cw2025_backend_common.dto.users.UserProfileDetailedDto
 import com.banew.cw2025_client.GlobalApplication
 import com.banew.cw2025_client.R
 import com.banew.cw2025_client.data.DataSource
-import com.banew.cw2025_client.ui.components.LoadingBox
 import com.banew.cw2025_client.ui.theme.AppTypography
 import kotlinx.coroutines.launch
 
 class ProfileScreenViewModel(val isMock: Boolean = false): ViewModel() {
     private val dataSource: DataSource? = GlobalApplication.getInstance()?.dataSource
 
-    var profile by mutableStateOf<UserProfileDetailedDto?>(
+    var profile by mutableStateOf(
         if (!isMock) null else UserProfileDetailedDto(
             1L,
             "Користувач", "aboba@gmail.com", "qwewqweq",
@@ -100,7 +91,7 @@ class ProfileScreenViewModel(val isMock: Boolean = false): ViewModel() {
                 when {
                     result.isSuccess -> profile = result.asSuccess().data
                     result.isError -> {
-                        contextModel.preferredRoute.value = "home"
+                        contextModel.preferredRoute = "home"
                     }
                 }
                 contextModel.isRefreshing.value = false
@@ -244,7 +235,7 @@ fun ProfilePageScreen(
                     modifier = Modifier
                         .fillMaxWidth(),
                     onClick = {
-                        contextModel.preferredRoute.value = "coursePlan/${item.id}"
+                        contextModel.preferredRoute = "coursePlan/${item.id}"
                     }
                 ) {
                     Row (

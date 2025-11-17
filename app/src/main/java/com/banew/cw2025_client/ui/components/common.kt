@@ -46,6 +46,7 @@ import com.banew.cw2025_backend_common.dto.users.UserProfileBasicDto
 import com.banew.cw2025_client.R
 import com.banew.cw2025_client.ui.main.MainPageModel
 import com.banew.cw2025_client.ui.theme.AppTypography
+import java.time.Duration
 
 @Composable
 @Preview(showBackground = true)
@@ -253,6 +254,16 @@ fun LoadingBox(text: String) {
     }
 }
 
+fun Duration.clockFormat(): String {
+    val h = toHours()
+    val m = toMinutesPart()
+    val s = toSecondsPart()
+
+    return if (h > 0)
+        "%d:%02d:%02d".format(h, m, s)
+    else
+        "%02d:%02d".format(m, s)
+}
 
 @Composable
 fun PagerIndicator(current: Int, total: Int) {

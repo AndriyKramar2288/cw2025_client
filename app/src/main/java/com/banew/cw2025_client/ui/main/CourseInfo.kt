@@ -99,7 +99,7 @@ class CourseViewModel(isMock: Boolean = false): ViewModel() {
                         "ЙЦРВГАРГШЙУ"
                     ),
                     listOf(
-                        TopicCompendiumDto.ConceptBasicDto(null, "Хуй", "Їбать")
+                        TopicCompendiumDto.ConceptBasicDto(null, "Хуй", "Їбать", false)
                     ),
                     CompendiumStatus.CURRENT
                 ),
@@ -112,7 +112,7 @@ class CourseViewModel(isMock: Boolean = false): ViewModel() {
                         "Desc 2"
                     ),
                     listOf(
-                        TopicCompendiumDto.ConceptBasicDto(null, "Хуй", "Їбать")
+                        TopicCompendiumDto.ConceptBasicDto(null, "Хуй", "Їбать", false)
                     ),
                     CompendiumStatus.COMPLETED
                 )
@@ -164,7 +164,7 @@ class CourseViewModel(isMock: Boolean = false): ViewModel() {
                 when (dataSource.beginTopic(topicId, course!!.coursePlan.id)) {
                     is Result.Success -> {
                         init(course!!.coursePlan.id, contextModel)
-                        contextModel.preferredRoute.value = "compendium/${topicId}"
+                        contextModel.preferredRoute = "compendium/${topicId}"
                     }
                 }
             }
@@ -533,10 +533,10 @@ fun TopicProgressCard(
                         TopicProgressType.CAN_START ->
                             courseModel.beginTopic(compendium.topic.id, contextModel)
                         TopicProgressType.CURRENT -> {
-                            contextModel.preferredRoute.value = "compendium/${compendium.topic.id}"
+                            contextModel.preferredRoute = "compendium/${compendium.topic.id}"
                         }
                         TopicProgressType.COMPLETED -> {
-                            contextModel.preferredRoute.value = "compendium/${compendium.topic.id}"
+                            contextModel.preferredRoute = "compendium/${compendium.topic.id}"
                         }
                         else -> {}
                     }

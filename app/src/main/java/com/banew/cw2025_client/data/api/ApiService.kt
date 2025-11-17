@@ -1,5 +1,8 @@
 package com.banew.cw2025_client.data.api
 
+import com.banew.cw2025_backend_common.dto.cards.FlashCardAnswer
+import com.banew.cw2025_backend_common.dto.cards.FlashCardBasicDto
+import com.banew.cw2025_backend_common.dto.cards.FlashCardDayStats
 import com.banew.cw2025_backend_common.dto.coursePlans.CoursePlanBasicDto
 import com.banew.cw2025_backend_common.dto.courses.CourseBasicDto
 import com.banew.cw2025_backend_common.dto.courses.CourseDetailedDto
@@ -88,4 +91,23 @@ interface ApiService {
         @Path("courseId") courseId: Long,
         @Body body: TopicCompendiumDto
     ): TopicCompendiumDto
+
+    // --- FLASH CARDS ---
+
+    @GET("cards")
+    suspend fun getCurrentCards(
+        @Header("Authorization") token: String
+    ): List<FlashCardBasicDto>
+
+    @GET("cards/stats")
+    suspend fun getCardDailyStats(
+        @Header("Authorization") token: String
+    ): FlashCardDayStats
+
+    @PUT("cards/{flashCardId}/answer")
+    suspend fun answerFlashCard(
+        @Header("Authorization") token: String,
+        @Path("flashCardId") flashCardId: Long,
+        @Body body: FlashCardAnswer
+    ): FlashCardBasicDto
 }

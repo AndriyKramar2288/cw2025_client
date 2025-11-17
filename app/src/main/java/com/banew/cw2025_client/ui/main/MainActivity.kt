@@ -87,8 +87,8 @@ fun MainScreen(viewModel : MainPageModel = viewModel<MainPageModelReal>()) {
         }
     }
 
-    LaunchedEffect(viewModel.preferredRoute.value) {
-        navController.navigate(viewModel.preferredRoute.value)
+    LaunchedEffect(viewModel.preferredRouteState.value) {
+        navController.navigate(viewModel.preferredRoute)
     }
 
     MyAppTheme {
@@ -145,6 +145,7 @@ fun MainScreen(viewModel : MainPageModel = viewModel<MainPageModelReal>()) {
                     composable("home") { MainPageScreen(viewModel) }
                     composable("courses") { CourseScreen(viewModel) }
                     composable("profile") { ProfilePageScreen(viewModel) }
+                    composable("flashCards") { FlashCardScreen(viewModel) }
                     composable(
                         route = "profile/{userId}",
                         arguments = listOf(navArgument("userId") { type = NavType.LongType })
@@ -214,8 +215,8 @@ fun RowScope.MyNavigationItem(
     viewModel: MainPageModel
 ) {
     NavigationBarItem(
-        selected = viewModel.preferredRoute.value == route,
-        onClick = { viewModel.preferredRoute.value = route },
+        selected = viewModel.preferredRoute == route,
+        onClick = { viewModel.preferredRoute = route },
         icon = {
             Icon(
                 painterResource(iconRes),

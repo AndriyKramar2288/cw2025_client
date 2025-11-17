@@ -5,23 +5,29 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredHeight
 import androidx.compose.foundation.layout.requiredSize
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -36,11 +42,28 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.banew.cw2025_backend_common.dto.cards.FlashCardDayStats
+import com.banew.cw2025_backend_common.dto.cards.FlashCardType
 import com.banew.cw2025_backend_common.dto.courses.CourseBasicDto
 import com.banew.cw2025_client.R
 import com.banew.cw2025_client.ui.components.PagerIndicator
+import com.banew.cw2025_client.ui.components.clockFormat
 import com.banew.cw2025_client.ui.theme.AppTypography
 import java.time.Instant
+
+private val FlashCardType.text: String
+    get() = when(this) {
+        FlashCardType.NEW -> "Нові"
+        FlashCardType.REPEAT -> "Повторення"
+        FlashCardType.STUDY -> "Вивчення"
+    }
+
+private val FlashCardType.iconId: Int
+    get() = when(this) {
+        FlashCardType.NEW -> R.drawable.rocket_launch_40px
+        FlashCardType.REPEAT -> R.drawable.lightbulb_40px
+        FlashCardType.STUDY -> R.drawable.wand_stars_40px
+    }
 
 @Composable
 fun CourseScreen(viewModel: MainPageModel) {
@@ -75,14 +98,131 @@ fun CourseScreen(viewModel: MainPageModel) {
             color = colorResource(R.color.navbar_button),
             thickness = 2.dp
         )
+
         PagerIndicator(
             pagerState.currentPage,
             viewModel.currentCourses.value.size
         )
+
         HorizontalPager(
             state = pagerState
         ) {
             CourseCard(viewModel.currentCourses.value[it], viewModel)
+        }
+
+        viewModel.flashCardDayStats.value?.let { stats ->
+            CardStatsDisplayer(stats) {
+                viewModel.preferredRoute = "flashCards"
+            }
+        }
+    }
+}
+
+@Composable
+private fun CardStatsDisplayer(stats: FlashCardDayStats, onClick: () -> Unit) {
+    Column(
+        Modifier.fillMaxWidth(),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Text(
+            text = "Вивчення концептів",
+            style = AppTypography.titleMedium,
+            modifier = Modifier.padding(5.dp)
+        )
+        HorizontalDivider(
+            modifier = Modifier
+                .padding(horizontal = 20.dp, vertical = 10.dp),
+            color = Color(0x66FFFFFF)
+        )
+        Row(
+            Modifier.fillMaxWidth().padding(horizontal = 20.dp)
+        ) {
+            Column(
+                Modifier.weight(1f)
+            ) {
+                Button(
+                    contentPadding = PaddingValues(horizontal = 20.dp),
+                    shape = RoundedCornerShape(2.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = colorResource(R.color.navbar_button)
+                    ),
+                    onClick = onClick
+                ) {
+                    Text(
+                        text = "Розпочати вивчення",
+                        style = AppTypography.bodyMedium,
+                        color = Color.White
+                    )
+                }
+            }
+            VerticalDivider(
+                thickness = 2.dp,
+                color = colorResource(R.color.navbar_button2),
+                modifier = Modifier.padding(2.dp).heightIn(max = 130.dp)
+            )
+            Column(
+                Modifier.weight(2f)
+            ) {
+                stats.cardLefts.forEach { (p0, p1) ->
+                    Row (
+                        Modifier
+                            .padding(horizontal = 10.dp, vertical = 1.dp)
+                            .background(
+                                colorResource(R.color.navbar_back).copy(alpha = .5f),
+                                RoundedCornerShape(5.dp)
+                            )
+                            .padding(10.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.End
+                    ) {
+                        Text(
+                            modifier = Modifier.weight(1f),
+                            text = p0.text,
+                            style = AppTypography.bodySmall
+                        )
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(
+                                style = AppTypography.titleSmall,
+                                text = "$p1",
+                                color = Color.DarkGray
+                            )
+                            Icon(
+                                painterResource(p0.iconId),
+                                tint = Color.Gray,
+                                modifier = Modifier
+                                    .padding(start = 10.dp)
+                                    .requiredSize(20.dp),
+                                contentDescription = "Flash card stats icon"
+                            )
+                        }
+                    }
+                }
+            }
+        }
+        Row(
+            Modifier
+                .padding(horizontal = 10.dp, vertical = 1.dp)
+                .border(
+                    1.dp, colorResource(R.color.navbar_back2),
+                    RoundedCornerShape(3.dp)
+                )
+                .background(
+                    colorResource(R.color.navbar_back).copy(alpha = .2f),
+                    RoundedCornerShape(3.dp)
+                )
+                .padding(10.dp)
+        ) {
+            Text(
+                style = AppTypography.bodySmall,
+                text = "Переглянуто карток: ${stats.reviewNumber}"
+            )
+            Spacer(Modifier.width(10.dp))
+            Text(
+                style = AppTypography.bodySmall,
+                text = "В середньому часу: ${stats.reviewDuration.clockFormat()}"
+            )
         }
     }
 }
@@ -92,7 +232,7 @@ private fun CourseCard(course: CourseBasicDto, viewModel: MainPageModel) {
     Card (
         shape = RectangleShape,
         onClick = {
-            viewModel.preferredRoute.value = "course/${course.coursePlan.id}"
+            viewModel.preferredRoute = "course/${course.coursePlan.id}"
         },
         modifier = Modifier
             .padding(top = 10.dp)

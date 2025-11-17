@@ -74,16 +74,18 @@ class ConceptForm (
     var id by mutableStateOf<Long?>(null)
     var name by mutableStateOf(nameInit)
     var desc by mutableStateOf(descInit)
+    var isFlashCard by mutableStateOf(true)
 
     override fun equals(other: Any?) =
         if (other is ConceptForm)
-            name == other.name && desc == other.desc
+            name == other.name && desc == other.desc && isFlashCard == other.isFlashCard
         else
             false
 
     constructor(concept: TopicCompendiumDto.ConceptBasicDto)
             : this(concept.name, concept.description) {
                 id = concept.id
+                isFlashCard = concept.isFlashCard
             }
 
     override fun hashCode(): Int {
@@ -124,7 +126,7 @@ fun CompendiumScreen(topicId: Long, viewModel: MainPageModel, courseModel: Cours
                 compendium.id, notesText.ifBlank { null },
                 compendium.topic, concepts.map {
                     TopicCompendiumDto.ConceptBasicDto(
-                        it.id, it.name, it.desc
+                        it.id, it.name, it.desc, it.isFlashCard
                     )
                 }, compendium.status
             )
@@ -141,7 +143,7 @@ fun CompendiumScreen(topicId: Long, viewModel: MainPageModel, courseModel: Cours
         ) {
             IconButton (
                 onClick = {
-                    viewModel.preferredRoute.value = "course/${course.coursePlan.id}"
+                    viewModel.preferredRoute = "course/${course.coursePlan.id}"
                 }
             ) {
                 Icon (
@@ -266,12 +268,12 @@ fun CompendiumScreen(topicId: Long, viewModel: MainPageModel, courseModel: Cours
             ) {
                 if (topicIndex - 1 >= 0) {
                     BottomPanelElement(BottomElementType.PREV) {
-                        viewModel.preferredRoute.value = "compendium/${topics[topicIndex - 1].id}"
+                        viewModel.preferredRoute = "compendium/${topics[topicIndex - 1].id}"
                     }
                 } else Box {}
                 BottomPanelElement(isNextOrEnd) {
                     if (isNextOrEnd == BottomElementType.NEXT)
-                        viewModel.preferredRoute.value = "compendium/${topics[topicIndex + 1].id}"
+                        viewModel.preferredRoute = "compendium/${topics[topicIndex + 1].id}"
                     else
                         showAlertNextTopic.value = true
                 }
@@ -448,19 +450,48 @@ fun ConceptCard(concept: ConceptForm, type: TopicProgressType, onDeleteClick: ()
         modifier = Modifier
             .padding(horizontal = 10.dp)
     ) {
-        if (type == TopicProgressType.CURRENT) Button(
-            onDeleteClick,
-            shape = RoundedCornerShape(3.dp),
-            colors = ButtonDefaults.buttonColors(
-                containerColor = Color.Gray.copy(alpha = 0.2f)
-            ),
-            contentPadding = PaddingValues(0.dp)
+        Row(
+            Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            Icon(
-                painterResource(R.drawable.disabled_by_default_40px),
-                contentDescription = "delete concept icon",
-                modifier = Modifier.requiredSize(30.dp)
-            )
+            if (type == TopicProgressType.CURRENT) Button(
+                onDeleteClick,
+                shape = RoundedCornerShape(3.dp),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = Color.Gray.copy(alpha = 0.2f)
+                ),
+                contentPadding = PaddingValues(0.dp)
+            ) {
+                Icon(
+                    painterResource(R.drawable.disabled_by_default_40px),
+                    contentDescription = "delete concept icon",
+                    modifier = Modifier.requiredSize(30.dp)
+                )
+            } else Box {}
+            Button(
+                {
+                    concept.isFlashCard = !concept.isFlashCard
+                },
+                enabled = type == TopicProgressType.CURRENT,
+                shape = RoundedCornerShape(3.dp),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = Color.Gray.copy(
+                        alpha = if (concept.isFlashCard) 0.4f else 0.3f
+                    )
+                ),
+                contentPadding = PaddingValues(0.dp)
+            ) {
+                Icon(
+                    painterResource(R.drawable.wand_stars_40px),
+                    contentDescription = "switch isFlashCard icon",
+                    modifier = Modifier.requiredSize(30.dp),
+                    tint =
+                        if (concept.isFlashCard)
+                            colorResource(R.color.navbar_back)
+                        else
+                            colorResource(R.color.navbar_back2)
+                )
+            }
         }
         Column(
             modifier = Modifier.padding(horizontal = 16.dp)

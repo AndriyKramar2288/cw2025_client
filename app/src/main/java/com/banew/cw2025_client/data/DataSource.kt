@@ -7,6 +7,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.core.content.edit
 import com.banew.cw2025_backend_common.dto.BasicResult
 import com.banew.cw2025_backend_common.dto.FieldExceptionResult
+import com.banew.cw2025_backend_common.dto.cards.FlashCardAnswer
+import com.banew.cw2025_backend_common.dto.cards.FlashCardBasicDto
+import com.banew.cw2025_backend_common.dto.cards.FlashCardDayStats
 import com.banew.cw2025_backend_common.dto.coursePlans.CoursePlanBasicDto
 import com.banew.cw2025_backend_common.dto.courses.CourseBasicDto
 import com.banew.cw2025_backend_common.dto.courses.CourseDetailedDto
@@ -30,6 +33,7 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.io.IOException
 import java.lang.reflect.Type
+import java.time.Duration
 import java.time.Instant
 import java.util.concurrent.TimeUnit
 
@@ -57,11 +61,6 @@ class DataSource(context: Context) {
     }
 
     suspend fun beginCourse(coursePlanId: Long): Result<CourseBasicDto> {
-        if (token == null) {
-            logout()
-            return Result.Error(IOException("Not authorized!"))
-        }
-
         return resolveResult {
             apiService.beginCourse("Bearer $token", coursePlanId)
         }
@@ -72,12 +71,6 @@ class DataSource(context: Context) {
         desc: String,
         topics: List<TopicForm>
     ): Result<CoursePlanBasicDto> {
-
-        if (token == null) {
-            logout()
-            return Result.Error(IOException("Not authorized!"))
-        }
-
         return resolveResult {
             apiService.createCoursePlan("Bearer $token", CoursePlanBasicDto(
                 null,
@@ -220,6 +213,25 @@ class DataSource(context: Context) {
         }
     }
 
+    suspend fun getCardsDailyStats(): Result<FlashCardDayStats> {
+        return resolveResult {
+            apiService.getCardDailyStats("Bearer $token")
+        }
+    }
+
+    suspend fun getFlashCardList(): Result<List<FlashCardBasicDto>> {
+        return resolveResult {
+            apiService.getCurrentCards("Bearer $token")
+        }
+    }
+
+    suspend fun answerFlashCard(flashCardId: Long, body: FlashCardAnswer)
+    : Result<FlashCardBasicDto> {
+        return resolveResult {
+            apiService.answerFlashCard("Bearer $token", flashCardId, body)
+        }
+    }
+
     data class TopicForm(
         var name : MutableState<String> = mutableStateOf(""),
         var desc : MutableState<String> = mutableStateOf("")
@@ -239,13 +251,27 @@ class DataSource(context: Context) {
         private fun buildClient(path: String): Retrofit {
 
             val gson = GsonBuilder()
+                // Instant deserializer
                 .registerTypeAdapter(Instant::class.java, object : JsonDeserializer<Instant> {
                     override fun deserialize(json: JsonElement?, typeOfT: Type?, context: JsonDeserializationContext?): Instant {
                         return Instant.parse(json!!.asString)
                     }
                 })
+                // Instant serializer
                 .registerTypeAdapter(Instant::class.java, object : JsonSerializer<Instant> {
                     override fun serialize(src: Instant?, typeOfSrc: Type?, context: JsonSerializationContext?): JsonElement {
+                        return JsonPrimitive(src?.toString())
+                    }
+                })
+                // Duration deserializer
+                .registerTypeAdapter(Duration::class.java, object : JsonDeserializer<Duration> {
+                    override fun deserialize(json: JsonElement?, typeOfT: Type?, context: JsonDeserializationContext?): Duration {
+                        return Duration.parse(json!!.asString)
+                    }
+                })
+                // Duration serializer
+                .registerTypeAdapter(Duration::class.java, object : JsonSerializer<Duration> {
+                    override fun serialize(src: Duration?, typeOfSrc: Type?, context: JsonSerializationContext?): JsonElement {
                         return JsonPrimitive(src?.toString())
                     }
                 })

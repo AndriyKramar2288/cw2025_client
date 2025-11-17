@@ -6,6 +6,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.banew.cw2025_backend_common.dto.cards.FlashCardDayStats
+import com.banew.cw2025_backend_common.dto.cards.FlashCardType
 import com.banew.cw2025_backend_common.dto.coursePlans.CoursePlanBasicDto
 import com.banew.cw2025_backend_common.dto.courses.CourseBasicDto
 import com.banew.cw2025_backend_common.dto.courses.CoursePlanCourseDto
@@ -16,14 +18,22 @@ import com.banew.cw2025_client.data.DataSource
 import com.banew.cw2025_client.data.NetworkMonitor
 import com.banew.cw2025_client.data.Result
 import kotlinx.coroutines.launch
+import java.time.Duration
 import java.time.Instant
 
 interface MainPageModel {
     val currentUser: State<UserProfileDetailedDto?>
+
     val currentCoursePlans: State<List<CoursePlanBasicDto>>
     val currentCourses: State<List<CourseBasicDto>>
+    val flashCardDayStats: State<FlashCardDayStats?>
+
     val lastException: MutableState<Exception?>
-    val preferredRoute: MutableState<String>
+
+    var preferredRoute: String
+    val preferredRouteState: State<String>
+        get() = mutableStateOf("home")
+
     fun beginCourse(coursePLanId: Long) {}
     fun confirmCoursePlanCreation(dto: CoursePlanBasicDto) {}
     fun refresh(callback: () -> Unit = {}) {}
@@ -79,10 +89,21 @@ class MainPageModelMock: ViewModel(), MainPageModel {
                 4233, 13
             )
         ).flatMap { listOf(it, it, it) })
+    override val flashCardDayStats: State<FlashCardDayStats?>
+        get() = mutableStateOf(FlashCardDayStats(
+            mapOf(
+                FlashCardType.NEW to 1,
+                FlashCardType.REPEAT to 2,
+                FlashCardType.STUDY to 3
+            ),
+            10,
+            Duration.ofMinutes(5)
+        ))
+
+
     override val lastException: MutableState<Exception?>
         get() = mutableStateOf(null)
-    override val preferredRoute: MutableState<String>
-        get() = mutableStateOf("home")
+    override var preferredRoute = "home"
 }
 
 class MainPageModelReal : ViewModel(), MainPageModel {
@@ -93,8 +114,26 @@ class MainPageModelReal : ViewModel(), MainPageModel {
         mutableStateOf<List<CoursePlanBasicDto>>(ArrayList())
     override val currentCourses =
         mutableStateOf<List<CourseBasicDto>>(ArrayList())
+    override val flashCardDayStats: MutableState<FlashCardDayStats?> =
+        mutableStateOf(null)
     override val lastException = mutableStateOf<Exception?>(null)
-    override val preferredRoute = mutableStateOf("home")
+
+    override var preferredRoute
+        get() = preferredRouteState.value
+        set(value) {
+            when (value){
+                "courses" -> {
+                    viewModelScope.launch {
+                        val dayStats = dataSource.getCardsDailyStats()
+                        if (dayStats.isSuccess) flashCardDayStats.value = dayStats.asSuccess().data
+                    }
+                }
+            }
+
+            preferredRouteState.value = value
+        }
+
+    override var preferredRouteState = mutableStateOf("home")
 
     private val networkMonitor: NetworkMonitor? = NetworkMonitor.getInstance(
         GlobalApplication.getInstance().applicationContext
@@ -126,7 +165,7 @@ class MainPageModelReal : ViewModel(), MainPageModel {
 
             if (result.isSuccess) {
                 currentCourses.value += listOf(result.asSuccess().data)
-                preferredRoute.value = "courses"
+                preferredRoute = "courses"
             }
             else {
                 lastException.value = result.asError().error
@@ -136,7 +175,7 @@ class MainPageModelReal : ViewModel(), MainPageModel {
 
     override fun confirmCoursePlanCreation(dto: CoursePlanBasicDto) {
         refresh()
-        preferredRoute.value = "home"
+        preferredRoute = "home"
     }
 
     override fun refresh(callback: () -> Unit) {
@@ -146,21 +185,18 @@ class MainPageModelReal : ViewModel(), MainPageModel {
             val userRes = dataSource.userProfileDetailed()
             val plansRes = dataSource.currentCoursePlanList()
             val coursesRes = dataSource.currentCourseList()
+            val dayStats = dataSource.getCardsDailyStats()
+
+            dataSource.token ?: logout()
 
             when (userRes) {
                 is Result.Success -> currentUser.value = userRes.data
                 is Result.Error -> lastException.value = userRes.error
             }
 
-            when (plansRes) {
-                is Result.Success -> currentCoursePlans.value = plansRes.data
-                is Result.Error -> lastException.value = plansRes.error
-            }
-
-            when (coursesRes) {
-                is Result.Success -> currentCourses.value = coursesRes.data
-                is Result.Error -> lastException.value = coursesRes.error
-            }
+            if (dayStats.isSuccess) flashCardDayStats.value = dayStats.asSuccess().data
+            if (plansRes.isSuccess) currentCoursePlans.value = plansRes.asSuccess().data
+            if (coursesRes.isSuccess) currentCourses.value = coursesRes.asSuccess().data
 
             isConnectionError.value = userRes.isError && plansRes.isError && coursesRes.isError
 

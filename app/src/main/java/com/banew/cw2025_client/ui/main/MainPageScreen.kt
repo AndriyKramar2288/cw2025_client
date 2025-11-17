@@ -16,7 +16,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -31,7 +30,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.banew.cw2025_client.R
 import com.banew.cw2025_client.ui.theme.AppTypography
-import com.banew.cw2025_client.ui.theme.StandardFont
 
 @Composable
 fun MainPageScreen(viewModel : MainPageModel) {
@@ -78,7 +76,7 @@ fun MainPageScreen(viewModel : MainPageModel) {
                     containerColor = Color.Transparent,
                 ),
                 onClick = {
-                    viewModel.preferredRoute.value = "coursePlan/${item.id}"
+                    viewModel.preferredRoute = "coursePlan/${item.id}"
                 }
             ) {
                 Column (modifier = Modifier.fillMaxWidth()) {
@@ -136,7 +134,7 @@ fun MainPageScreen(viewModel : MainPageModel) {
                             Color.LightGray, shape = RoundedCornerShape(5.dp)
                         ),
                     onClick = {
-                        viewModel.preferredRoute.value = "coursePlanCreationRoute"
+                        viewModel.preferredRoute = "coursePlanCreationRoute"
                     }
                 ) {
                     Text(
