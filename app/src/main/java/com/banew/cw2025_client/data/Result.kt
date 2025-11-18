@@ -1,64 +1,37 @@
-package com.banew.cw2025_client.data;
-
-import androidx.compose.runtime.MutableState;
-import androidx.lifecycle.MutableLiveData;
+package com.banew.cw2025_client.data
 
 /**
  * A generic class that holds a result success w/ data or an error exception.
  */
-public class Result<T> {
-    // hide the private constructor to limit subclass types (Success, Error)
-    private Result() {
+open class Result<T>  // hide the private constructor to limit subclass types (Success, Error)
+private constructor() {
+    val isSuccess: Boolean
+        get() = this is Success<*>
+
+    val isError: Boolean
+        get() = this is Error<*>
+
+    fun asSuccess(callback: (res: Success<T>) -> Unit = {}): Result<T> {
+        if (this is Success<*>) callback(this as Success<T>)
+        return this
     }
 
-    public void resolveData(MutableState<T> success, MutableState<Exception> failure) {
-        if (isSuccess()) {
-            success.setValue(asSuccess().getData());
-        }
-        else {
-            failure.setValue(asError().getError());
-        }
+    fun asSuccess(): Success<T> {
+        return this as Success<T>
     }
 
-    public boolean isSuccess() {
-        return this instanceof Success;
+    fun asError(callback: (res: Error<T>) -> Unit = {}): Result<T> {
+        if (this is Error<*>) callback(this as Error<T>)
+        return this
     }
 
-    public boolean isError() {
-        return this instanceof Error;
-    }
-
-    public Success<T> asSuccess() {
-        return (Success<T>) this;
-    }
-
-    public Error<T> asError() {
-        return (Error<T>) this;
+    fun asError(): Error<T> {
+        return this as Error<T>
     }
 
     // Success sub-class
-    public final static class Success<T> extends Result<T> {
-        private final T data;
-
-        public Success(T data) {
-            this.data = data;
-        }
-
-        public T getData() {
-            return this.data;
-        }
-    }
+    class Success<T>(val data: T) : Result<T>()
 
     // Error sub-class
-    public final static class Error<T> extends Result<T> {
-        private final Exception error;
-
-        public Error(Exception error) {
-            this.error = error;
-        }
-
-        public Exception getError() {
-            return this.error;
-        }
-    }
+    class Error<T>(val error: Exception) : Result<T>()
 }

@@ -80,6 +80,10 @@ fun MainScreen(viewModel : MainPageModel = viewModel<MainPageModel>()) {
 
     val courseModel = viewModel<CourseViewModel>()
 
+    LaunchedEffect(viewModel) {
+        viewModel.refresh()
+    }
+
     LaunchedEffect(viewModel.lastException) {
         viewModel.lastException?.let { e ->
             Toast.makeText(context, e.message ?: "Помилка", Toast.LENGTH_SHORT).show()
@@ -140,7 +144,7 @@ fun MainScreen(viewModel : MainPageModel = viewModel<MainPageModel>()) {
             ) {
                 NavHost(
                     navController = navController,
-                    startDestination = "home"
+                    startDestination = viewModel.preferredRoute
                 ) {
                     composable("home") { MainPageScreen(viewModel) }
                     composable("courses") { CourseScreen(viewModel) }

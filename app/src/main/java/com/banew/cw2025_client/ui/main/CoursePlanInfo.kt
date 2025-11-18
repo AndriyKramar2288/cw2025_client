@@ -68,9 +68,8 @@ class CoursePlanInfoViewModel(val isMock: Boolean = true) : ViewModel() {
         coursePlan ?: dataSource?.let { dataSource ->
             viewModelScope.launch {
                 contextModel.isRefreshing = true
-                val res = dataSource.loadCoursePlanById(id)
-                when {
-                    res.isSuccess -> coursePlan = res.asSuccess().data
+                dataSource.loadCoursePlanById(id).asSuccess {
+                    coursePlan = it.data
                 }
                 contextModel.isRefreshing = false
             }

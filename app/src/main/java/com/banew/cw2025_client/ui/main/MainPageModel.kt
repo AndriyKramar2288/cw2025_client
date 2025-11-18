@@ -24,7 +24,13 @@ class MainPageModel(isMock: Boolean = false) : ViewModel() {
     private val dataSource: DataSource? = GlobalApplication.getInstance()?.dataSource
 
     var isRefreshing by mutableStateOf(false)
-
+    var isShouldToSwitchToLogin by mutableStateOf(false)
+        private set
+    var isConnectionError by mutableStateOf(false)
+    var lastException by mutableStateOf<Exception?>(null)
+    private val preferredRouteState = mutableStateOf("courses")
+    var shouldRefreshCourses by mutableStateOf(true)
+    var shouldRefreshCoursePlans by mutableStateOf(true)
     var currentCoursePlans by
         mutableStateOf<List<CoursePlanBasicDto>>(
             if (!isMock) emptyList() else listOf(
@@ -41,7 +47,6 @@ class MainPageModel(isMock: Boolean = false) : ViewModel() {
             ).flatMap { listOf(it, it, it, it, it) }.flatMap { listOf(it, it, it) }
         )
         private set
-
     var currentCourses by
         mutableStateOf<List<CourseBasicDto>>(if (!isMock) emptyList() else listOf(
             CourseBasicDto(
@@ -63,7 +68,6 @@ class MainPageModel(isMock: Boolean = false) : ViewModel() {
             )
         ).flatMap { listOf(it, it, it) })
         private set
-
     var flashCardDayStats by
         mutableStateOf(if (!isMock) null else FlashCardDayStats(
             mapOf(
@@ -75,21 +79,21 @@ class MainPageModel(isMock: Boolean = false) : ViewModel() {
             Duration.ofMinutes(5)
         ))
         private set
-    var lastException by mutableStateOf<Exception?>(null)
+
 
     var preferredRoute
         get() = preferredRouteState.value
         set(value) {
             viewModelScope.launch {
+                isRefreshing = true
                 when (value) {
                     "courses" -> refreshCoursePage()
                     "home" -> refreshCoursePlanPage()
                 }
                 preferredRouteState.value = value
+                isRefreshing = false
             }
         }
-
-    private val preferredRouteState = mutableStateOf("home")
 
     private val networkMonitor: NetworkMonitor? = if (!isMock) NetworkMonitor.getInstance(
         GlobalApplication.getInstance().applicationContext
@@ -101,7 +105,6 @@ class MainPageModel(isMock: Boolean = false) : ViewModel() {
 
     init {
         if (!isMock) {
-            refresh()
             networkMonitor?.observeForever(networkObserver)
         }
     }
@@ -119,14 +122,12 @@ class MainPageModel(isMock: Boolean = false) : ViewModel() {
 
     fun beginCourse(coursePLanId: Long) {
         viewModelScope.launch {
-            val result = dataSource!!.beginCourse(coursePLanId)
-
-            if (result.isSuccess) {
-                currentCourses += listOf(result.asSuccess().data)
+            dataSource!!.beginCourse(coursePLanId).asSuccess {
+                currentCourses += listOf(it.data)
+                shouldRefreshCourses = true
                 preferredRoute = "courses"
-            }
-            else {
-                lastException = result.asError().error
+            }.asError {
+                lastException = it.error
             }
         }
     }
@@ -134,37 +135,35 @@ class MainPageModel(isMock: Boolean = false) : ViewModel() {
     fun confirmCoursePlanCreation(dto: CoursePlanBasicDto) {
         currentCoursePlans += listOf(dto)
         preferredRoute = "home"
+        shouldRefreshCoursePlans = true
     }
 
-    private suspend fun refreshCoursePlanPage() {
+    private suspend fun refreshCoursePlanPage(forced: Boolean = false) {
+        if (!shouldRefreshCoursePlans && !forced) return
+        shouldRefreshCoursePlans = false
         val plansRes = dataSource!!.currentCoursePlanList()
         if (plansRes is Result.Success) currentCoursePlans = plansRes.data
     }
 
-    private suspend fun refreshCoursePage() {
+    private suspend fun refreshCoursePage(forced: Boolean = false) {
+        if (!shouldRefreshCourses && !forced) return
+        shouldRefreshCourses = false
         val courseRes = dataSource!!.currentCourseList()
         val dayStats = dataSource.getCardsDailyStats()
         if (courseRes is Result.Success) currentCourses = courseRes.data
         if (dayStats is Result.Success) flashCardDayStats = dayStats.data
     }
 
-    fun refresh(callback: () -> Unit = {}) {
-
+    fun refresh() {
         dataSource!!.token ?: logout()
 
         viewModelScope.launch {
             isRefreshing = true
 
-            refreshCoursePage()
-            refreshCoursePlanPage()
-
-            callback()
+            refreshCoursePage(true)
+            refreshCoursePlanPage(true)
 
             isRefreshing = false
         }
     }
-
-    var isShouldToSwitchToLogin by mutableStateOf(false)
-        private set
-    var isConnectionError by mutableStateOf(false)
 }

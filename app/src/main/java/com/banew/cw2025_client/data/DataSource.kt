@@ -42,11 +42,7 @@ class DataSource(context: Context) {
 
     init {
         if (NGROK) {
-            NgrokPathExtractor.extractNgrokPath(
-                "34tAXbBzXVP23CRpx3aV8lIke4t_3TQ2CQKnWGniuwPzPRmC1"
-            ) { path: String? ->
-                retrofit = buildClient("$path/api/")
-            }
+            retrofit = buildClient("https://e8e7b5314538.ngrok-free.app/api/")
         }
     }
 
@@ -251,7 +247,7 @@ class DataSource(context: Context) {
     companion object {
         private var retrofit: Retrofit? = null
         private const val BASE_URL = "http://10.0.2.2:8080/api/"
-        private const val NGROK = false
+        private const val NGROK = true
         private val client: Retrofit
             get() = retrofit ?: buildClient(BASE_URL)
 

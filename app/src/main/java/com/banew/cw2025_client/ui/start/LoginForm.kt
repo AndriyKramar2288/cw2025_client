@@ -7,7 +7,6 @@ import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -42,7 +41,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.colorResource
@@ -271,12 +269,13 @@ private fun FormField(
     OutlinedTextField(
         value = value,
         onValueChange = onChange,
-        label = { Text(text) },
-        placeholder = { Text(placeholder) },
+        textStyle = AppTypography.bodyMedium,
+        label = { Text(text, style = AppTypography.bodyMedium) },
+        placeholder = { Text(placeholder, style = AppTypography.bodySmall) },
         leadingIcon = {
             Icon(
                 painter = painterResource(id = iconId),
-                contentDescription = "",
+                contentDescription = "Login icon",
                 tint = Color(0xFF607D8B)
             )
         },
@@ -306,9 +305,10 @@ private fun FormField(
             .padding(bottom = 16.dp),
         shape = RoundedCornerShape(12.dp),
         colors = OutlinedTextFieldDefaults.colors(
-            focusedBorderColor = Color(0xFF2196F3),
+            focusedBorderColor = Color(0xFF4E3715),
             unfocusedBorderColor = Color.LightGray,
-            focusedLabelColor = Color(0xFF2196F3)
+            unfocusedTextColor = Color.DarkGray,
+            focusedTextColor = Color.Black,
         ),
         keyboardOptions = KeyboardOptions(
             keyboardType = KeyboardType.Email,
@@ -323,7 +323,7 @@ private fun FormField(
         Text(
             text = errorMessage,
             color = MaterialTheme.colorScheme.error,
-            style = MaterialTheme.typography.bodySmall,
+            style = AppTypography.bodySmall,
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(start = 16.dp, bottom = 8.dp)

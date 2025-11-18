@@ -164,9 +164,8 @@ class FlashCardViewModel(isMock: Boolean = false): ViewModel() {
         dataSource?.let { dataSource ->
             viewModelScope.launch {
                 contextModel.isRefreshing = true
-                val res = dataSource.getFlashCardList()
-                if (res.isSuccess) {
-                    cardList = res.asSuccess().data
+                dataSource.getFlashCardList().asSuccess {
+                    cardList = it.data
                     currentCard = cardList.randomOrNull()
                 }
                 contextModel.isRefreshing = false
@@ -202,7 +201,11 @@ private val FlashCardAnswer.text
     }
 
 @Composable
-private fun FlashCardAnswerButton(type: Map.Entry<FlashCardAnswer, Double>, onClick: () -> Unit) {
+private fun FlashCardAnswerButton(
+    type: Map.Entry<FlashCardAnswer, Double>,
+    modifier: Modifier,
+    onClick: () -> Unit
+) {
     Button(
         onClick,
         shape = RoundedCornerShape(2.dp),
@@ -212,11 +215,11 @@ private fun FlashCardAnswerButton(type: Map.Entry<FlashCardAnswer, Double>, onCl
                 .compositeOver(colorResource(R.color.navbar_button))
         ),
         contentPadding = PaddingValues(vertical = 5.dp, horizontal = 20.dp),
-        modifier = Modifier.padding(horizontal = 2.dp)
+        modifier = modifier.padding(horizontal = 2.dp)
     ) {
         Text(
             textAlign = TextAlign.Center,
-            style = AppTypography.bodyMedium,
+            style = AppTypography.bodySmall,
             color = Color.White,
             text = "${type.key.text}\n${type.value} дня"
         )
@@ -239,7 +242,6 @@ fun FlashCardScreen(
             .makeText(context, "Наразі це все!", Toast.LENGTH_SHORT)
             .show()
         contextModel.preferredRoute = "courses"
-        contextModel.refresh()
     }
 
     Box(Modifier.fillMaxSize()) {
@@ -349,8 +351,11 @@ fun FlashCardScreen(
                         card.availableIntervals
                             .toSortedMap()
                             .forEach { each ->
-                            FlashCardAnswerButton(each) {
+                            FlashCardAnswerButton(
+                                each, Modifier.weight(1f)
+                            ) {
                                 viewModel.answer(each.key)
+                                contextModel.shouldRefreshCourses = true
                             }
                         }
                     }
@@ -360,12 +365,12 @@ fun FlashCardScreen(
                 }
             }
         }
-        EditConceptBox(viewModel)
+        EditConceptBox(viewModel, contextModel)
     }
 }
 
 @Composable
-fun EditConceptBox(viewModel: FlashCardViewModel) {
+fun EditConceptBox(viewModel: FlashCardViewModel, contextModel: MainPageModel) {
     viewModel.currentCard?.concept?.let { concept ->
         var name by remember { mutableStateOf(concept.name) }
         var desc by remember { mutableStateOf(concept.description) }
@@ -401,6 +406,7 @@ fun EditConceptBox(viewModel: FlashCardViewModel) {
                         }
                         SimpleButton("Зберегти") {
                             viewModel.updateConcept(name, desc)
+                            contextModel.shouldRefreshCourses = true
                         }
                     }
                 }

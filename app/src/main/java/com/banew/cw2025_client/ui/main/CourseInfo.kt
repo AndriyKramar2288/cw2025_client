@@ -126,33 +126,34 @@ class CourseViewModel(isMock: Boolean = false): ViewModel() {
         dataSource?.let { dataSource ->
             viewModelScope.launch {
                 contextModel.isRefreshing = true
-                val res = dataSource.courseDetailedById(coursePlanId)
-                when {
-                    res.isSuccess -> course = res.asSuccess().data
+                dataSource.courseDetailedById(coursePlanId).asSuccess {
+                    course = it.data
                 }
                 contextModel.isRefreshing = false
             }
         }
     }
 
-    fun updateCompendium(updatedCompendium: TopicCompendiumDto) {
+    fun updateCompendium(updatedCompendium: TopicCompendiumDto, contextModel: MainPageModel) {
         course!!.let { crs ->
             dataSource?.let { dataSource ->
                 viewModelScope.launch {
-                    val res = dataSource
+                    dataSource
                         .updateCompendium(updatedCompendium, crs.coursePlan.id)
-                    if (res.isSuccess) {
-                        val resSuccess = res.asSuccess().data
+                        .asSuccess { res ->
+                            val resSuccess = res.data
 
-                        course = CourseDetailedDto(
-                            crs.id, crs.startedAt, crs.coursePlan,
-                            crs.compendiums.map {
-                                if (it.topic.id != resSuccess.topic.id) it
-                                else resSuccess
-                            },
-                            crs.currentCompendiumId
-                        )
-                    }
+                            course = CourseDetailedDto(
+                                crs.id, crs.startedAt, crs.coursePlan,
+                                crs.compendiums.map {
+                                    if (it.topic.id != resSuccess.topic.id) it
+                                    else resSuccess
+                                },
+                                crs.currentCompendiumId
+                            )
+
+                            contextModel.shouldRefreshCourses = true
+                        }
                 }
             }
         }
@@ -165,6 +166,7 @@ class CourseViewModel(isMock: Boolean = false): ViewModel() {
                     is Result.Success -> {
                         init(course!!.coursePlan.id, contextModel)
                         contextModel.preferredRoute = "compendium/${topicId}"
+                        contextModel.shouldRefreshCourses = true
                     }
                 }
             }

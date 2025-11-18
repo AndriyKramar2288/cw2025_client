@@ -144,7 +144,7 @@ private fun CardStatsDisplayer(stats: FlashCardDayStats, onClick: () -> Unit) {
                 val isPassed = stats.cardLefts.values.sum() == 0
 
                 Button(
-                    contentPadding = PaddingValues(horizontal = 20.dp),
+                    contentPadding = PaddingValues(horizontal = 10.dp),
                     shape = RoundedCornerShape(2.dp),
                     colors = ButtonDefaults.buttonColors(
                         containerColor =
@@ -160,7 +160,7 @@ private fun CardStatsDisplayer(stats: FlashCardDayStats, onClick: () -> Unit) {
                         text =
                             if (!isPassed) "Розпочати вивчення"
                             else "Вже пройдено!",
-                        style = AppTypography.bodyMedium,
+                        style = AppTypography.bodySmall,
                         color = Color.White
                     )
                 }

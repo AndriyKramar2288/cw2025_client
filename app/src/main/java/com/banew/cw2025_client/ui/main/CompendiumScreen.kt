@@ -131,7 +131,7 @@ fun CompendiumScreen(topicId: Long, viewModel: MainPageModel, courseModel: Cours
                 }, compendium.status
             )
 
-            courseModel.updateCompendium(updatedCompendium)
+            courseModel.updateCompendium(updatedCompendium, viewModel)
         }
 
         Column(
