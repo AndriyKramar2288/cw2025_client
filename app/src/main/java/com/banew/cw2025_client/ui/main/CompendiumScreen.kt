@@ -64,7 +64,7 @@ import com.banew.cw2025_client.ui.theme.AppTypography
 @Composable
 @Preview(showBackground = true)
 private fun Preview() {
-    CompendiumScreen(1703L, MainPageModelMock(), CourseViewModel(true))
+    CompendiumScreen(1703L, MainPageModel(true), CourseViewModel(true))
 }
 
 class ConceptForm (

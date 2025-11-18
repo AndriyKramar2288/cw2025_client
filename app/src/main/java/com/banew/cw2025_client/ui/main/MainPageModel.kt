@@ -1,8 +1,8 @@
 package com.banew.cw2025_client.ui.main
 
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.State
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -12,7 +12,6 @@ import com.banew.cw2025_backend_common.dto.coursePlans.CoursePlanBasicDto
 import com.banew.cw2025_backend_common.dto.courses.CourseBasicDto
 import com.banew.cw2025_backend_common.dto.courses.CoursePlanCourseDto
 import com.banew.cw2025_backend_common.dto.users.UserProfileBasicDto
-import com.banew.cw2025_backend_common.dto.users.UserProfileDetailedDto
 import com.banew.cw2025_client.GlobalApplication
 import com.banew.cw2025_client.data.DataSource
 import com.banew.cw2025_client.data.NetworkMonitor
@@ -21,42 +20,14 @@ import kotlinx.coroutines.launch
 import java.time.Duration
 import java.time.Instant
 
-interface MainPageModel {
-    val currentUser: State<UserProfileDetailedDto?>
+class MainPageModel(isMock: Boolean = false) : ViewModel() {
+    private val dataSource: DataSource? = GlobalApplication.getInstance()?.dataSource
 
-    val currentCoursePlans: State<List<CoursePlanBasicDto>>
-    val currentCourses: State<List<CourseBasicDto>>
-    val flashCardDayStats: State<FlashCardDayStats?>
+    var isRefreshing by mutableStateOf(false)
 
-    val lastException: MutableState<Exception?>
-
-    var preferredRoute: String
-    val preferredRouteState: State<String>
-        get() = mutableStateOf("home")
-
-    fun beginCourse(coursePLanId: Long) {}
-    fun confirmCoursePlanCreation(dto: CoursePlanBasicDto) {}
-    fun refresh(callback: () -> Unit = {}) {}
-    fun logout() {}
-    val isShouldToSwitchToLogin: State<Boolean>
-        get() = mutableStateOf(false)
-    val isRefreshing: MutableState<Boolean>
-        get() = mutableStateOf(false)
-    val isConnectionError: MutableState<Boolean>
-        get() = mutableStateOf(false)
-}
-
-class MainPageModelMock: ViewModel(), MainPageModel {
-    override val currentUser: State<UserProfileDetailedDto?>
-        get() = mutableStateOf(
-            UserProfileDetailedDto(
-                1L,
-                "Користувач", "aboba@gmail.com", "qwewqweq", listOf()
-            )
-        )
-    override val currentCoursePlans: State<List<CoursePlanBasicDto>>
-        get() = mutableStateOf(
-            listOf(
+    var currentCoursePlans by
+        mutableStateOf<List<CoursePlanBasicDto>>(
+            if (!isMock) emptyList() else listOf(
                 CoursePlanBasicDto(
                     3, "Курс", UserProfileBasicDto(
                         44L,
@@ -69,8 +40,10 @@ class MainPageModelMock: ViewModel(), MainPageModel {
                 )
             ).flatMap { listOf(it, it, it, it, it) }.flatMap { listOf(it, it, it) }
         )
-    override val currentCourses: State<List<CourseBasicDto>>
-        get() = mutableStateOf(listOf(
+        private set
+
+    var currentCourses by
+        mutableStateOf<List<CourseBasicDto>>(if (!isMock) emptyList() else listOf(
             CourseBasicDto(
                 148228L,
                 Instant.parse("2025-11-07T22:28:26.935362Z"),
@@ -89,8 +62,10 @@ class MainPageModelMock: ViewModel(), MainPageModel {
                 4233, 13
             )
         ).flatMap { listOf(it, it, it) })
-    override val flashCardDayStats: State<FlashCardDayStats?>
-        get() = mutableStateOf(FlashCardDayStats(
+        private set
+
+    var flashCardDayStats by
+        mutableStateOf(if (!isMock) null else FlashCardDayStats(
             mapOf(
                 FlashCardType.NEW to 1,
                 FlashCardType.REPEAT to 2,
@@ -99,53 +74,36 @@ class MainPageModelMock: ViewModel(), MainPageModel {
             10,
             Duration.ofMinutes(5)
         ))
+        private set
+    var lastException by mutableStateOf<Exception?>(null)
 
-
-    override val lastException: MutableState<Exception?>
-        get() = mutableStateOf(null)
-    override var preferredRoute = "home"
-}
-
-class MainPageModelReal : ViewModel(), MainPageModel {
-    private val dataSource: DataSource = GlobalApplication.getInstance()!!.dataSource
-    override val isRefreshing = mutableStateOf(false)
-    override val currentUser = mutableStateOf<UserProfileDetailedDto?>(null)
-    override val currentCoursePlans =
-        mutableStateOf<List<CoursePlanBasicDto>>(ArrayList())
-    override val currentCourses =
-        mutableStateOf<List<CourseBasicDto>>(ArrayList())
-    override val flashCardDayStats: MutableState<FlashCardDayStats?> =
-        mutableStateOf(null)
-    override val lastException = mutableStateOf<Exception?>(null)
-
-    override var preferredRoute
+    var preferredRoute
         get() = preferredRouteState.value
         set(value) {
-            when (value){
-                "courses" -> {
-                    viewModelScope.launch {
-                        val dayStats = dataSource.getCardsDailyStats()
-                        if (dayStats.isSuccess) flashCardDayStats.value = dayStats.asSuccess().data
-                    }
+            viewModelScope.launch {
+                when (value) {
+                    "courses" -> refreshCoursePage()
+                    "home" -> refreshCoursePlanPage()
                 }
+                preferredRouteState.value = value
             }
-
-            preferredRouteState.value = value
         }
 
-    override var preferredRouteState = mutableStateOf("home")
+    private val preferredRouteState = mutableStateOf("home")
 
-    private val networkMonitor: NetworkMonitor? = NetworkMonitor.getInstance(
+    private val networkMonitor: NetworkMonitor? = if (!isMock) NetworkMonitor.getInstance(
         GlobalApplication.getInstance().applicationContext
-    )
+    ) else null
 
     private val networkObserver = Observer { connected: Boolean ->
         if (connected) refresh()
     }
 
     init {
-        refresh()
-        networkMonitor?.observeForever(networkObserver)
+        if (!isMock) {
+            refresh()
+            networkMonitor?.observeForever(networkObserver)
+        }
     }
 
     override fun onCleared() {
@@ -154,58 +112,59 @@ class MainPageModelReal : ViewModel(), MainPageModel {
         networkMonitor?.removeObserver(networkObserver)
     }
 
-    override fun logout() {
-        dataSource.logout()
-        isShouldToSwitchToLogin.value = true
+    fun logout() {
+        dataSource!!.logout()
+        isShouldToSwitchToLogin = true
     }
 
-    override fun beginCourse(coursePLanId: Long) {
+    fun beginCourse(coursePLanId: Long) {
         viewModelScope.launch {
-            val result = dataSource.beginCourse(coursePLanId)
+            val result = dataSource!!.beginCourse(coursePLanId)
 
             if (result.isSuccess) {
-                currentCourses.value += listOf(result.asSuccess().data)
+                currentCourses += listOf(result.asSuccess().data)
                 preferredRoute = "courses"
             }
             else {
-                lastException.value = result.asError().error
+                lastException = result.asError().error
             }
         }
     }
 
-    override fun confirmCoursePlanCreation(dto: CoursePlanBasicDto) {
-        refresh()
+    fun confirmCoursePlanCreation(dto: CoursePlanBasicDto) {
+        currentCoursePlans += listOf(dto)
         preferredRoute = "home"
     }
 
-    override fun refresh(callback: () -> Unit) {
+    private suspend fun refreshCoursePlanPage() {
+        val plansRes = dataSource!!.currentCoursePlanList()
+        if (plansRes is Result.Success) currentCoursePlans = plansRes.data
+    }
+
+    private suspend fun refreshCoursePage() {
+        val courseRes = dataSource!!.currentCourseList()
+        val dayStats = dataSource.getCardsDailyStats()
+        if (courseRes is Result.Success) currentCourses = courseRes.data
+        if (dayStats is Result.Success) flashCardDayStats = dayStats.data
+    }
+
+    fun refresh(callback: () -> Unit = {}) {
+
+        dataSource!!.token ?: logout()
+
         viewModelScope.launch {
-            isRefreshing.value = true
+            isRefreshing = true
 
-            val userRes = dataSource.userProfileDetailed()
-            val plansRes = dataSource.currentCoursePlanList()
-            val coursesRes = dataSource.currentCourseList()
-            val dayStats = dataSource.getCardsDailyStats()
-
-            dataSource.token ?: logout()
-
-            when (userRes) {
-                is Result.Success -> currentUser.value = userRes.data
-                is Result.Error -> lastException.value = userRes.error
-            }
-
-            if (dayStats.isSuccess) flashCardDayStats.value = dayStats.asSuccess().data
-            if (plansRes.isSuccess) currentCoursePlans.value = plansRes.asSuccess().data
-            if (coursesRes.isSuccess) currentCourses.value = coursesRes.asSuccess().data
-
-            isConnectionError.value = userRes.isError && plansRes.isError && coursesRes.isError
+            refreshCoursePage()
+            refreshCoursePlanPage()
 
             callback()
 
-            isRefreshing.value = false
+            isRefreshing = false
         }
     }
 
-    override val isShouldToSwitchToLogin = mutableStateOf(dataSource.token == null)
-    override val isConnectionError = mutableStateOf(dataSource.token == null)
+    var isShouldToSwitchToLogin by mutableStateOf(false)
+        private set
+    var isConnectionError by mutableStateOf(false)
 }

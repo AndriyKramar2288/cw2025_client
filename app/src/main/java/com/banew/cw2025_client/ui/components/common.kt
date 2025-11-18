@@ -102,7 +102,7 @@ fun ErrorBox(text: String, modifier: Modifier = Modifier) {
 fun UserProfileCard(userProfile: UserProfileBasicDto, model: MainPageModel, modifier: Modifier = Modifier) {
     Card(
         onClick = {
-            model.preferredRoute.value = "profile/${userProfile.id}"
+            model.preferredRoute = "profile/${userProfile.id}"
         },
         modifier = modifier
             .fillMaxWidth()

@@ -68,7 +68,7 @@ private val FlashCardType.iconId: Int
 @Composable
 fun CourseScreen(viewModel: MainPageModel) {
 
-    val pagerState = rememberPagerState { viewModel.currentCourses.value.size }
+    val pagerState = rememberPagerState { viewModel.currentCourses.size }
 
     Column (
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -101,16 +101,17 @@ fun CourseScreen(viewModel: MainPageModel) {
 
         PagerIndicator(
             pagerState.currentPage,
-            viewModel.currentCourses.value.size
+            viewModel.currentCourses.size
         )
 
         HorizontalPager(
-            state = pagerState
+            state = pagerState,
+            verticalAlignment = Alignment.Top
         ) {
-            CourseCard(viewModel.currentCourses.value[it], viewModel)
+            CourseCard(viewModel.currentCourses[it], viewModel)
         }
 
-        viewModel.flashCardDayStats.value?.let { stats ->
+        viewModel.flashCardDayStats?.let { stats ->
             CardStatsDisplayer(stats) {
                 viewModel.preferredRoute = "flashCards"
             }
@@ -140,16 +141,25 @@ private fun CardStatsDisplayer(stats: FlashCardDayStats, onClick: () -> Unit) {
             Column(
                 Modifier.weight(1f)
             ) {
+                val isPassed = stats.cardLefts.values.sum() == 0
+
                 Button(
                     contentPadding = PaddingValues(horizontal = 20.dp),
                     shape = RoundedCornerShape(2.dp),
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = colorResource(R.color.navbar_button)
+                        containerColor =
+                            if (!isPassed)
+                                colorResource(R.color.navbar_button)
+                            else
+                                Color.Gray
                     ),
+                    enabled = !isPassed,
                     onClick = onClick
                 ) {
                     Text(
-                        text = "Розпочати вивчення",
+                        text =
+                            if (!isPassed) "Розпочати вивчення"
+                            else "Вже пройдено!",
                         style = AppTypography.bodyMedium,
                         color = Color.White
                     )
@@ -395,5 +405,5 @@ fun formatDate(instant: Instant): String {
 @Composable
 @Preview(showBackground = true)
 private fun Content2() {
-    CourseScreen(viewModel = MainPageModelMock())
+    CourseScreen(viewModel = MainPageModel(true))
 }

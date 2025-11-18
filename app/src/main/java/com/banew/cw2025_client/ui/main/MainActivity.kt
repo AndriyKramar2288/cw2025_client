@@ -63,16 +63,16 @@ class MainActivity : AppCompatActivity() {
 @Composable
 @Preview(showBackground = true)
 private fun Content() {
-    MainScreen(viewModel = MainPageModelMock())
+    MainScreen(viewModel = MainPageModel(true))
 }
 
 @Composable
-fun MainScreen(viewModel : MainPageModel = viewModel<MainPageModelReal>()) {
+fun MainScreen(viewModel : MainPageModel = viewModel<MainPageModel>()) {
     val navController = rememberNavController()
 
     val context = LocalContext.current
 
-    if (viewModel.isShouldToSwitchToLogin.value) {
+    if (viewModel.isShouldToSwitchToLogin) {
         val intent = Intent(context, StartActivity::class.java)
         context.startActivity(intent)
         return
@@ -80,14 +80,14 @@ fun MainScreen(viewModel : MainPageModel = viewModel<MainPageModelReal>()) {
 
     val courseModel = viewModel<CourseViewModel>()
 
-    LaunchedEffect(viewModel.lastException.value) {
-        viewModel.lastException.value?.let { e ->
+    LaunchedEffect(viewModel.lastException) {
+        viewModel.lastException?.let { e ->
             Toast.makeText(context, e.message ?: "Помилка", Toast.LENGTH_SHORT).show()
-            viewModel.lastException.value = null
+            viewModel.lastException = null
         }
     }
 
-    LaunchedEffect(viewModel.preferredRouteState.value) {
+    LaunchedEffect(viewModel.preferredRoute) {
         navController.navigate(viewModel.preferredRoute)
     }
 
@@ -193,12 +193,12 @@ fun MainScreen(viewModel : MainPageModel = viewModel<MainPageModelReal>()) {
                             )
                         )
                 )
-                if (viewModel.isRefreshing.value) {
+                if (viewModel.isRefreshing) {
                     LoadingBox("Завантаження...")
                 }
-                if (viewModel.isConnectionError.value) {
+                if (viewModel.isConnectionError) {
                     DeathBox("Помилка з'єднання!", "Спробувати ще раз") {
-                        viewModel.isConnectionError.value = false
+                        viewModel.isConnectionError = false
                         viewModel.refresh()
                     }
                 }

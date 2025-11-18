@@ -63,16 +63,16 @@ class CoursePlanInfoViewModel(val isMock: Boolean = true) : ViewModel() {
         private set
 
     fun loadCourseById(id: Long, contextModel: MainPageModel) {
-        coursePlan = contextModel.currentCoursePlans.value.first { it.id == id }
+        coursePlan = contextModel.currentCoursePlans.first { it.id == id }
 
         coursePlan ?: dataSource?.let { dataSource ->
             viewModelScope.launch {
-                contextModel.isRefreshing.value = true
+                contextModel.isRefreshing = true
                 val res = dataSource.loadCoursePlanById(id)
                 when {
                     res.isSuccess -> coursePlan = res.asSuccess().data
                 }
-                contextModel.isRefreshing.value = false
+                contextModel.isRefreshing = false
             }
         }
     }
@@ -168,7 +168,7 @@ fun CoursePlanInfo(id: Long, contextModel: MainPageModel, viewModel: CoursePlanI
                     }
                 }
             }
-            val isUserAdded = !contextModel.currentCourses.value
+            val isUserAdded = !contextModel.currentCourses
                 .any { it.coursePlan.id == coursePlan.id }
 
             Button(
@@ -209,6 +209,6 @@ fun CoursePlanInfo(id: Long, contextModel: MainPageModel, viewModel: CoursePlanI
 @Preview(showBackground = true)
 private fun Aboba() {
     MyAppTheme {
-        CoursePlanInfo(3, MainPageModelMock(), CoursePlanInfoViewModel(true))
+        CoursePlanInfo(3, MainPageModel(true), CoursePlanInfoViewModel(true))
     }
 }

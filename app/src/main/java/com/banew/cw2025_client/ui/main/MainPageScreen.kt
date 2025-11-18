@@ -55,7 +55,7 @@ fun MainPageScreen(viewModel : MainPageModel) {
                 modifier = Modifier.padding(5.dp)
             )
         }
-        items(viewModel.currentCoursePlans.value) { item ->
+        items(viewModel.currentCoursePlans) { item ->
             Button (
                 contentPadding = PaddingValues(horizontal = 10.dp),
                 shape = RoundedCornerShape(12.dp),

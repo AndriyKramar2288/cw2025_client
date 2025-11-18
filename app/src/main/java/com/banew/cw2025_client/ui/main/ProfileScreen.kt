@@ -54,6 +54,7 @@ import com.banew.cw2025_backend_common.dto.users.UserProfileDetailedDto
 import com.banew.cw2025_client.GlobalApplication
 import com.banew.cw2025_client.R
 import com.banew.cw2025_client.data.DataSource
+import com.banew.cw2025_client.data.Result
 import com.banew.cw2025_client.ui.theme.AppTypography
 import kotlinx.coroutines.launch
 
@@ -63,13 +64,13 @@ class ProfileScreenViewModel(val isMock: Boolean = false): ViewModel() {
     var profile by mutableStateOf(
         if (!isMock) null else UserProfileDetailedDto(
             1L,
-            "Користувач", "aboba@gmail.com", "qwewqweq",
+            "User", "example@email.com", "src-example",
             listOf(
                 UserProfileCoursePlanDto(
-                    3L, "назвааааааааааааааааааааа",
-                    "описяя", listOf(
+                    3L, "course plan name",
+                    "course desc name", listOf(
                         CoursePlanBasicDto.TopicBasicDto(
-                            null, "тема 1", "опис"
+                            null, "topic 1", "topic desc"
                         )
                     )
                 )
@@ -78,23 +79,11 @@ class ProfileScreenViewModel(val isMock: Boolean = false): ViewModel() {
     )
         private set
 
-    fun initProfile(contextModel: MainPageModel, userId: Long? = null) {
-        if (isMock) return
-
-        if (userId == null || userId == contextModel.currentUser.value?.id) {
-            profile = contextModel.currentUser.value
-        }
-        else {
+    fun initProfile(userId: Long? = null) {
+        dataSource?.let { dataSource ->
             viewModelScope.launch {
-                contextModel.isRefreshing.value = true
-                val result = dataSource!!.userProfileDetailed(userId)
-                when {
-                    result.isSuccess -> profile = result.asSuccess().data
-                    result.isError -> {
-                        contextModel.preferredRoute = "home"
-                    }
-                }
-                contextModel.isRefreshing.value = false
+                val result = dataSource.userProfileDetailed(userId)
+                if (result is Result.Success) profile = result.data
             }
         }
     }
@@ -104,7 +93,7 @@ class ProfileScreenViewModel(val isMock: Boolean = false): ViewModel() {
 @Preview(showBackground = true)
 private fun Aboba() {
     ProfilePageScreen(
-        MainPageModelMock(),
+        MainPageModel(true),
         ProfileScreenViewModel(true)
     )
 }
@@ -116,7 +105,7 @@ fun ProfilePageScreen(
     userId: Long? = null
 ) {
     LaunchedEffect(userId) {
-        model.initProfile(contextModel, userId)
+        model.initProfile(userId)
     }
 
     model.profile?.let { profile ->

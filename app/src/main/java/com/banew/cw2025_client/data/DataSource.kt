@@ -226,9 +226,16 @@ class DataSource(context: Context) {
     }
 
     suspend fun answerFlashCard(flashCardId: Long, body: FlashCardAnswer)
-    : Result<FlashCardBasicDto> {
+            : Result<FlashCardBasicDto> {
         return resolveResult {
             apiService.answerFlashCard("Bearer $token", flashCardId, body)
+        }
+    }
+
+    suspend fun updateConcept(flashCardId: Long, body: TopicCompendiumDto.ConceptBasicDto)
+            : Result<FlashCardBasicDto> {
+        return resolveResult {
+            apiService.updateConcept("Bearer $token", flashCardId, body)
         }
     }
 

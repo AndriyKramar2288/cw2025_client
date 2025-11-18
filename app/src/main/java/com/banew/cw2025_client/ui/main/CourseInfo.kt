@@ -68,7 +68,7 @@ import java.time.Instant
 @Composable
 @Preview(showBackground = true)
 private fun Preview() {
-    CourseInfo(1603L, MainPageModelMock(), CourseViewModel(true))
+    CourseInfo(1603L, MainPageModel(true), CourseViewModel(true))
 }
 
 class CourseViewModel(isMock: Boolean = false): ViewModel() {
@@ -125,12 +125,12 @@ class CourseViewModel(isMock: Boolean = false): ViewModel() {
     fun init(coursePlanId: Long, contextModel: MainPageModel) {
         dataSource?.let { dataSource ->
             viewModelScope.launch {
-                contextModel.isRefreshing.value = true
+                contextModel.isRefreshing = true
                 val res = dataSource.courseDetailedById(coursePlanId)
                 when {
                     res.isSuccess -> course = res.asSuccess().data
                 }
-                contextModel.isRefreshing.value = false
+                contextModel.isRefreshing = false
             }
         }
     }

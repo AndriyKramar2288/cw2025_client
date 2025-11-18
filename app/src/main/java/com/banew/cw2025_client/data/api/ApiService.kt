@@ -110,4 +110,11 @@ interface ApiService {
         @Path("flashCardId") flashCardId: Long,
         @Body body: FlashCardAnswer
     ): FlashCardBasicDto
+
+    @PUT("cards/{flashCardId}/concept")
+    suspend fun updateConcept(
+        @Header("Authorization") token: String,
+        @Path("flashCardId") flashCardId: Long,
+        @Body body: TopicCompendiumDto.ConceptBasicDto
+    ): FlashCardBasicDto
 }
