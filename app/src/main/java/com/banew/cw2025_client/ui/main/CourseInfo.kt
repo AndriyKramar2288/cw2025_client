@@ -58,7 +58,6 @@ import com.banew.cw2025_backend_common.dto.users.UserProfileBasicDto
 import com.banew.cw2025_client.GlobalApplication
 import com.banew.cw2025_client.R
 import com.banew.cw2025_client.data.DataSource
-import com.banew.cw2025_client.data.Result
 import com.banew.cw2025_client.ui.components.UserProfileCard
 import com.banew.cw2025_client.ui.theme.AppTypography
 import kotlinx.coroutines.launch
@@ -162,12 +161,22 @@ class CourseViewModel(isMock: Boolean = false): ViewModel() {
     fun beginTopic(topicId: Long, contextModel: MainPageModel) {
         dataSource?.let { dataSource ->
             viewModelScope.launch {
-                when (dataSource.beginTopic(topicId, course!!.coursePlan.id)) {
-                    is Result.Success -> {
-                        init(course!!.coursePlan.id, contextModel)
-                        contextModel.preferredRoute = "compendium/${topicId}"
-                        contextModel.shouldRefreshCourses = true
-                    }
+                dataSource.beginTopic(topicId, course!!.coursePlan.id).asSuccess {
+                    init(course!!.coursePlan.id, contextModel)
+                    contextModel.preferredRoute = "compendium/${topicId}"
+                    contextModel.shouldRefreshCourses = true
+                }
+            }
+        }
+    }
+
+    fun endCourse(coursePlanId: Long, contextModel: MainPageModel) {
+        dataSource?.let { dataSource ->
+            viewModelScope.launch {
+                dataSource.endCourse(coursePlanId).asSuccess {
+                    course = it.data
+                    contextModel.preferredRoute = "course/${coursePlanId}"
+                    contextModel.shouldRefreshCourses = true
                 }
             }
         }
@@ -412,7 +421,7 @@ enum class TopicProgressType(
     ),
 
     CAN_START(
-        backgroundColor = Color(0xFF4CAF50), // зеленкуватий
+        backgroundColor = Color(0x774CAF50), // зеленкуватий
         borderColor = Color(0xFF4CAF50),                        // насичений зелений
         buttonColor = Color(0xFF4CAF50),                        // зелений
         buttonIconId = R.drawable.new_label_40px
@@ -473,7 +482,7 @@ fun TopicProgressCard(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            Row (Modifier.padding(16.dp)) {
+            Row (Modifier.weight(5f).padding(16.dp)) {
                 // Інформація про тему
                 Column {
                     Text(
@@ -527,6 +536,7 @@ fun TopicProgressCard(
                 ),
                 modifier = Modifier
                     .fillMaxHeight()
+                    .weight(1f)
                     .background(
                         type.buttonColor, shape = RoundedCornerShape(5.dp)
                     ),

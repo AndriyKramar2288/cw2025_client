@@ -259,7 +259,10 @@ fun CompendiumScreen(topicId: Long, viewModel: MainPageModel, courseModel: Cours
                     courseModel.beginTopic(topics[topicIndex + 1].id, viewModel)
                 }
                 else {
-                    TODO("Завершення курсу!")
+                    courseModel.endCourse(
+                        course.coursePlan.id,
+                        viewModel
+                    )
                 }
             }
             Row(
@@ -271,11 +274,17 @@ fun CompendiumScreen(topicId: Long, viewModel: MainPageModel, courseModel: Cours
                         viewModel.preferredRoute = "compendium/${topics[topicIndex - 1].id}"
                     }
                 } else Box {}
-                BottomPanelElement(isNextOrEnd) {
-                    if (isNextOrEnd == BottomElementType.NEXT)
-                        viewModel.preferredRoute = "compendium/${topics[topicIndex + 1].id}"
-                    else
-                        showAlertNextTopic.value = true
+
+                if (course.currentCompendiumId == null && topicIndex == topics.size - 1) {
+                    Box {}
+                }
+                else {
+                    BottomPanelElement(isNextOrEnd) {
+                        if (isNextOrEnd == BottomElementType.NEXT)
+                            viewModel.preferredRoute = "compendium/${topics[topicIndex + 1].id}"
+                        else
+                            showAlertNextTopic.value = true
+                    }
                 }
             }
 

@@ -17,6 +17,7 @@ import retrofit2.http.Header
 import retrofit2.http.POST
 import retrofit2.http.PUT
 import retrofit2.http.Path
+import retrofit2.http.Query
 
 interface ApiService {
 
@@ -48,9 +49,10 @@ interface ApiService {
         @Path("courseId") courseId: Long
     ): CoursePlanBasicDto
 
-    @GET("course-plan/")
+    @GET("course-plan/search")
     suspend fun currentCoursePlanList(
-        @Header("Authorization") token: String
+        @Header("Authorization") token: String,
+        @Query("query") query: String?
     ): List<CoursePlanBasicDto>
 
     @POST("course-plan/")
@@ -77,6 +79,12 @@ interface ApiService {
         @Header("Authorization") token: String,
         @Path("courseId") courseId: Long
     ): CourseBasicDto
+
+    @POST("course/by-plan/{courseId}/end")
+    suspend fun endCourse(
+        @Header("Authorization") token: String,
+        @Path("courseId") courseId: Long
+    ): CourseDetailedDto
 
     @POST("course/by-plan/{courseId}/topic/{topicId}/start")
     suspend fun beginTopic(

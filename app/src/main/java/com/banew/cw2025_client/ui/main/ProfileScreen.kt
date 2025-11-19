@@ -1,5 +1,6 @@
 package com.banew.cw2025_client.ui.main
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -89,6 +90,7 @@ class ProfileScreenViewModel(val isMock: Boolean = false): ViewModel() {
     }
 }
 
+@SuppressLint("ViewModelConstructorInComposable")
 @Composable
 @Preview(showBackground = true)
 private fun Aboba() {
@@ -207,56 +209,58 @@ fun ProfilePageScreen(
                     2.dp, colorResource(R.color.navbar_button)
                 )
             }
-            item {
-                Spacer(Modifier.height(20.dp))
-                Text(
-                    style = AppTypography.bodyLarge,
-                    text = "Створені користувачем курси"
-                )
-            }
-            items(profile.coursePlans) { item ->
-                Spacer(Modifier.height(5.dp))
-                Card (
-                    shape = RoundedCornerShape(3.dp),
-                    colors = CardDefaults.cardColors(
-                        containerColor = Color.Gray.copy(alpha = 0.1f)
-                    ),
-                    modifier = Modifier
-                        .fillMaxWidth(),
-                    onClick = {
-                        contextModel.preferredRoute = "coursePlan/${item.id}"
-                    }
-                ) {
-                    Row (
+            if (profile.coursePlans.isNotEmpty()) {
+                item {
+                    Spacer(Modifier.height(20.dp))
+                    Text(
+                        style = AppTypography.bodyLarge,
+                        text = "Створені користувачем курси"
+                    )
+                }
+                items(profile.coursePlans) { item ->
+                    Spacer(Modifier.height(5.dp))
+                    Card (
+                        shape = RoundedCornerShape(3.dp),
+                        colors = CardDefaults.cardColors(
+                            containerColor = Color.Gray.copy(alpha = 0.1f)
+                        ),
                         modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(vertical = 5.dp, horizontal = 20.dp),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.SpaceBetween
+                            .fillMaxWidth(),
+                        onClick = {
+                            contextModel.preferredRoute = "coursePlan/${item.id}"
+                        }
                     ) {
-                        Text(
-                            modifier = Modifier.widthIn(max = 170.dp),
-                            text = item.name,
-                            style = AppTypography.titleMedium,
-                            color = colorResource(R.color.navbar_button)
-                        )
-                        Row (verticalAlignment = Alignment.CenterVertically) {
-                            VerticalDivider(
-                                Modifier.requiredHeight(30.dp),
-                                thickness = 2.dp,
-                                color = colorResource(R.color.navbar_button)
-                            )
-                            Icon(
-                                modifier = Modifier.padding(horizontal = 10.dp),
-                                painter = painterResource(R.drawable.label_24px),
-                                contentDescription = "topic-icon",
-                                tint = colorResource(R.color.navbar_button)
-                            )
+                        Row (
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(vertical = 5.dp, horizontal = 20.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
                             Text(
-                                text = "Тем: ${item.topics.size} штучок",
-                                style = AppTypography.bodyMedium,
+                                modifier = Modifier.widthIn(max = 170.dp),
+                                text = item.name,
+                                style = AppTypography.bodySmall,
                                 color = colorResource(R.color.navbar_button)
                             )
+                            Row (verticalAlignment = Alignment.CenterVertically) {
+                                VerticalDivider(
+                                    Modifier.requiredHeight(30.dp),
+                                    thickness = 2.dp,
+                                    color = colorResource(R.color.navbar_button)
+                                )
+                                Icon(
+                                    modifier = Modifier.padding(horizontal = 10.dp),
+                                    painter = painterResource(R.drawable.label_24px),
+                                    contentDescription = "topic-icon",
+                                    tint = colorResource(R.color.navbar_button)
+                                )
+                                Text(
+                                    text = "Тем: ${item.topics.size}",
+                                    style = AppTypography.bodyMedium,
+                                    color = colorResource(R.color.navbar_button)
+                                )
+                            }
                         }
                     }
                 }

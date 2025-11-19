@@ -310,7 +310,7 @@ fun FlashCardScreen(
                                 2.dp, colorResource(R.color.navbar_button),
                                 RoundedCornerShape(3.dp)
                             )
-                            .padding(horizontal = 40.dp, vertical = 15.dp)
+                            .padding(horizontal = 20.dp, vertical = 10.dp)
                     )
                     if (!viewModel.isHide) Row(
                         Modifier.fillMaxWidth(),

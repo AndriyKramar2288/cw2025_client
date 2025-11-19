@@ -62,6 +62,12 @@ class DataSource(context: Context) {
         }
     }
 
+    suspend fun endCourse(coursePlanId: Long): Result<CourseDetailedDto> {
+        return resolveResult {
+            apiService.endCourse("Bearer $token", coursePlanId)
+        }
+    }
+
     suspend fun createCoursePlan(
         name: String,
         desc: String,
@@ -122,9 +128,9 @@ class DataSource(context: Context) {
         }
     }
 
-    suspend fun currentCoursePlanList(): Result<List<CoursePlanBasicDto>> {
+    suspend fun currentCoursePlanList(query: String): Result<List<CoursePlanBasicDto>> {
         return resolveResult {
-            apiService.currentCoursePlanList("Bearer $token")
+            apiService.currentCoursePlanList("Bearer $token", query.ifBlank { null })
         }
     }
 

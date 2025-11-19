@@ -230,7 +230,7 @@ fun GreetingsStep2(
                 .padding(vertical = 20.dp),
             shape = RoundedCornerShape(5.dp),
             colors = ButtonDefaults.buttonColors(
-                containerColor = Color(0xFF3E2F2F),
+                containerColor = colorResource(R.color.navbar_button2),
                 disabledContainerColor = Color.LightGray
             ),
             enabled = isLoginEnabled(viewModel, isLogin) && !viewModel.isLoading

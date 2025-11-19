@@ -23,6 +23,7 @@ import java.time.Instant
 class MainPageModel(isMock: Boolean = false) : ViewModel() {
     private val dataSource: DataSource? = GlobalApplication.getInstance()?.dataSource
 
+    var searchQuery by mutableStateOf("")
     var isRefreshing by mutableStateOf(false)
     var isShouldToSwitchToLogin by mutableStateOf(false)
         private set
@@ -44,7 +45,7 @@ class MainPageModel(isMock: Boolean = false) : ViewModel() {
                         )
                     )
                 )
-            ).flatMap { listOf(it, it, it, it, it) }.flatMap { listOf(it, it, it) }
+            ).flatMap { listOf(it, it, it, it, it) }
         )
         private set
     var currentCourses by
@@ -120,6 +121,12 @@ class MainPageModel(isMock: Boolean = false) : ViewModel() {
         isShouldToSwitchToLogin = true
     }
 
+    fun searchCoursePlans() {
+        viewModelScope.launch {
+            refreshCoursePlanPage(true)
+        }
+    }
+
     fun beginCourse(coursePLanId: Long) {
         viewModelScope.launch {
             dataSource!!.beginCourse(coursePLanId).asSuccess {
@@ -141,7 +148,7 @@ class MainPageModel(isMock: Boolean = false) : ViewModel() {
     private suspend fun refreshCoursePlanPage(forced: Boolean = false) {
         if (!shouldRefreshCoursePlans && !forced) return
         shouldRefreshCoursePlans = false
-        val plansRes = dataSource!!.currentCoursePlanList()
+        val plansRes = dataSource!!.currentCoursePlanList(searchQuery)
         if (plansRes is Result.Success) currentCoursePlans = plansRes.data
     }
 

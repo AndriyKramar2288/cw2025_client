@@ -15,10 +15,11 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredHeight
 import androidx.compose.foundation.layout.requiredSize
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -71,9 +72,9 @@ fun CourseScreen(viewModel: MainPageModel) {
     val pagerState = rememberPagerState { viewModel.currentCourses.size }
 
     Column (
-        horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier
+        Modifier
             .fillMaxSize()
+            .verticalScroll(rememberScrollState())
             .background(
                 Brush.linearGradient(
                     colors = listOf(
@@ -85,23 +86,34 @@ fun CourseScreen(viewModel: MainPageModel) {
                     end = Offset(1500f, 1500f)
                 )
             )
-            .padding(vertical = 15.dp)
+            .padding(vertical = 15.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Text(
-            text = "Мої курси",
-            style = AppTypography.titleMedium,
-            modifier = Modifier.padding(5.dp)
-        )
+        viewModel.flashCardDayStats?.let { stats ->
+            CardStatsDisplayer(stats) {
+                viewModel.preferredRoute = "flashCards"
+            }
+        }
+
+        Spacer(Modifier.height(20.dp))
+        Row(
+            Modifier.fillMaxWidth().padding(horizontal = 20.dp),
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Text(
+                text = "Мої курси",
+                style = AppTypography.titleMedium,
+                modifier = Modifier.padding(5.dp)
+            )
+            PagerIndicator(
+                pagerState.currentPage,
+                viewModel.currentCourses.size
+            )
+        }
         HorizontalDivider(
             modifier = Modifier
-                .padding(horizontal = 20.dp),
-            color = colorResource(R.color.navbar_button),
-            thickness = 2.dp
-        )
-
-        PagerIndicator(
-            pagerState.currentPage,
-            viewModel.currentCourses.size
+                .padding(horizontal = 20.dp, vertical = 5.dp),
+            color = Color(0xC9D9D9D9)
         )
 
         HorizontalPager(
@@ -109,12 +121,6 @@ fun CourseScreen(viewModel: MainPageModel) {
             verticalAlignment = Alignment.Top
         ) {
             CourseCard(viewModel.currentCourses[it], viewModel)
-        }
-
-        viewModel.flashCardDayStats?.let { stats ->
-            CardStatsDisplayer(stats) {
-                viewModel.preferredRoute = "flashCards"
-            }
         }
     }
 }
@@ -132,9 +138,11 @@ private fun CardStatsDisplayer(stats: FlashCardDayStats, onClick: () -> Unit) {
         )
         HorizontalDivider(
             modifier = Modifier
-                .padding(horizontal = 20.dp, vertical = 10.dp),
-            color = Color(0x66FFFFFF)
+                .padding(horizontal = 20.dp),
+            color = colorResource(R.color.navbar_button),
+            thickness = 2.dp
         )
+        Spacer(Modifier.height(25.dp))
         Row(
             Modifier.fillMaxWidth().padding(horizontal = 20.dp)
         ) {
@@ -157,9 +165,11 @@ private fun CardStatsDisplayer(stats: FlashCardDayStats, onClick: () -> Unit) {
                     onClick = onClick
                 ) {
                     Text(
-                        text =
-                            if (!isPassed) "Розпочати вивчення"
-                            else "Вже пройдено!",
+                        text = when {
+                            (!isPassed) -> "Розпочати вивчення"
+                            stats.reviewNumber == 0 -> "Нема шо проходити!"
+                            else -> "Вже пройдено!"
+                        },
                         style = AppTypography.bodySmall,
                         color = Color.White
                     )
@@ -226,12 +236,8 @@ private fun CardStatsDisplayer(stats: FlashCardDayStats, onClick: () -> Unit) {
         ) {
             Text(
                 style = AppTypography.bodySmall,
-                text = "Переглянуто карток: ${stats.reviewNumber}"
-            )
-            Spacer(Modifier.width(10.dp))
-            Text(
-                style = AppTypography.bodySmall,
-                text = "В середньому часу: ${stats.reviewDuration.clockFormat()}"
+                fontSize = 10.sp,
+                text = "Переглянуто карток: ${stats.reviewNumber} | В середньому часу: ${stats.reviewDuration.clockFormat()}"
             )
         }
     }
@@ -245,7 +251,6 @@ private fun CourseCard(course: CourseBasicDto, viewModel: MainPageModel) {
             viewModel.preferredRoute = "course/${course.coursePlan.id}"
         },
         modifier = Modifier
-            .padding(top = 10.dp)
             .fillMaxWidth()
             .padding(vertical = 8.dp),
         colors = CardDefaults.cardColors(
