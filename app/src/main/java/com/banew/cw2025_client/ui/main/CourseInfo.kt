@@ -272,10 +272,8 @@ fun CourseInfo(id: Long, viewModel: MainPageModel, courseModel: CourseViewModel)
 @Composable
 fun CourseStats(course: CourseDetailedDto) {
     val totalTopics = course.compendiums.size
-    val currentTopicIndex = course.currentCompendiumId?.let { currentId ->
-        course.compendiums.indexOfFirst { it.id == currentId }
-    } ?: 0
-    val completedTopics = if (currentTopicIndex >= 0) currentTopicIndex else 0
+
+    val completedTopics = course.compendiums.count { it.status == CompendiumStatus.COMPLETED }
     val totalConcepts = course.compendiums.sumOf { it.concepts.size }
     val progress = if (totalTopics > 0) completedTopics.toFloat() / totalTopics else 0f
 
