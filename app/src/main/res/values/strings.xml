@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">cw2025_client</string>
+    <string name="app_name">Seezu</string>
     <!--    Greetings page        -->
     <string name="greetings_app_real_name">SEEZU</string>
     <string name="greetings_app_desc">

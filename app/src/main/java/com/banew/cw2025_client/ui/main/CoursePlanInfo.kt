@@ -63,7 +63,7 @@ class CoursePlanInfoViewModel(val isMock: Boolean = true) : ViewModel() {
         private set
 
     fun loadCourseById(id: Long, contextModel: MainPageModel) {
-        coursePlan = contextModel.currentCoursePlans.first { it.id == id }
+        coursePlan = contextModel.currentCoursePlans.firstOrNull { it.id == id }
 
         coursePlan ?: dataSource?.let { dataSource ->
             viewModelScope.launch {
