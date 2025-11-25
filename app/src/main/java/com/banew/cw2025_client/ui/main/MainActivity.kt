@@ -72,16 +72,16 @@ fun MainScreen(viewModel : MainPageModel = viewModel<MainPageModel>()) {
 
     val context = LocalContext.current
 
-    if (viewModel.isShouldToSwitchToLogin) {
-        val intent = Intent(context, StartActivity::class.java)
-        context.startActivity(intent)
-        return
-    }
-
     val courseModel = viewModel<CourseViewModel>()
 
     LaunchedEffect(viewModel) {
         viewModel.refresh()
+    }
+
+    LaunchedEffect(viewModel.isShouldToSwitchToLogin) {
+        if (viewModel.isShouldToSwitchToLogin) {
+            context.startActivity(Intent(context, StartActivity::class.java))
+        }
     }
 
     LaunchedEffect(viewModel.lastException) {
@@ -202,7 +202,7 @@ fun MainScreen(viewModel : MainPageModel = viewModel<MainPageModel>()) {
                 }
                 if (viewModel.isConnectionError) {
                     DeathBox("Помилка з'єднання!", "Спробувати ще раз") {
-                        viewModel.isConnectionError = false
+                        viewModel.updateConnectionError(false)
                         viewModel.refresh()
                     }
                 }

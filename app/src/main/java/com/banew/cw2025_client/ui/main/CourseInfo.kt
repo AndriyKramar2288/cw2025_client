@@ -530,14 +530,12 @@ fun TopicProgressCard(
                 contentPadding = PaddingValues(0.dp),
                 colors = ButtonDefaults.buttonColors(
                     contentColor = Color.Transparent,
-                    containerColor = Color.Transparent,
+                    containerColor = type.buttonColor,
                 ),
+                shape = RoundedCornerShape(5.dp),
                 modifier = Modifier
                     .fillMaxHeight()
-                    .weight(1f)
-                    .background(
-                        type.buttonColor, shape = RoundedCornerShape(5.dp)
-                    ),
+                    .weight(1f),
                 onClick = {
                     when (type) {
                         TopicProgressType.CAN_START ->
@@ -555,7 +553,7 @@ fun TopicProgressCard(
                 Image(
                     modifier = Modifier.requiredSize(30.dp),
                     painter = painterResource(type.buttonIconId),
-                    contentDescription = ""
+                    contentDescription = "Choose compendium icon"
                 )
             }
         }

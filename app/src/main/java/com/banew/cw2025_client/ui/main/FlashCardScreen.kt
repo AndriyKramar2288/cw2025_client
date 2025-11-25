@@ -237,11 +237,13 @@ fun FlashCardScreen(
         viewModel.init(contextModel)
     }
 
-    if (viewModel.isFinished) {
-        Toast
-            .makeText(context, "Наразі це все!", Toast.LENGTH_SHORT)
-            .show()
-        contextModel.preferredRoute = "courses"
+    LaunchedEffect(viewModel.isFinished) {
+        if (viewModel.isFinished) {
+            Toast
+                .makeText(context, "Наразі це все!", Toast.LENGTH_SHORT)
+                .show()
+            contextModel.preferredRoute = "courses"
+        }
     }
 
     Box(Modifier.fillMaxSize()) {
@@ -317,6 +319,12 @@ fun FlashCardScreen(
                         horizontalArrangement = Arrangement.End
                     ) {
                         IconButton(
+                            modifier = Modifier
+                                .padding(horizontal = 5.dp)
+                                .background(
+                                    Color.LightGray.copy(alpha = 0.25f),
+                                    shape = RoundedCornerShape(5.dp)
+                                ),
                             onClick = {
                                 viewModel.isEditConcept = true
                             }
@@ -325,7 +333,8 @@ fun FlashCardScreen(
                                 painterResource(R.drawable.edit_square_40px),
                                 contentDescription = "Edit concept",
                                 tint = Color.Gray,
-                                modifier = Modifier.requiredSize(30.dp)
+                                modifier = Modifier
+                                    .requiredSize(30.dp)
                             )
                         }
                     }
@@ -372,8 +381,13 @@ fun FlashCardScreen(
 @Composable
 fun EditConceptBox(viewModel: FlashCardViewModel, contextModel: MainPageModel) {
     viewModel.currentCard?.concept?.let { concept ->
-        var name by remember { mutableStateOf(concept.name) }
-        var desc by remember { mutableStateOf(concept.description) }
+        var name by remember { mutableStateOf("") }
+        var desc by remember { mutableStateOf("") }
+
+        LaunchedEffect(concept) {
+            name = concept.name
+            desc = concept.description
+        }
 
         if (viewModel.isEditConcept) {
             Box(

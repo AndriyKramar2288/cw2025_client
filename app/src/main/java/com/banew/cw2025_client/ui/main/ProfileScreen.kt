@@ -55,7 +55,6 @@ import com.banew.cw2025_backend_common.dto.users.UserProfileDetailedDto
 import com.banew.cw2025_client.GlobalApplication
 import com.banew.cw2025_client.R
 import com.banew.cw2025_client.data.DataSource
-import com.banew.cw2025_client.data.Result
 import com.banew.cw2025_client.ui.theme.AppTypography
 import kotlinx.coroutines.launch
 
@@ -80,11 +79,12 @@ class ProfileScreenViewModel(val isMock: Boolean = false): ViewModel() {
     )
         private set
 
-    fun initProfile(userId: Long? = null) {
+    fun initProfile(userId: Long? = null, contextModel: MainPageModel) {
         dataSource?.let { dataSource ->
             viewModelScope.launch {
-                val result = dataSource.userProfileDetailed(userId)
-                if (result is Result.Success) profile = result.data
+                dataSource.userProfileDetailed(userId).asSuccess {
+                    profile = it.data
+                }.asErrorNetEx(contextModel)
             }
         }
     }
@@ -107,7 +107,7 @@ fun ProfilePageScreen(
     userId: Long? = null
 ) {
     LaunchedEffect(userId) {
-        model.initProfile(userId)
+        model.initProfile(userId, contextModel)
     }
 
     model.profile?.let { profile ->

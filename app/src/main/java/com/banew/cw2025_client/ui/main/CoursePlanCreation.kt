@@ -1,23 +1,20 @@
 package com.banew.cw2025_client.ui.main
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
@@ -25,14 +22,12 @@ import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -86,13 +81,10 @@ class CoursePlanCreationViewModel(val isMock: Boolean = false): ViewModel() {
 }
 
 @Composable
-fun CoursePlanCreationComponent(contextViewModel : MainPageModel? = null) {
-
-    val formModel = if (contextViewModel == null)
-        CoursePlanCreationViewModel(true)
-        else
-            viewModel<CoursePlanCreationViewModel>()
-
+fun CoursePlanCreationComponent(
+    contextViewModel: MainPageModel,
+    formModel: CoursePlanCreationViewModel = viewModel()
+) {
     Box {
         Column (
             Modifier
@@ -140,17 +132,13 @@ fun CoursePlanCreationComponent(contextViewModel : MainPageModel? = null) {
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Button(
-                    modifier = Modifier
-                        .background(
-                            color = Color.LightGray,
-                            shape = RoundedCornerShape(5.dp)
-                        ),
                     onClick = {
                         formModel.topicList += listOf(DataSource.TopicForm())
                     },
+                    shape = RoundedCornerShape(5.dp),
                     colors = ButtonDefaults.buttonColors(
                         contentColor = Color.Transparent,
-                        containerColor = Color.Transparent,
+                        containerColor = Color.LightGray,
                     )
                 ) {
                     Text(
@@ -188,14 +176,11 @@ fun CoursePlanCreationComponent(contextViewModel : MainPageModel? = null) {
                             formModel.topicList = formModel.topicList.filter { it != item }
                         },
                         modifier = Modifier
-                            .padding(end = 15.dp, top = 5.dp)
-                            .background(
-                                color = colorResource(R.color.navbar_button2),
-                                shape = RoundedCornerShape(5.dp)
-                            ),
+                            .padding(end = 15.dp, top = 10.dp),
+                        shape = RoundedCornerShape(5.dp),
                         colors = ButtonDefaults.buttonColors(
                             contentColor = Color.Transparent,
-                            containerColor = Color.Transparent,
+                            containerColor = colorResource(R.color.navbar_button2),
                         )
                     ) {
                         Text(text = "x", color = Color.White, style = AppTypography.titleLarge)
@@ -243,23 +228,15 @@ fun CoursePlanCreationComponent(contextViewModel : MainPageModel? = null) {
             }
             Button(
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = Color.Transparent
+                    containerColor = colorResource(R.color.navbar_button)
                 ),
                 onClick = {
-                    formModel.createCoursePlan(contextViewModel!!)
+                    formModel.createCoursePlan(contextViewModel)
                 },
+                contentPadding = PaddingValues(horizontal = 50.dp),
+                shape = RoundedCornerShape(10.dp),
                 modifier = Modifier
-                    .padding(top = 20.dp)
-                    .background(
-                        shape = RoundedCornerShape(10.dp),
-                        brush = Brush.horizontalGradient(
-                            listOf(
-                                colorResource(R.color.navbar_button),
-                                colorResource(R.color.navbar_button2)
-                            )
-                        )
-                    )
-                    .padding(horizontal = 50.dp),
+                    .padding(top = 20.dp),
             ) {
                 Text(
                     text = "Створити",
@@ -326,10 +303,14 @@ fun CoursePlanTextField(
     }
 }
 
+@SuppressLint("ViewModelConstructorInComposable")
 @Composable
 @Preview(showBackground = true)
 private fun Aboba() {
     MyAppTheme {
-        CoursePlanCreationComponent()
+        CoursePlanCreationComponent(
+            MainPageModel(true),
+            CoursePlanCreationViewModel(true)
+        )
     }
 }

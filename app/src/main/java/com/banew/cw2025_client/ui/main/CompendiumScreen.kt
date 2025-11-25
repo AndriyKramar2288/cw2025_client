@@ -652,17 +652,17 @@ private enum class BottomElementType {
 
 @Composable
 private fun BottomPanelElement(type: BottomElementType, onClick: () -> Unit) {
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier
-            .background(
-                color = colorResource(R.color.navbar_back),
-                shape = RoundedCornerShape(10.dp)
-            )
-            .padding(horizontal = 20.dp, vertical = 5.dp)
+    Card(
+        onClick = onClick,
+        shape = RoundedCornerShape(10.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = colorResource(R.color.navbar_back)
+        )
     ) {
-        IconButton(
-            onClick
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier
+                .padding(horizontal = 20.dp, vertical = 5.dp)
         ) {
             Icon(
                 painterResource(when (type) {
@@ -674,22 +674,22 @@ private fun BottomPanelElement(type: BottomElementType, onClick: () -> Unit) {
                 contentDescription = "bottom panel element icon",
                 tint = colorResource(R.color.navbar_button2)
             )
+            Box(
+                modifier = Modifier
+                    .padding(bottom = 7.dp)
+                    .requiredSize(30.dp, 2.dp)
+                    .background(colorResource(R.color.navbar_button2))
+            )
+            Text(
+                textAlign = TextAlign.Center,
+                text = when (type) {
+                    BottomElementType.PREV -> "Переглянути\nпопередню"
+                    BottomElementType.NEXT -> "Переглянути\nнаступну"
+                    BottomElementType.START_NEXT -> "Почати\nнаступну"
+                    BottomElementType.END -> "Завершити\nкурс"
+                },
+                style = AppTypography.bodySmall
+            )
         }
-        Box(
-            modifier = Modifier
-                .padding(bottom = 7.dp)
-                .requiredSize(30.dp, 2.dp)
-                .background(colorResource(R.color.navbar_button2))
-        )
-        Text(
-            textAlign = TextAlign.Center,
-            text = when (type) {
-                BottomElementType.PREV -> "Переглянути\nпопередню"
-                BottomElementType.NEXT -> "Переглянути\nнаступну"
-                BottomElementType.START_NEXT -> "Почати\nнаступну"
-                BottomElementType.END -> "Завершити\nкурс"
-            },
-            style = AppTypography.bodySmall
-        )
     }
 }

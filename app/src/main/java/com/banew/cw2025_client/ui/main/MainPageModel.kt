@@ -28,6 +28,7 @@ class MainPageModel(isMock: Boolean = false) : ViewModel() {
     var isShouldToSwitchToLogin by mutableStateOf(false)
         private set
     var isConnectionError by mutableStateOf(false)
+        private set
     var lastException by mutableStateOf<Exception?>(null)
     private val preferredRouteState = mutableStateOf("courses")
     var shouldRefreshCourses by mutableStateOf(true)
@@ -147,18 +148,26 @@ class MainPageModel(isMock: Boolean = false) : ViewModel() {
 
     private suspend fun refreshCoursePlanPage(forced: Boolean = false) {
         if (!shouldRefreshCoursePlans && !forced) return
+
         shouldRefreshCoursePlans = false
-        val plansRes = dataSource!!.currentCoursePlanList(searchQuery)
-        if (plansRes is Result.Success) currentCoursePlans = plansRes.data
+
+        dataSource!!.currentCoursePlanList(searchQuery).asSuccess {
+            currentCoursePlans = it.data
+        }.asNetEx()
     }
 
     private suspend fun refreshCoursePage(forced: Boolean = false) {
         if (!shouldRefreshCourses && !forced) return
+
         shouldRefreshCourses = false
-        val courseRes = dataSource!!.currentCourseList()
-        val dayStats = dataSource.getCardsDailyStats()
-        if (courseRes is Result.Success) currentCourses = courseRes.data
-        if (dayStats is Result.Success) flashCardDayStats = dayStats.data
+
+        dataSource!!.currentCourseList().asSuccess {
+            currentCourses = it.data
+        }.asNetEx()
+
+        dataSource.getCardsDailyStats().asSuccess {
+            flashCardDayStats = it.data
+        }.asNetEx()
     }
 
     fun refresh() {
@@ -172,5 +181,15 @@ class MainPageModel(isMock: Boolean = false) : ViewModel() {
 
             isRefreshing = false
         }
+    }
+
+    fun updateConnectionError(value: Boolean) {
+        isConnectionError = value
+        if (value)
+            isRefreshing = false
+    }
+
+    private fun <T> Result<T>.asNetEx() {
+        asErrorNetEx(this@MainPageModel)
     }
 }

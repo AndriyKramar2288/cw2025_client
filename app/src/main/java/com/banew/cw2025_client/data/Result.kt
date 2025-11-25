@@ -1,5 +1,7 @@
 package com.banew.cw2025_client.data
 
+import com.banew.cw2025_client.ui.main.MainPageModel
+
 /**
  * A generic class that holds a result success w/ data or an error exception.
  */
@@ -20,13 +22,25 @@ private constructor() {
         return this as Success<T>
     }
 
+    fun asError(): Error<T> {
+        return this as Error<T>
+    }
+
     fun asError(callback: (res: Error<T>) -> Unit = {}): Result<T> {
         if (this is Error<*>) callback(this as Error<T>)
         return this
     }
 
-    fun asError(): Error<T> {
-        return this as Error<T>
+    fun asErrorNetEx(booleanFieldSetter: (Boolean) -> Unit): Result<T> {
+        if (this is Error<*>)
+            booleanFieldSetter(error.message.equals("Network error"))
+        return this
+    }
+
+    fun asErrorNetEx(contextModel: MainPageModel): Result<T> {
+        return asErrorNetEx {
+            contextModel.updateConnectionError(contextModel.isConnectionError || it)
+        }
     }
 
     // Success sub-class
