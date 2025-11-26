@@ -127,7 +127,7 @@ class CourseViewModel(isMock: Boolean = false): ViewModel() {
                 contextModel.isRefreshing = true
                 dataSource.courseDetailedById(coursePlanId).asSuccess {
                     course = it.data
-                }
+                }.default(contextModel)
                 contextModel.isRefreshing = false
             }
         }
@@ -152,7 +152,7 @@ class CourseViewModel(isMock: Boolean = false): ViewModel() {
                             )
 
                             contextModel.shouldRefreshCourses = true
-                        }
+                        }.default(contextModel)
                 }
             }
         }
@@ -165,7 +165,7 @@ class CourseViewModel(isMock: Boolean = false): ViewModel() {
                     init(course!!.coursePlan.id, contextModel)
                     contextModel.preferredRoute = "compendium/${topicId}"
                     contextModel.shouldRefreshCourses = true
-                }
+                }.default(contextModel)
             }
         }
     }
@@ -177,7 +177,7 @@ class CourseViewModel(isMock: Boolean = false): ViewModel() {
                     course = it.data
                     contextModel.preferredRoute = "course/${coursePlanId}"
                     contextModel.shouldRefreshCourses = true
-                }
+                }.default(contextModel)
             }
         }
     }

@@ -220,7 +220,9 @@ fun RowScope.MyNavigationItem(
 ) {
     NavigationBarItem(
         selected = viewModel.preferredRoute == route,
-        onClick = { viewModel.preferredRoute = route },
+        onClick = {
+            viewModel.preferredRoute = route
+        },
         icon = {
             Icon(
                 painterResource(iconRes),
@@ -238,6 +240,7 @@ fun RowScope.MyNavigationItem(
             Color(0, 0, 0, 0),
             Color(0, 0, 0, 0),
         ),
-        label = { Text(text = label, fontSize = 14.sp) }
+        label = { Text(text = label, fontSize = 14.sp) },
+        enabled = !viewModel.isConnectionError && !viewModel.isRefreshing
     )
 }

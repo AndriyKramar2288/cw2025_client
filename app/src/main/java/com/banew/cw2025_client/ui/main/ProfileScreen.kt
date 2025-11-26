@@ -84,7 +84,7 @@ class ProfileScreenViewModel(val isMock: Boolean = false): ViewModel() {
             viewModelScope.launch {
                 dataSource.userProfileDetailed(userId).asSuccess {
                     profile = it.data
-                }.asErrorNetEx(contextModel)
+                }.default(contextModel)
             }
         }
     }

@@ -31,16 +31,15 @@ private constructor() {
         return this
     }
 
-    fun asErrorNetEx(booleanFieldSetter: (Boolean) -> Unit): Result<T> {
-        if (this is Error<*>)
-            booleanFieldSetter(error.message.equals("Network error"))
-        return this
-    }
-
-    fun asErrorNetEx(contextModel: MainPageModel): Result<T> {
-        return asErrorNetEx {
-            contextModel.updateConnectionError(contextModel.isConnectionError || it)
+    fun default(contextModel: MainPageModel): Result<T> {
+        asError {
+            contextModel.updateConnectionError(
+                contextModel.isConnectionError ||
+                it.error.message.equals("Network error")
+            )
+            contextModel.lastException = it.error
         }
+        return this
     }
 
     // Success sub-class

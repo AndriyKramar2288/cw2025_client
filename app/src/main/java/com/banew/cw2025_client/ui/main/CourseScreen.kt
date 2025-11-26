@@ -1,9 +1,11 @@
 package com.banew.cw2025_client.ui.main
 
 import android.annotation.SuppressLint
+import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -105,10 +107,6 @@ fun CourseScreen(viewModel: MainPageModel) {
                 style = AppTypography.titleMedium,
                 modifier = Modifier.padding(5.dp)
             )
-            PagerIndicator(
-                pagerState.currentPage,
-                viewModel.currentCourses.size
-            )
         }
         HorizontalDivider(
             modifier = Modifier
@@ -118,9 +116,27 @@ fun CourseScreen(viewModel: MainPageModel) {
 
         HorizontalPager(
             state = pagerState,
+            modifier = Modifier.animateContentSize(),
             verticalAlignment = Alignment.Top
         ) {
             CourseCard(viewModel.currentCourses[it], viewModel)
+        }
+
+        Box(
+            Modifier.fillMaxWidth(),
+            contentAlignment = Alignment.Center
+        ) {
+            HorizontalDivider(
+                modifier = Modifier
+                    .padding(horizontal = 40.dp, vertical = 5.dp),
+                color = colorResource(R.color.navbar_button2).copy(alpha = 0.5f)
+            )
+            PagerIndicator(
+                pagerState.currentPage,
+                viewModel.currentCourses.size
+            ) {
+                pagerState.requestScrollToPage(it)
+            }
         }
     }
 }

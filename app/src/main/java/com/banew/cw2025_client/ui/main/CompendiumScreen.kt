@@ -20,6 +20,7 @@ import androidx.compose.foundation.layout.requiredHeight
 import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -116,6 +117,30 @@ fun CompendiumScreen(topicId: Long, viewModel: MainPageModel, courseModel: Cours
         val isUnsavedChanges = notesText != compendium.notes
                 || compendium.concepts.map { ConceptForm(it) } != concepts
 
+        var showAlertNextTopic by remember { mutableStateOf(false) }
+
+        var showAlertSwitchWithoutSave by remember { mutableStateOf<(() -> Unit)?>(null) }
+
+        viewModel.preferredRouteCallback = { proceed ->
+            if (isUnsavedChanges) {
+                showAlertSwitchWithoutSave = {
+                    proceed()
+                }
+            } else {
+                proceed()
+            }
+        }
+
+        // Перейти на наступну тему
+        val isNextOrEnd =
+            if (topics.size > topicIndex + 1)
+                if (course.currentCompendiumId == compendium.id)
+                    BottomElementType.START_NEXT
+                else
+                    BottomElementType.NEXT
+            else
+                BottomElementType.END
+
         LaunchedEffect(compendium) {
             concepts.clear()
             compendium.concepts.map { concepts.add(ConceptForm(it)) }
@@ -133,6 +158,38 @@ fun CompendiumScreen(topicId: Long, viewModel: MainPageModel, courseModel: Cours
 
             courseModel.updateCompendium(updatedCompendium, viewModel)
         }
+
+        AlertDialogWrap(
+            showAlertNextTopic,
+            {
+                if (isNextOrEnd == BottomElementType.START_NEXT) {
+                    courseModel.beginTopic(topics[topicIndex + 1].id, viewModel)
+                }
+                else {
+                    courseModel.endCourse(
+                        course.coursePlan.id,
+                        viewModel
+                    )
+                }
+            },
+            {
+                showAlertNextTopic = false
+            },
+            "Після завершення теми ви зможете " +
+            "змінювати вміст конспекту лише крізь флеш-картки. Продовжити?"
+        )
+
+        AlertDialogWrap(
+            showAlertSwitchWithoutSave != null,
+            {
+                showAlertSwitchWithoutSave?.invoke()
+                showAlertSwitchWithoutSave = null
+            },
+            {
+                showAlertSwitchWithoutSave = null
+            },
+            "У вас є незбережені зміни! Продовжити без збереження?"
+        )
 
         Column(
             modifier = Modifier
@@ -208,6 +265,7 @@ fun CompendiumScreen(topicId: Long, viewModel: MainPageModel, courseModel: Cours
                 type = type
             ) {
                 concepts.add(ConceptForm())
+                it.requestScrollToPage(concepts.size - 1)
             }
 
             if (isUnsavedChanges) {
@@ -244,27 +302,6 @@ fun CompendiumScreen(topicId: Long, viewModel: MainPageModel, courseModel: Cours
 
             Spacer(modifier = Modifier.height(24.dp))
 
-            // Перейти на наступну тему
-            val isNextOrEnd =
-                if (topics.size > topicIndex + 1)
-                    if (course.currentCompendiumId == compendium.id)
-                        BottomElementType.START_NEXT
-                    else
-                        BottomElementType.NEXT
-                else
-                    BottomElementType.END
-            val showAlertNextTopic = remember { mutableStateOf(false) }
-            AlertDialogWrap(showAlertNextTopic) {
-                if (isNextOrEnd == BottomElementType.START_NEXT) {
-                    courseModel.beginTopic(topics[topicIndex + 1].id, viewModel)
-                }
-                else {
-                    courseModel.endCourse(
-                        course.coursePlan.id,
-                        viewModel
-                    )
-                }
-            }
             Row(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 modifier = Modifier.fillMaxWidth()
@@ -283,7 +320,7 @@ fun CompendiumScreen(topicId: Long, viewModel: MainPageModel, courseModel: Cours
                         if (isNextOrEnd == BottomElementType.NEXT)
                             viewModel.preferredRoute = "compendium/${topics[topicIndex + 1].id}"
                         else
-                            showAlertNextTopic.value = true
+                            showAlertNextTopic = true
                     }
                 }
             }
@@ -358,7 +395,7 @@ fun StatusBadge(type: TopicProgressType) {
 }
 
 @Composable
-fun ConceptsSection(concepts: SnapshotStateList<ConceptForm>, type: TopicProgressType, onClick: () -> Unit) {
+fun ConceptsSection(concepts: SnapshotStateList<ConceptForm>, type: TopicProgressType, onClick: (PagerState) -> Unit) {
 
     val pagerState = rememberPagerState { concepts.size }
 
@@ -398,7 +435,9 @@ fun ConceptsSection(concepts: SnapshotStateList<ConceptForm>, type: TopicProgres
                         containerColor = colorResource(R.color.navbar_button)
                     ),
                     shape = RoundedCornerShape(5.dp),
-                    onClick = onClick
+                    onClick = {
+                        onClick(pagerState)
+                    }
                 ) {
                     Icon(
                         painterResource(R.drawable.add_diamond_40px),
@@ -434,9 +473,12 @@ fun ConceptsSection(concepts: SnapshotStateList<ConceptForm>, type: TopicProgres
             ) {
                 HorizontalPager(
                     state = pagerState
-                ) {
-                    ConceptCard(concept = concepts[it], type = type) {
-                        concepts.remove(concepts[it])
+                ) { page ->
+                    ConceptCard(
+                        concept = concepts[page],
+                        type = type
+                    ) {
+                        concepts.remove(concepts[page])
                     }
                 }
                 Spacer(Modifier.height(2.dp))
@@ -444,7 +486,9 @@ fun ConceptsSection(concepts: SnapshotStateList<ConceptForm>, type: TopicProgres
                     thickness = 1.dp,
                     color = Color.Gray.copy(alpha = 0.5f)
                 )
-                PagerIndicator(pagerState.currentPage, concepts.size)
+                PagerIndicator(pagerState.currentPage, concepts.size) {
+                    pagerState.requestScrollToPage(it)
+                }
             }
         }
     }

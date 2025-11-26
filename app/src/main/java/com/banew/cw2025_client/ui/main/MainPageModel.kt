@@ -30,6 +30,9 @@ class MainPageModel(isMock: Boolean = false) : ViewModel() {
     var isConnectionError by mutableStateOf(false)
         private set
     var lastException by mutableStateOf<Exception?>(null)
+    var preferredRouteCallback by mutableStateOf<(proceed: () -> Unit) -> Unit>(
+        { proceed -> proceed() }
+    )
     private val preferredRouteState = mutableStateOf("courses")
     var shouldRefreshCourses by mutableStateOf(true)
     var shouldRefreshCoursePlans by mutableStateOf(true)
@@ -86,15 +89,18 @@ class MainPageModel(isMock: Boolean = false) : ViewModel() {
     var preferredRoute
         get() = preferredRouteState.value
         set(value) {
-            viewModelScope.launch {
-                isRefreshing = true
-                when (value) {
-                    "courses" -> refreshCoursePage()
-                    "home" -> refreshCoursePlanPage()
+            preferredRouteCallback {
+                viewModelScope.launch {
+                    isRefreshing = true
+                    when (value) {
+                        "courses" -> refreshCoursePage()
+                        "home" -> refreshCoursePlanPage()
+                    }
+                    preferredRouteState.value = value
+                    isRefreshing = false
                 }
-                preferredRouteState.value = value
-                isRefreshing = false
             }
+            preferredRouteCallback = { proceed -> proceed() }
         }
 
     private val networkMonitor: NetworkMonitor? = if (!isMock) NetworkMonitor.getInstance(
@@ -134,9 +140,7 @@ class MainPageModel(isMock: Boolean = false) : ViewModel() {
                 currentCourses += listOf(it.data)
                 shouldRefreshCourses = true
                 preferredRoute = "courses"
-            }.asError {
-                lastException = it.error
-            }
+            }.default(this@MainPageModel)
         }
     }
 
@@ -185,11 +189,14 @@ class MainPageModel(isMock: Boolean = false) : ViewModel() {
 
     fun updateConnectionError(value: Boolean) {
         isConnectionError = value
-        if (value)
+
+        if (value) {
+            preferredRoute = "courses"
             isRefreshing = false
+        }
     }
 
     private fun <T> Result<T>.asNetEx() {
-        asErrorNetEx(this@MainPageModel)
+        default(this@MainPageModel)
     }
 }

@@ -40,12 +40,6 @@ import java.util.concurrent.TimeUnit
 class DataSource(context: Context) {
     private val prefs: SharedPreferences = context.getSharedPreferences("MyAppPrefs", Context.MODE_PRIVATE)
 
-    init {
-        if (NGROK) {
-            retrofit = buildClient("https://cw2025-backend.onrender.com/api/")
-        }
-    }
-
     private suspend fun <T> resolveResult(successCallback: (T) -> Unit = {}, resultSource: (suspend () -> T)) = try {
         val result = resultSource()
         successCallback(result)
@@ -253,9 +247,12 @@ class DataSource(context: Context) {
     companion object {
         private var retrofit: Retrofit? = null
         private const val BASE_URL = "http://10.0.2.2:8080/api/"
-        private const val NGROK = true
+        private const val PROD_URL = "https://cw2025-backend.onrender.com/api/"
+        private const val PROD = false
+        private const val CONNECT_TIMEOUT = 10L
+        private const val READ_TIMEOUT = 60L
         private val client: Retrofit
-            get() = retrofit ?: buildClient(BASE_URL)
+            get() = retrofit ?: buildClient(if (PROD) PROD_URL else BASE_URL)
 
         private fun buildClient(path: String): Retrofit {
 
@@ -287,8 +284,8 @@ class DataSource(context: Context) {
                 .create()
 
             val client = OkHttpClient.Builder()
-                .connectTimeout(5, TimeUnit.SECONDS)
-                .readTimeout(3, TimeUnit.SECONDS)
+                .connectTimeout(CONNECT_TIMEOUT, TimeUnit.SECONDS)
+                .readTimeout(READ_TIMEOUT, TimeUnit.SECONDS)
                 .build()
 
             retrofit = Retrofit.Builder()

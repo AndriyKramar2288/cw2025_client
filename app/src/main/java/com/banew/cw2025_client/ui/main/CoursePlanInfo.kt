@@ -70,7 +70,7 @@ class CoursePlanInfoViewModel(val isMock: Boolean = true) : ViewModel() {
                 contextModel.isRefreshing = true
                 dataSource.loadCoursePlanById(id).asSuccess {
                     coursePlan = it.data
-                }
+                }.default(contextModel)
                 contextModel.isRefreshing = false
             }
         }
@@ -171,21 +171,13 @@ fun CoursePlanInfo(id: Long, contextModel: MainPageModel, viewModel: CoursePlanI
                 .any { it.coursePlan.id == coursePlan.id }
 
             Button(
-                contentPadding = PaddingValues(0.dp),
+                contentPadding = PaddingValues(horizontal = 30.dp),
                 colors = ButtonDefaults.buttonColors(
                     contentColor = Color.Transparent,
-                    containerColor = Color.Transparent,
+                    containerColor = Color.Gray.copy(alpha = 0.8f),
                     disabledContainerColor = Color.Transparent
                 ),
-                modifier = Modifier
-                    .padding(start = 20.dp)
-                    .background(
-                        brush = Brush.horizontalGradient(
-                            colors = listOf(Color.Gray, Color.Gray.copy(alpha = 0.8f))
-                        ),
-                        shape = RoundedCornerShape(5.dp)
-                    )
-                    .padding( horizontal = 30.dp),
+                shape = RoundedCornerShape(5.dp),
                 onClick = {
                     if (isUserAdded)
                         contextModel.beginCourse(coursePlan.id)
