@@ -95,6 +95,18 @@ fun MainScreen(viewModel : MainPageModel = viewModel<MainPageModel>()) {
         navController.navigate(viewModel.preferredRoute)
     }
 
+    val navbarTint =
+        if (!viewModel.isConnectionError && !viewModel.isRefreshing)
+            Color.Transparent
+        else
+            Color.Gray.copy(alpha = .5f)
+
+    val bottomShadows = when {
+        viewModel.isRefreshing -> Color.LightGray.copy(alpha = .5f)
+        viewModel.isConnectionError -> Color.LightGray
+        else -> Color.White
+    }
+
     MyAppTheme {
         Scaffold(
             bottomBar = {
@@ -102,10 +114,13 @@ fun MainScreen(viewModel : MainPageModel = viewModel<MainPageModel>()) {
                     containerColor = Color.Transparent,
                     modifier = Modifier
                         .windowInsetsPadding(WindowInsets(0, 0, 0, 0))
-                        .background(Color.White)
-                        .padding( horizontal = 7.dp)
+                        .background(bottomShadows)
+                        .padding(horizontal = 7.dp)
                         .padding(bottom = 7.dp)
-                        .shadow(8.dp)
+                        .shadow(
+                            5.dp,
+                            RoundedCornerShape(10.dp)
+                        )
                         .background(
                             Brush.horizontalGradient(
                                 colors = listOf(
@@ -115,6 +130,7 @@ fun MainScreen(viewModel : MainPageModel = viewModel<MainPageModel>()) {
                             ),
                             shape = RoundedCornerShape(10.dp)
                         )
+                        .background(navbarTint)
                 ) {
                     MyNavigationItem(
                         "home",
@@ -192,7 +208,7 @@ fun MainScreen(viewModel : MainPageModel = viewModel<MainPageModel>()) {
                             brush = Brush.verticalGradient(
                                 listOf(
                                     Color.Transparent,
-                                    Color.White
+                                    bottomShadows
                                 )
                             )
                         )

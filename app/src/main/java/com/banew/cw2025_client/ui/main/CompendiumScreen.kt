@@ -162,6 +162,10 @@ fun CompendiumScreen(topicId: Long, viewModel: MainPageModel, courseModel: Cours
         AlertDialogWrap(
             showAlertNextTopic,
             {
+                if (isUnsavedChanges) {
+                    viewModel.preferredRouteCallback = {it()}
+                }
+
                 if (isNextOrEnd == BottomElementType.START_NEXT) {
                     courseModel.beginTopic(topics[topicIndex + 1].id, viewModel)
                 }
@@ -175,8 +179,12 @@ fun CompendiumScreen(topicId: Long, viewModel: MainPageModel, courseModel: Cours
             {
                 showAlertNextTopic = false
             },
-            "Після завершення теми ви зможете " +
-            "змінювати вміст конспекту лише крізь флеш-картки. Продовжити?"
+            buildString {
+                append("Після завершення теми ви зможете змінювати вміст конспекту")
+                appendLine(" лише крізь флеш-картки.")
+                if (isUnsavedChanges) appendLine("Ну і ще у вас є незбережені зміни!")
+                appendLine("Продовжити?")
+            }
         )
 
         AlertDialogWrap(

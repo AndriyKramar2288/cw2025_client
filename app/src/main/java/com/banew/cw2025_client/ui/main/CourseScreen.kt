@@ -138,6 +138,7 @@ fun CourseScreen(viewModel: MainPageModel) {
                 pagerState.requestScrollToPage(it)
             }
         }
+        Spacer(Modifier.height(50.dp))
     }
 }
 
