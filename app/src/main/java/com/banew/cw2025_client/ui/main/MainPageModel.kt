@@ -108,7 +108,10 @@ class MainPageModel(isMock: Boolean = false) : ViewModel() {
     ) else null
 
     private val networkObserver = Observer { connected: Boolean ->
-        if (connected) refresh()
+        if (connected) {
+            updateConnectionError(false)
+            refresh()
+        }
     }
 
     init {

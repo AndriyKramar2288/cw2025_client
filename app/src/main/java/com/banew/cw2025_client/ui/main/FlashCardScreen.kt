@@ -36,6 +36,7 @@ import androidx.compose.ui.graphics.compositeOver
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -91,7 +92,7 @@ class FlashCardViewModel(isMock: Boolean = false): ViewModel() {
         ),
         TopicCompendiumDto.ConceptBasicDto(
             1400L,
-            "Абобус",
+            "CONCEPT NAME",
             "EWwqwqwqqwq",
             true
         ),
@@ -192,13 +193,13 @@ private val FlashCardAnswer.color
     FlashCardAnswer.GOOD -> Color.Green
 }
 
-private val FlashCardAnswer.text
-    get() = when (this) {
-        FlashCardAnswer.BAD -> "Погано"
-        FlashCardAnswer.EASY -> "Легко"
-        FlashCardAnswer.FAIL -> "Забув"
-        FlashCardAnswer.GOOD -> "Норм"
-    }
+@Composable
+private fun FlashCardAnswer.getText() = when (this) {
+    FlashCardAnswer.BAD -> stringResource(R.string.card_screen_state_bad)
+    FlashCardAnswer.EASY -> stringResource(R.string.card_screen_state_easy)
+    FlashCardAnswer.FAIL -> stringResource(R.string.card_screen_state_forget)
+    FlashCardAnswer.GOOD -> stringResource(R.string.card_screen_state_ok)
+}
 
 @Composable
 private fun FlashCardAnswerButton(
@@ -221,7 +222,10 @@ private fun FlashCardAnswerButton(
             textAlign = TextAlign.Center,
             style = AppTypography.bodySmall,
             color = Color.White,
-            text = "${type.key.text}\n${type.value} дня"
+            text = stringResource(
+                R.string.card_screen_button_text,
+                type.key.getText(), type.value
+            )
         )
     }
 }
@@ -240,7 +244,11 @@ fun FlashCardScreen(
     LaunchedEffect(viewModel.isFinished) {
         if (viewModel.isFinished) {
             Toast
-                .makeText(context, "Наразі це все!", Toast.LENGTH_SHORT)
+                .makeText(
+                    context,
+                    context.getString(R.string.card_screen_ended),
+                    Toast.LENGTH_SHORT
+                )
                 .show()
             contextModel.preferredRoute = "courses"
         }
@@ -275,7 +283,10 @@ fun FlashCardScreen(
                     )
                     Text(
                         textAlign = TextAlign.Center,
-                        text = "Залишилось: ${viewModel.cardList.size}",
+                        text = stringResource(
+                            R.string.card_screen_left_count,
+                            viewModel.cardList.size
+                        ),
                         style = AppTypography.titleMedium,
                         color = Color.White,
                         modifier = Modifier
@@ -292,13 +303,16 @@ fun FlashCardScreen(
                     contentAlignment = Alignment.Center
                 ) {
                     Box(
-                        Modifier.fillMaxWidth()
+                        Modifier
+                            .fillMaxWidth()
                             .requiredHeight(25.dp)
                             .background(
-                                brush = Brush.horizontalGradient(listOf(
-                                    Color(0x9FFFFFFF),
-                                    Color(0x4FF1F1F1),
-                                ))
+                                brush = Brush.horizontalGradient(
+                                    listOf(
+                                        Color(0x9FFFFFFF),
+                                        Color(0x4FF1F1F1),
+                                    )
+                                )
                             )
                             .padding(3.dp),
                     )
@@ -340,7 +354,7 @@ fun FlashCardScreen(
                     }
                 }
                 if (viewModel.isHide) {
-                    SimpleButton("Показати") {
+                    SimpleButton(stringResource(R.string.card_screen_show)) {
                         viewModel.show()
                     }
                 }
@@ -391,7 +405,9 @@ fun EditConceptBox(viewModel: FlashCardViewModel, contextModel: MainPageModel) {
 
         if (viewModel.isEditConcept) {
             Box(
-                Modifier.fillMaxSize().background(Color(0x55000000)),
+                Modifier
+                    .fillMaxSize()
+                    .background(Color(0x55000000)),
                 contentAlignment = Alignment.Center
             ) {
                 Column(
@@ -404,21 +420,23 @@ fun EditConceptBox(viewModel: FlashCardViewModel, contextModel: MainPageModel) {
                         .padding(10.dp)
                 ) {
                     CompendiumTextField(
-                        name, "Назва", TopicProgressType.CURRENT
+                        name,
+                        stringResource(R.string.card_screen_edit_name), TopicProgressType.CURRENT
                     ) { name = it }
 
                     CompendiumTextField(
-                        desc, "Опис", TopicProgressType.CURRENT,
+                        desc,
+                        stringResource(R.string.card_screen_edit_desc), TopicProgressType.CURRENT,
                         largeText = true
                     ) { desc = it }
                     Row (
                         Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
-                        SimpleButton("Скасувати") {
+                        SimpleButton(stringResource(R.string.card_screen_edit_cancel)) {
                             viewModel.isEditConcept = false
                         }
-                        SimpleButton("Зберегти") {
+                        SimpleButton(stringResource(R.string.card_screen_edit_save)) {
                             viewModel.updateConcept(name, desc)
                             contextModel.shouldRefreshCourses = true
                         }

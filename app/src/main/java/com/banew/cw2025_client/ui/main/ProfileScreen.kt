@@ -42,6 +42,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -132,7 +133,7 @@ fun ProfilePageScreen(
                         ) {
                             AsyncImage( // coil-compose
                                 model = profile.photoSrc ?: "",
-                                contentDescription = "Автор",
+                                contentDescription = "Author",
                                 modifier = Modifier
                                     .size(80.dp)
                                     .clip(RoundedCornerShape(10.dp))
@@ -148,10 +149,12 @@ fun ProfilePageScreen(
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .background(
-                                        brush = Brush.horizontalGradient(listOf(
-                                            colorResource(R.color.navbar_back),
-                                            colorResource(R.color.navbar_back2)
-                                        )),
+                                        brush = Brush.horizontalGradient(
+                                            listOf(
+                                                colorResource(R.color.navbar_back),
+                                                colorResource(R.color.navbar_back2)
+                                            )
+                                        ),
                                         RoundedCornerShape(5.dp)
                                     )
                                     .padding(horizontal = 30.dp, vertical = 20.dp)
@@ -162,10 +165,12 @@ fun ProfilePageScreen(
                                     .fillMaxWidth()
                                     .padding(top = 5.dp)
                                     .background(
-                                        brush = Brush.horizontalGradient(listOf(
-                                            colorResource(R.color.navbar_button),
-                                            colorResource(R.color.navbar_button2)
-                                        )),
+                                        brush = Brush.horizontalGradient(
+                                            listOf(
+                                                colorResource(R.color.navbar_button),
+                                                colorResource(R.color.navbar_button2)
+                                            )
+                                        ),
                                         RoundedCornerShape(5.dp)
                                     )
                                     .padding(5.dp)
@@ -197,7 +202,7 @@ fun ProfilePageScreen(
                         }
                     ) {
                         Text(
-                            text = "Вийти",
+                            text = stringResource(R.string.profile_screen_logout),
                             style = AppTypography.bodyLarge,
                             textAlign = TextAlign.Center,
                             color = Color.White,
@@ -214,7 +219,7 @@ fun ProfilePageScreen(
                     Spacer(Modifier.height(20.dp))
                     Text(
                         style = AppTypography.bodyLarge,
-                        text = "Створені користувачем курси"
+                        text = stringResource(R.string.profile_screen_created_courses_label)
                     )
                 }
                 items(profile.coursePlans) { item ->
@@ -256,7 +261,10 @@ fun ProfilePageScreen(
                                     tint = colorResource(R.color.navbar_button)
                                 )
                                 Text(
-                                    text = "Тем: ${item.topics.size}",
+                                    text = stringResource(
+                                        R.string.profile_screen_topics_count,
+                                        item.topics.size
+                                    ),
                                     style = AppTypography.bodyMedium,
                                     color = colorResource(R.color.navbar_button)
                                 )

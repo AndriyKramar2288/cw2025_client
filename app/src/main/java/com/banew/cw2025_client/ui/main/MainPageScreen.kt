@@ -33,6 +33,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -65,7 +66,7 @@ fun MainPageScreen(viewModel : MainPageModel) {
     ) {
         item {
             Text(
-                text = "Популярні плани навчання",
+                text = stringResource(R.string.main_page_screen_recent_course_plans),
                 style = AppTypography.titleMedium,
                 modifier = Modifier.padding(5.dp)
             )
@@ -88,7 +89,9 @@ fun MainPageScreen(viewModel : MainPageModel) {
                     Modifier.fillMaxWidth(),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Column (modifier = Modifier.weight(1f).padding(10.dp)) {
+                    Column (modifier = Modifier
+                        .weight(1f)
+                        .padding(10.dp)) {
                         Text(
                             text = item.name,
                             style = AppTypography.titleLarge
@@ -144,7 +147,7 @@ fun MainPageScreen(viewModel : MainPageModel) {
             ) {
                 Text(
                     style = AppTypography.bodyMedium,
-                    text = "Не знайшли бажаний курс?\nCтворіть власний!",
+                    text = stringResource(R.string.main_page_screen_create_course_label),
                     color = colorResource(R.color.navbar_back)
                 )
                 IconButton (
@@ -193,7 +196,8 @@ fun SearchRow(viewModel: MainPageModel) {
             modifier = Modifier
                 .weight(1f),
             placeholder = { Text(
-                "Пошук...", style = AppTypography.bodySmall
+                stringResource(R.string.main_page_screen_search),
+                style = AppTypography.bodySmall
             ) },
             singleLine = true,
             colors = TextFieldDefaults.colors(

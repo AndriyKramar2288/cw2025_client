@@ -41,6 +41,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -91,14 +92,19 @@ class CourseViewModel(isMock: Boolean = false): ViewModel() {
             listOf(
                 TopicCompendiumDto(
                     652L,
-                    "ХУЙУЦЙКЛОЙШАЙЩУРРРЦГУРЦШАГУПЦШ",
+                    "НОТАТКИ",
                     CoursePlanBasicDto.TopicBasicDto(
                         1703L,
-                        "ТЕма!1",
-                        "ЙЦРВГАРГШЙУ"
+                        "ТЕМА",
+                        "ОПИС ТЕМИ"
                     ),
                     listOf(
-                        TopicCompendiumDto.ConceptBasicDto(null, "Хуй", "Їбать", false)
+                        TopicCompendiumDto.ConceptBasicDto(
+                            null,
+                            "КОНЦЕПТ",
+                            "ОПИС",
+                            false
+                        )
                     ),
                     CompendiumStatus.CURRENT
                 ),
@@ -111,7 +117,12 @@ class CourseViewModel(isMock: Boolean = false): ViewModel() {
                         "Desc 2"
                     ),
                     listOf(
-                        TopicCompendiumDto.ConceptBasicDto(null, "Хуй", "Їбать", false)
+                        TopicCompendiumDto.ConceptBasicDto(
+                            null,
+                            "ШЕ КОНЦЕПТ",
+                            "ШЕ ОПИС",
+                            false
+                        )
                     ),
                     CompendiumStatus.COMPLETED
                 )
@@ -211,13 +222,17 @@ fun CourseInfo(id: Long, viewModel: MainPageModel, courseModel: CourseViewModel)
             // Автор курсу
             Spacer(modifier = Modifier.height(16.dp))
             Text(
-                text = "Автор курсу",
+                text = stringResource(R.string.course_info_author),
                 style = AppTypography.bodyMedium,
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 10.dp)
             )
-            UserProfileCard(course.coursePlan.author, viewModel, Modifier.padding(horizontal = 20.dp))
+            UserProfileCard(
+                course.coursePlan.author,
+                viewModel,
+                Modifier.padding(horizontal = 20.dp)
+            )
 
             // Статистика курсу
             Spacer(modifier = Modifier.height(8.dp))
@@ -227,7 +242,7 @@ fun CourseInfo(id: Long, viewModel: MainPageModel, courseModel: CourseViewModel)
 
             // Прогрес тем
             Text(
-                text = "Прогрес навчання",
+                text = stringResource(R.string.course_info_study_progress),
                 style = AppTypography.bodyLarge,
                 modifier = Modifier
                     .fillMaxWidth()
@@ -260,7 +275,10 @@ fun CourseInfo(id: Long, viewModel: MainPageModel, courseModel: CourseViewModel)
 
             // Дата початку
             Text(
-                text = "Розпочато: ${formatDate(course.startedAt)}",
+                text = stringResource(
+                    R.string.course_info_started_at,
+                    formatDate(course.startedAt)
+                ),
                 style = AppTypography.bodySmall,
                 color = Color.Gray,
                 modifier = Modifier.padding(bottom = 16.dp)
@@ -297,7 +315,7 @@ fun CourseStats(course: CourseDetailedDto) {
             // Прогрес-бар
             Column(modifier = Modifier.fillMaxWidth()) {
                 Text(
-                    text = "Загальний прогрес",
+                    text = stringResource(R.string.course_info_basic_progress),
                     style = AppTypography.bodyMedium,
                     color = Color.White,
                     fontWeight = FontWeight.SemiBold,
@@ -333,13 +351,13 @@ fun CourseStats(course: CourseDetailedDto) {
                 horizontalArrangement = Arrangement.SpaceEvenly
             ) {
                 StatItem(
-                    label = "Завершено",
+                    label = stringResource(R.string.course_info_ended_topics_count_label),
                     value = "$completedTopics/$totalTopics",
                     icon = R.drawable.fact_check_40px
                 )
 
                 StatItem(
-                    label = "Концептів",
+                    label = stringResource(R.string.course_info_concepts_count_label),
                     value = totalConcepts.toString(),
                     icon = R.drawable.award_star_40px
                 )
@@ -480,7 +498,9 @@ fun TopicProgressCard(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            Row (Modifier.weight(5f).padding(16.dp)) {
+            Row (Modifier
+                .weight(5f)
+                .padding(16.dp)) {
                 // Інформація про тему
                 Column {
                     Text(
@@ -508,7 +528,10 @@ fun TopicProgressCard(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Text(
-                            text = "${compendium.concepts.size} концептів",
+                            text = stringResource(
+                                R.string.course_info_concepts_count,
+                                compendium.concepts.size
+                            ),
                             style = AppTypography.bodySmall,
                             color = if (type.isLocked) Color.LightGray else Color.Gray
                         )
@@ -517,7 +540,7 @@ fun TopicProgressCard(
                     // Нотатки (якщо є)
                     if (!compendium.notes.isNullOrBlank() && !type.isLocked) {
                         Text(
-                            text = "💡 Є нотатки",
+                            text = stringResource(R.string.course_info_notes_is_present),
                             style = AppTypography.bodySmall,
                             color = Color(0xFF2196F3),
                             modifier = Modifier.padding(top = 4.dp)

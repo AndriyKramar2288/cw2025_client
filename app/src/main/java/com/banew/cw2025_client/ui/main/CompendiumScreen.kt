@@ -51,6 +51,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -180,10 +181,10 @@ fun CompendiumScreen(topicId: Long, viewModel: MainPageModel, courseModel: Cours
                 showAlertNextTopic = false
             },
             buildString {
-                append("Після завершення теми ви зможете змінювати вміст конспекту")
-                appendLine(" лише крізь флеш-картки.")
-                if (isUnsavedChanges) appendLine("Ну і ще у вас є незбережені зміни!")
-                appendLine("Продовжити?")
+                appendLine(stringResource(R.string.compendium_screen_next_topic_alert))
+                if (isUnsavedChanges)
+                    appendLine(stringResource(R.string.compendium_screen_next_topic_unsaved))
+                appendLine(stringResource(R.string.compendium_screen_next_topic_continue))
             }
         )
 
@@ -196,7 +197,7 @@ fun CompendiumScreen(topicId: Long, viewModel: MainPageModel, courseModel: Cours
             {
                 showAlertSwitchWithoutSave = null
             },
-            "У вас є незбережені зміни! Продовжити без збереження?"
+            stringResource(R.string.compendium_screen_without_save_alert)
         )
 
         Column(
@@ -230,7 +231,9 @@ fun CompendiumScreen(topicId: Long, viewModel: MainPageModel, courseModel: Cours
                 style = AppTypography.titleLarge,
                 fontWeight = FontWeight.Bold,
                 textAlign = TextAlign.Center,
-                modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp)
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 8.dp)
             )
 
             // Опис теми
@@ -261,7 +264,8 @@ fun CompendiumScreen(topicId: Long, viewModel: MainPageModel, courseModel: Cours
             Spacer(modifier = Modifier.height(24.dp))
 
             CompendiumTextField(
-                notesText, "Власні нотатки", type,
+                notesText,
+                stringResource(R.string.compendium_screen_own_notes), type,
                 largeText = true
             ) { notesText = it }
 
@@ -288,7 +292,7 @@ fun CompendiumScreen(topicId: Long, viewModel: MainPageModel, courseModel: Cours
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        "У вас є незбережені зміни!",
+                        stringResource(R.string.compendium_screen_without_save_label),
                         style = AppTypography.bodySmall,
                     )
                     Spacer(Modifier.width(5.dp))
@@ -302,7 +306,7 @@ fun CompendiumScreen(topicId: Long, viewModel: MainPageModel, courseModel: Cours
                     ) {
                         Text(
                             style = AppTypography.bodySmall,
-                            text = "Зберегти"
+                            text = stringResource(R.string.compendium_screen_without_save_button)
                         )
                     }
                 }
@@ -344,10 +348,10 @@ fun CompendiumScreen(topicId: Long, viewModel: MainPageModel, courseModel: Cours
 @Composable
 fun StatusBadge(type: TopicProgressType) {
     val statusText = when (type) {
-        TopicProgressType.LOCKED -> "Заблоковано"
-        TopicProgressType.CAN_START -> "Можна почати"
-        TopicProgressType.COMPLETED -> "Завершено"
-        TopicProgressType.CURRENT -> "Поточна тема"
+        TopicProgressType.LOCKED -> stringResource(R.string.compendium_screen_status_locked)
+        TopicProgressType.CAN_START -> stringResource(R.string.compendium_screen_status_can_start)
+        TopicProgressType.COMPLETED -> stringResource(R.string.compendium_screen_status_completed)
+        TopicProgressType.CURRENT -> stringResource(R.string.compendium_screen_status_current)
     }
 
     Row (
@@ -403,7 +407,11 @@ fun StatusBadge(type: TopicProgressType) {
 }
 
 @Composable
-fun ConceptsSection(concepts: SnapshotStateList<ConceptForm>, type: TopicProgressType, onClick: (PagerState) -> Unit) {
+fun ConceptsSection(
+    concepts: SnapshotStateList<ConceptForm>,
+    type: TopicProgressType,
+    onClick: (PagerState) -> Unit
+) {
 
     val pagerState = rememberPagerState { concepts.size }
 
@@ -424,7 +432,7 @@ fun ConceptsSection(concepts: SnapshotStateList<ConceptForm>, type: TopicProgres
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = "Концепти",
+                    text = stringResource(R.string.compendium_screen_concepts),
                     style = AppTypography.bodyLarge
                 )
                 Text(
@@ -466,7 +474,7 @@ fun ConceptsSection(concepts: SnapshotStateList<ConceptForm>, type: TopicProgres
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Text(
-                    text = "Немає концептів для цієї теми",
+                    text = stringResource(R.string.compendium_screen_no_concepts),
                     style = AppTypography.bodyMedium,
                     color = Color.Gray,
                     textAlign = TextAlign.Center,
@@ -558,11 +566,13 @@ fun ConceptCard(concept: ConceptForm, type: TopicProgressType, onDeleteClick: ()
             modifier = Modifier.padding(horizontal = 16.dp)
         ) {
             CompendiumTextField(
-                concept.name, "Назва", type
+                concept.name,
+                stringResource(R.string.compendium_screen_concept_name), type
             ) { concept.name = it }
 
             CompendiumTextField(
-                concept.desc, "Опис", type,
+                concept.desc,
+                stringResource(R.string.compendium_screen_concept_desc), type,
                 largeText = true
             ) { concept.desc = it }
         }
@@ -650,7 +660,7 @@ fun InfoPanel(compendium: TopicCompendiumDto, type: TopicProgressType) {
         ) {
             InfoItem(
                 iconId = R.drawable.award_star_40px,
-                label = "Концептів",
+                label = stringResource(R.string.compendium_screen_concept_count),
                 value = compendium.concepts.size.toString(),
                 isActive = compendium.concepts.isEmpty()
             )
@@ -663,8 +673,12 @@ fun InfoPanel(compendium: TopicCompendiumDto, type: TopicProgressType) {
 
             InfoItem(
                 iconId = R.drawable.fact_check_40px,
-                label = "Нотатки",
-                value = if (compendium.notes.isNullOrBlank()) "Немає" else "Є",
+                label = stringResource(R.string.compendium_screen_notes_present_label),
+                value =
+                    if (compendium.notes.isNullOrBlank())
+                        stringResource(R.string.compendium_screen_notes_present_no)
+                    else
+                        stringResource(R.string.compendium_screen_notes_present_yes),
                 isActive = compendium.notes.isNullOrBlank()
             )
         }
@@ -735,10 +749,14 @@ private fun BottomPanelElement(type: BottomElementType, onClick: () -> Unit) {
             Text(
                 textAlign = TextAlign.Center,
                 text = when (type) {
-                    BottomElementType.PREV -> "Переглянути\nпопередню"
-                    BottomElementType.NEXT -> "Переглянути\nнаступну"
-                    BottomElementType.START_NEXT -> "Почати\nнаступну"
-                    BottomElementType.END -> "Завершити\nкурс"
+                    BottomElementType.PREV ->
+                        stringResource(R.string.compendium_screen_navigate_view_prev)
+                    BottomElementType.NEXT ->
+                        stringResource(R.string.compendium_screen_navigate_view_next)
+                    BottomElementType.START_NEXT ->
+                        stringResource(R.string.compendium_screen_navigate_start_next)
+                    BottomElementType.END ->
+                        stringResource(R.string.compendium_screen_navigate_end_course)
                 },
                 style = AppTypography.bodySmall
             )

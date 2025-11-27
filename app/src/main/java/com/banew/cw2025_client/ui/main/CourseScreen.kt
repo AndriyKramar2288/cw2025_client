@@ -40,6 +40,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
@@ -54,12 +55,12 @@ import com.banew.cw2025_client.ui.components.clockFormat
 import com.banew.cw2025_client.ui.theme.AppTypography
 import java.time.Instant
 
-private val FlashCardType.text: String
-    get() = when(this) {
-        FlashCardType.NEW -> "Нові"
-        FlashCardType.REPEAT -> "Повторення"
-        FlashCardType.STUDY -> "Вивчення"
-    }
+@Composable
+private fun FlashCardType.getText(): String = when (this) {
+    FlashCardType.NEW -> stringResource(R.string.course_screen_cards_new)
+    FlashCardType.REPEAT -> stringResource(R.string.course_screen_cards_repeat)
+    FlashCardType.STUDY -> stringResource(R.string.course_screen_cards_study)
+}
 
 private val FlashCardType.iconId: Int
     get() = when(this) {
@@ -99,11 +100,13 @@ fun CourseScreen(viewModel: MainPageModel) {
 
         Spacer(Modifier.height(20.dp))
         Row(
-            Modifier.fillMaxWidth().padding(horizontal = 20.dp),
+            Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 20.dp),
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             Text(
-                text = "Мої курси",
+                text = stringResource(R.string.course_screen_my_courses),
                 style = AppTypography.titleMedium,
                 modifier = Modifier.padding(5.dp)
             )
@@ -149,7 +152,7 @@ private fun CardStatsDisplayer(stats: FlashCardDayStats, onClick: () -> Unit) {
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
-            text = "Вивчення концептів",
+            text = stringResource(R.string.course_screen_concept_studying),
             style = AppTypography.titleMedium,
             modifier = Modifier.padding(5.dp)
         )
@@ -161,7 +164,9 @@ private fun CardStatsDisplayer(stats: FlashCardDayStats, onClick: () -> Unit) {
         )
         Spacer(Modifier.height(25.dp))
         Row(
-            Modifier.fillMaxWidth().padding(horizontal = 20.dp)
+            Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 20.dp)
         ) {
             Column(
                 Modifier.weight(1f)
@@ -183,9 +188,12 @@ private fun CardStatsDisplayer(stats: FlashCardDayStats, onClick: () -> Unit) {
                 ) {
                     Text(
                         text = when {
-                            (!isPassed) -> "Розпочати вивчення"
-                            stats.reviewNumber == 0 -> "Нема шо проходити!"
-                            else -> "Вже пройдено!"
+                            (!isPassed) ->
+                                stringResource(R.string.course_screen_concept_studying_start)
+                            stats.reviewNumber == 0 ->
+                                stringResource(R.string.course_screen_concept_studying_empty)
+                            else ->
+                                stringResource(R.string.course_screen_concept_studying_ended)
                         },
                         style = AppTypography.bodySmall,
                         color = Color.White
@@ -195,7 +203,9 @@ private fun CardStatsDisplayer(stats: FlashCardDayStats, onClick: () -> Unit) {
             VerticalDivider(
                 thickness = 2.dp,
                 color = colorResource(R.color.navbar_button2),
-                modifier = Modifier.padding(2.dp).heightIn(max = 130.dp)
+                modifier = Modifier
+                    .padding(2.dp)
+                    .heightIn(max = 130.dp)
             )
             Column(
                 Modifier.weight(2f)
@@ -214,7 +224,7 @@ private fun CardStatsDisplayer(stats: FlashCardDayStats, onClick: () -> Unit) {
                     ) {
                         Text(
                             modifier = Modifier.weight(1f),
-                            text = p0.text,
+                            text = p0.getText(),
                             style = AppTypography.bodySmall
                         )
                         Row(
@@ -254,7 +264,11 @@ private fun CardStatsDisplayer(stats: FlashCardDayStats, onClick: () -> Unit) {
             Text(
                 style = AppTypography.bodySmall,
                 fontSize = 10.sp,
-                text = "Переглянуто карток: ${stats.reviewNumber} | В середньому часу: ${stats.reviewDuration.clockFormat()}"
+                text = stringResource(
+                    R.string.course_screen_concept_studying_label,
+                    stats.reviewNumber,
+                    stats.reviewDuration.clockFormat()
+                )
             )
         }
     }
@@ -305,12 +319,12 @@ private fun CourseCard(course: CourseBasicDto, viewModel: MainPageModel) {
             // Автор курсу
             Row (verticalAlignment = Alignment.CenterVertically) {
                 Text(
-                    text = "Автор: ",
+                    text = stringResource(R.string.course_screen_course_author),
                     style = AppTypography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
                 Text(
-                    text = course.coursePlan.author.username ?: "Невідомий",
+                    text = course.coursePlan.author.username,
                     style = AppTypography.bodyMedium
                 )
             }
@@ -336,12 +350,18 @@ private fun CourseCard(course: CourseBasicDto, viewModel: MainPageModel) {
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 ProgressBlock(
-                    text = "Тем: ${course.totalTopics}",
+                    text = stringResource(
+                        R.string.course_screen_course_topics_count,
+                        course.totalTopics
+                    ),
                     iconId = R.drawable.fact_check_40px
                 )
 
                 ProgressBlock(
-                    text = "Концептів: ${course.totalConcepts}",
+                    text = stringResource(
+                        R.string.course_screen_course_concepts_count,
+                        course.totalConcepts
+                    ),
                     iconId = R.drawable.award_star_40px
                 )
             }
@@ -354,7 +374,7 @@ private fun CourseCard(course: CourseBasicDto, viewModel: MainPageModel) {
                 Spacer(modifier = Modifier.height(8.dp))
 
                 Text(
-                    text = "Поточна тема:",
+                    text = stringResource(R.string.course_screen_course_current_topic),
                     style = AppTypography.labelMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
@@ -368,7 +388,10 @@ private fun CourseCard(course: CourseBasicDto, viewModel: MainPageModel) {
             // Дата початку
             Spacer(modifier = Modifier.height(8.dp))
             Text(
-                text = "Розпочато: ${formatDate(course.startedAt)}",
+                text = stringResource(
+                    R.string.course_screen_course_started_at,
+                    formatDate(course.startedAt)
+                ),
                 style = AppTypography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )

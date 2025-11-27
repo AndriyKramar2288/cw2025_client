@@ -45,6 +45,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
@@ -116,7 +117,7 @@ fun GreetingsStep2(
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             Text(
-                text = "Вітаємо!",
+                text = stringResource(R.string.login_form_hello),
                 style = AppTypography.headlineLarge,
             )
 
@@ -127,9 +128,10 @@ fun GreetingsStep2(
                     .fillMaxWidth()
                     .background(
                         colorResource(R.color.navbar_button).copy(alpha = 0.7f)
-                    ).padding(10.dp),
+                    )
+                    .padding(10.dp),
                 textAlign = TextAlign.Center,
-                text = "Увійдіть до свого акаунту",
+                text = stringResource(R.string.login_form_label),
                 style = AppTypography.bodyLarge,
                 color = Color.White
             )
@@ -138,13 +140,13 @@ fun GreetingsStep2(
             modifier = Modifier.padding(bottom = 48.dp)
         ) {
             SwitchButton(
-                text = "Увійти",
+                text = stringResource(R.string.login_form_login),
                 isEnabled = !isLogin,
             ) {
                 isLogin = true
             }
             SwitchButton(
-                text = "Зареєструватись",
+                text = stringResource(R.string.login_form_sign_in),
                 isEnabled = isLogin,
             ) {
                 isLogin = false
@@ -153,37 +155,37 @@ fun GreetingsStep2(
 
         // Email Field
         FormField(
-            "Електронна скринька",
+            stringResource(R.string.login_form_field_email),
             "example@email.com",
             android.R.drawable.ic_dialog_email,
             viewModel.email,
             viewModel.email.isNotEmpty() && !Patterns.EMAIL_ADDRESS.matcher(
                 viewModel.email
             ).matches(),
-            "Введіть коректну email адресу",
+            stringResource(R.string.login_form_field_email_alert),
         ) { viewModel.email = it }
 
         if (!isLogin) {
             // Username Field
             FormField(
-                "Ім'я користувача",
-                "Введіть псевдонім...",
+                stringResource(R.string.login_form_field_username),
+                stringResource(R.string.login_form_field_username_placeholder),
                 android.R.drawable.star_on,
                 viewModel.username,
                 viewModel.username.isNotEmpty() && viewModel.username.length <= 5,
-                "Псевдо має бути не менше 5 символів",
+                stringResource(R.string.login_form_field_username_alert),
             ) { viewModel.username = it }
             // Photo Field
             FormField(
-                "Посилання на аватар користувача",
-                "Вставте посилання на фото...",
+                stringResource(R.string.login_form_field_photo),
+                stringResource(R.string.login_form_field_photo_placeholder),
                 android.R.drawable.ic_menu_mapmode,
                 viewModel.photoSrc
             ) { viewModel.photoSrc = it }
 
             AsyncImage( // coil-compose
                 model = viewModel.photoSrc,
-                contentDescription = "Фото",
+                contentDescription = "Photo",
                 modifier = Modifier
                     .padding(bottom = 16.dp)
                     .size(80.dp)
@@ -195,12 +197,12 @@ fun GreetingsStep2(
 
         // Password Field
         FormField(
-            "Пароль",
-            "Введіть пароль",
+            stringResource(R.string.login_form_field_password),
+            stringResource(R.string.login_form_field_password_placeholder),
             android.R.drawable.ic_lock_idle_lock,
             viewModel.password,
             viewModel.password.isNotEmpty() && viewModel.password.length < 8,
-            "Пароль повинен містити більше 8 символів",
+            stringResource(R.string.login_form_field_password_alert),
             isPassword = true,
         ) { viewModel.password = it }
 
@@ -210,7 +212,7 @@ fun GreetingsStep2(
         viewModel.loginResult?.let { result ->
             if (result.isError) {
                 ErrorBox(
-                    text = "Невірний email або пароль",
+                    text = stringResource(R.string.login_form_alert),
                     modifier = Modifier.padding(bottom = 16.dp)
                 )
             }
@@ -243,7 +245,11 @@ fun GreetingsStep2(
                 )
             } else {
                 Text(
-                    text = if (isLogin) "Увійти" else "Зареєструватись",
+                    text =
+                        if (isLogin)
+                            stringResource(R.string.login_form_login)
+                        else
+                            stringResource(R.string.login_form_sign_in),
                     fontSize = 18.sp,
                     fontWeight = FontWeight.SemiBold
                 )
@@ -253,7 +259,7 @@ fun GreetingsStep2(
 
     // Loading Overlay
     if (viewModel.isLoading) {
-        LoadingBox("Вхід...")
+        LoadingBox(stringResource(R.string.login_form_loading))
     }
 }
 
@@ -289,7 +295,7 @@ private fun FormField(
                             else
                                 android.R.drawable.ic_secure
                         ),
-                        contentDescription = if (passwordVisible) "Сховати пароль" else "Показати пароль",
+                        contentDescription = if (passwordVisible) "hide" else "show",
                         tint = Color(0xFF607D8B)
                     )
                 }

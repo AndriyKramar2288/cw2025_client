@@ -36,6 +36,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
@@ -54,7 +55,7 @@ private fun LoadingPreview() {
 @Composable
 @Preview(showBackground = true)
 private fun DeathPreview() {
-    DeathBox("Помилка!", "Спробувати ще раz") {}
+    DeathBox("Помилка!", "Спробувати ще раз") {}
 }
 
 @Composable
@@ -126,7 +127,7 @@ fun UserProfileCard(userProfile: UserProfileBasicDto, model: MainPageModel, modi
         ) {
             AsyncImage( // coil-compose
                 model = userProfile.photoSrc ?: "",
-                contentDescription = "Автор",
+                contentDescription = "author",
                 modifier = Modifier
                     .size(60.dp)
                     .clip(CircleShape)
@@ -153,12 +154,16 @@ fun DeathBox(text1: String, text2: String, onClick: () -> Unit) {
     Box (
         modifier = Modifier
             .fillMaxSize()
-            .background(brush = Brush.verticalGradient(colors = listOf(
-                Color.Black.copy(alpha = 0.3f),
-                Color(0x8B973232),
-                Color(0x8B973232),
-                Color.Transparent,
-            )))
+            .background(
+                brush = Brush.verticalGradient(
+                    colors = listOf(
+                        Color.Black.copy(alpha = 0.3f),
+                        Color(0x8B973232),
+                        Color(0x8B973232),
+                        Color.Transparent,
+                    )
+                )
+            )
             .clickable(enabled = false) { },
         contentAlignment = Alignment.Center
     ) {
@@ -208,12 +213,16 @@ fun LoadingBox(text: String) {
     Box (
         modifier = Modifier
             .fillMaxSize()
-            .background(brush = Brush.verticalGradient(colors = listOf(
-                Color.Black.copy(alpha = 0.3f),
-                Color.Black.copy(alpha = 0.3f),
-                Color.Black.copy(alpha = 0.3f),
-                Color.Transparent,
-            )))
+            .background(
+                brush = Brush.verticalGradient(
+                    colors = listOf(
+                        Color.Black.copy(alpha = 0.3f),
+                        Color.Black.copy(alpha = 0.3f),
+                        Color.Black.copy(alpha = 0.3f),
+                        Color.Transparent,
+                    )
+                )
+            )
             .clickable(enabled = false) { },
         contentAlignment = Alignment.Center
     ) {
@@ -303,7 +312,7 @@ fun AlertDialogWrap(
     isVisible: Boolean,
     onConfirm: () -> Unit,
     onDismiss: () -> Unit,
-    message: String = "Ви впевнені, що хочете продовжити?"
+    message: String = stringResource(R.string.common_are_you_sure)
 ) {
     if (isVisible) {
         AlertDialog(
@@ -313,14 +322,14 @@ fun AlertDialogWrap(
             confirmButton = {
                 TextButton(onClick = {
                     onConfirm()
-                }) { Text("Так") }
+                }) { Text(stringResource(R.string.common_yes)) }
             },
             dismissButton = {
                 TextButton(onClick = {
                     onDismiss()
-                }) { Text("Скасувати") }
+                }) { Text(stringResource(R.string.common_cancel)) }
             },
-            title = { Text("Підтвердження") },
+            title = { Text(stringResource(R.string.common_confirm)) },
             text = { Text(message) },
             shape = RoundedCornerShape(3.dp),
             textContentColor = Color.DarkGray,

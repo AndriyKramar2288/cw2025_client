@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Seezu</string>
+    <string name="title_activity_main">MainActivity</string>
+    <string name="title_activity_start">StartActivity</string>
+
+
+
+    <string name="greetings_app_real_name">SEEZU</string>
+    <string name="greetings_app_desc">
+        Застосунок для контрольованого та продуктивного самонавчання
+        з гарантованим результатом.
+    </string>
+    <string name="greetings_continue">Продовжити...</string>
+
+
+
+    <string name="compendium_screen_next_topic_alert">Після завершення теми ви зможете змінювати вміст конспекту лише крізь флеш-картки.</string>
+    <string name="compendium_screen_next_topic_unsaved">Ну і ще у вас є незбережені зміни!</string>
+    <string name="compendium_screen_next_topic_continue">Продовжити?</string>
+    <string name="compendium_screen_without_save_alert">У вас є незбережені зміни! Продовжити без збереження?</string>
+    <string name="compendium_screen_own_notes">Власні нотатки</string>
+    <string name="compendium_screen_without_save_label">У вас є незбережені зміни!</string>
+    <string name="compendium_screen_without_save_button">Зберегти</string>
+    <string name="compendium_screen_status_locked">Заблоковано</string>
+    <string name="compendium_screen_status_can_start">Можна почати</string>
+    <string name="compendium_screen_status_completed">Завершено</string>
+    <string name="compendium_screen_status_current">Поточна тема</string>
+    <string name="compendium_screen_concepts">Концепти</string>
+    <string name="compendium_screen_no_concepts">Немає концептів для цієї теми</string>
+    <string name="compendium_screen_concept_name">Назва</string>
+    <string name="compendium_screen_concept_desc">Опис</string>
+    <string name="compendium_screen_concept_count">Концептів</string>
+    <string name="compendium_screen_notes_present_label">Нотатки</string>
+    <string name="compendium_screen_notes_present_no">Немає</string>
+    <string name="compendium_screen_notes_present_yes">Є</string>
+    <string name="compendium_screen_navigate_view_prev">Переглянути\nпопередню</string>
+    <string name="compendium_screen_navigate_view_next">Переглянути\nнаступну</string>
+    <string name="compendium_screen_navigate_start_next">Почати\nнаступну</string>
+    <string name="compendium_screen_navigate_end_course">Завершити\nкурс</string>
+
+
+
+    <string name="course_info_author">Автор курсу</string>
+    <string name="course_info_study_progress">Прогрес навчання</string>
+    <string name="course_info_started_at">Розпочато: %1$s</string>
+    <string name="course_info_basic_progress">Загальний прогрес</string>
+    <string name="course_info_ended_topics_count_label">Завершено</string>
+    <string name="course_info_concepts_count_label">Концептів</string>
+    <string name="course_info_concepts_count">%1$d концептів</string>
+    <string name="course_info_notes_is_present">💡 Є нотатки</string>
+
+
+
+    <string name="course_plan_creation_label">Створення курсу</string>
+    <string name="course_plan_creation_name_label">Назва...</string>
+    <string name="course_plan_creation_desc_label">Опис...</string>
+    <string name="course_plan_creation_name_alert">Назва має бути розміром 5..255 включно</string>
+    <string name="course_plan_creation_add_topic">Додати тему</string>
+    <string name="course_plan_creation_error">Помилка створення!</string>
+    <string name="course_plan_creation_create">Створити</string>
+    <string name="course_plan_creation_creating">Створення...</string>
+    <string name="course_plan_info_topics">Теми курсу</string>
+    <string name="course_plan_info_join">Доєднатись до курсу</string>
+    <string name="course_plan_info_goto">Перейти до прогресу</string>
+
+
+
+    <string name="course_screen_cards_new">Нові</string>
+    <string name="course_screen_cards_repeat">Повторення</string>
+    <string name="course_screen_cards_study">Вивчення</string>
+    <string name="course_screen_my_courses">Мої курси</string>
+    <string name="course_screen_concept_studying">Вивчення концептів</string>
+    <string name="course_screen_concept_studying_start">Розпочати вивчення</string>
+    <string name="course_screen_concept_studying_empty">Нема шо проходити!</string>
+    <string name="course_screen_concept_studying_ended">Вже пройдено!</string>
+    <string name="course_screen_concept_studying_label">Переглянуто карток: %1$s | В середньому часу: %2$s</string>
+    <string name="course_screen_course_author">"Автор: "</string>
+    <string name="course_screen_course_topics_count">Тем: %1$s</string>
+    <string name="course_screen_course_concepts_count">Концептів: %1$s</string>
+    <string name="course_screen_course_current_topic">Поточна тема:</string>
+    <string name="course_screen_course_started_at">Розпочато: %1$s</string>
+
+
+
+    <string name="card_screen_state_bad">Погано</string>
+    <string name="card_screen_state_easy">Легко</string>
+    <string name="card_screen_state_forget">Забув</string>
+    <string name="card_screen_state_ok">Норм</string>
+    <string name="card_screen_button_text">%1$s\n%2$s дня</string>
+    <string name="card_screen_ended">Наразі це все!</string>
+    <string name="card_screen_left_count">Залишилось: %1$d</string>
+    <string name="card_screen_show">Показати</string>
+    <string name="card_screen_edit_name">Назва</string>
+    <string name="card_screen_edit_desc">Опис</string>
+    <string name="card_screen_edit_cancel">Скасувати</string>
+    <string name="card_screen_edit_save">Зберегти</string>
+
+
+
+    <string name="main_activity_error">Помилка</string>
+    <string name="main_activity_nav_main">Головна</string>
+    <string name="main_activity_nav_progress">Прогрес</string>
+    <string name="main_activity_nav_profile">Профіль</string>
+    <string name="main_activity_loading">Завантаження...</string>
+    <string name="main_activity_internet_error">Помилка з\'єднання!</string>
+    <string name="main_activity_try_again">Спробувати ще раз</string>
+
+
+
+    <string name="main_page_screen_recent_course_plans">Популярні плани навчання</string>
+    <string name="main_page_screen_create_course_label">Не знайшли бажаний курс?\nCтворіть власний!</string>
+    <string name="main_page_screen_search">Пошук...</string>
+
+
+
+    <string name="profile_screen_logout">Вийти</string>
+    <string name="profile_screen_created_courses_label">Створені користувачем курси</string>
+    <string name="profile_screen_topics_count">Тем: %1$d</string>
+
+
+
+    <string name="login_form_hello">Вітаємо!</string>
+    <string name="login_form_label">Увійдіть до свого акаунту</string>
+    <string name="login_form_login">Увійти</string>
+    <string name="login_form_sign_in">Зареєструватись</string>
+    <string name="login_form_field_email">Електронна скринька</string>
+    <string name="login_form_field_email_alert">Введіть коректну email адресу</string>
+    <string name="login_form_field_username">Ім\'я користувача</string>
+    <string name="login_form_field_username_placeholder">Введіть псевдонім...</string>
+    <string name="login_form_field_username_alert">Псевдо має бути не менше 5 символів</string>
+    <string name="login_form_field_photo">Посилання на аватар користувача</string>
+    <string name="login_form_field_photo_placeholder">Вставте посилання на фото...</string>
+    <string name="login_form_field_password">Пароль</string>
+    <string name="login_form_field_password_placeholder">Введіть пароль</string>
+    <string name="login_form_field_password_alert">Пароль повинен містити більше 8 символів</string>
+    <string name="login_form_alert">Невірний email або пароль</string>
+    <string name="login_form_loading">Вхід...</string>
+
+
+
+    <string name="common_are_you_sure">Ви впевнені, що хочете продовжити?</string>
+    <string name="common_cancel">Скасувати</string>
+    <string name="common_confirm">Підтвердження</string>
+    <string name="common_yes">Так</string>
+</resources>

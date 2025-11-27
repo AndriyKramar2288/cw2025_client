@@ -28,6 +28,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -54,7 +55,7 @@ class CoursePlanCreationViewModel(val isMock: Boolean = false): ViewModel() {
     var descFieldValue by mutableStateOf("")
     var topicList by mutableStateOf(
         if (isMock) listOf(
-            DataSource.TopicForm("ХУЙ", "ЇБАТЬ")
+            DataSource.TopicForm("TOPIC", "DESC")
         ).flatMap { listOf(it, it, it) } else emptyList()
     )
     var lastResult by mutableStateOf<Result<CoursePlanBasicDto>?>(null)
@@ -107,7 +108,7 @@ fun CoursePlanCreationComponent(
                     )
                     .padding(vertical = 10.dp),
                 textAlign = TextAlign.Center,
-                text = "Створення курсу",
+                text = stringResource(R.string.course_plan_creation_label),
                 style = AppTypography.titleMedium,
                 color = colorResource(R.color.navbar_back)
             )
@@ -118,13 +119,15 @@ fun CoursePlanCreationComponent(
                 color = colorResource(R.color.navbar_button)
             )
             CoursePlanTextField(
-                formModel.nameFieldValue, "Назва...",
+                formModel.nameFieldValue, stringResource(R.string.course_plan_creation_name_label),
                 { it.length !in 5..255 },
-                "Назва має бути розміром 5..255 включно"
+                stringResource(R.string.course_plan_creation_name_alert)
             ) {
                 formModel.nameFieldValue = it
             }
-            CoursePlanTextField(formModel.descFieldValue, "Опис...") {
+            CoursePlanTextField(formModel.descFieldValue,
+                stringResource(R.string.course_plan_creation_desc_label)
+            ) {
                 formModel.descFieldValue = it
             }
             Row (
@@ -162,7 +165,7 @@ fun CoursePlanCreationComponent(
                             )
                         )
                         .padding(vertical = 10.dp, horizontal = 50.dp),
-                    text = "Додати тему",
+                    text = stringResource(R.string.course_plan_creation_add_topic),
                     style = AppTypography.bodyMedium,
                     color = Color.DarkGray
                 )
@@ -201,13 +204,17 @@ fun CoursePlanCreationComponent(
                             .padding(bottom = 5.dp)
                     ) {
                         CoursePlanTextField(
-                            item.name.value, "Назва...",
+                            item.name.value,
+                            stringResource(R.string.course_plan_creation_name_label),
                             { it.length !in 5..255 },
-                            "Назва має бути розміром 5..255 включно"
+                            stringResource(R.string.course_plan_creation_name_alert),
                         ) {
                             item.name.value = it
                         }
-                        CoursePlanTextField(item.desc.value, "Опис...") {
+                        CoursePlanTextField(
+                            item.desc.value,
+                            stringResource(R.string.course_plan_creation_desc_label)
+                        ) {
                             item.desc.value = it
                         }
                     }
@@ -221,7 +228,8 @@ fun CoursePlanCreationComponent(
             formModel.lastResult?.let { result ->
                 if (result.isError) {
                     ErrorBox(
-                        text = result.asError().error.message ?: "Помилка створення!",
+                        text = result.asError().error.message
+                            ?: stringResource(R.string.course_plan_creation_error),
                         modifier = Modifier.padding(top = 10.dp)
                     )
                 }
@@ -239,14 +247,14 @@ fun CoursePlanCreationComponent(
                     .padding(top = 20.dp),
             ) {
                 Text(
-                    text = "Створити",
+                    text = stringResource(R.string.course_plan_creation_create),
                     style = AppTypography.titleLarge,
                     color = colorResource(R.color.navbar_back)
                 )
             }
         }
         if (formModel.isLoading) {
-            LoadingBox("Створення...")
+            LoadingBox(stringResource(R.string.course_plan_creation_creating))
         }
     }
 }

@@ -31,11 +31,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity
-            android:name=".ui.grave.TestJetpackActivity"
-            android:exported="false"
-            android:label="@string/title_activity_test_jetpack"
-            android:theme="@style/Theme.Cw2025_client" />
 
         <meta-data
             android:name="preloaded_fonts"

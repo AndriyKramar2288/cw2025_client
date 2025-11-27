@@ -33,6 +33,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -86,7 +87,9 @@ fun MainScreen(viewModel : MainPageModel = viewModel<MainPageModel>()) {
 
     LaunchedEffect(viewModel.lastException) {
         viewModel.lastException?.let { e ->
-            Toast.makeText(context, e.message ?: "Помилка", Toast.LENGTH_SHORT).show()
+            Toast.makeText(context,
+                e.message ?: context.getString(R.string.main_activity_error),
+                Toast.LENGTH_SHORT).show()
             viewModel.lastException = null
         }
     }
@@ -135,19 +138,19 @@ fun MainScreen(viewModel : MainPageModel = viewModel<MainPageModel>()) {
                     MyNavigationItem(
                         "home",
                         R.drawable.globe_24px,
-                        "Головна",
+                        stringResource(R.string.main_activity_nav_main),
                         viewModel
                     )
                     MyNavigationItem(
                         "courses",
                         R.drawable.book_2_24px,
-                        "Прогрес",
+                        stringResource(R.string.main_activity_nav_progress),
                         viewModel
                     )
                     MyNavigationItem(
                         "profile",
                         R.drawable.contacts_product_24px,
-                        "Профіль",
+                        stringResource(R.string.main_activity_nav_profile),
                         viewModel
                     )
                 }
@@ -214,10 +217,13 @@ fun MainScreen(viewModel : MainPageModel = viewModel<MainPageModel>()) {
                         )
                 )
                 if (viewModel.isRefreshing) {
-                    LoadingBox("Завантаження...")
+                    LoadingBox(stringResource(R.string.main_activity_loading))
                 }
                 if (viewModel.isConnectionError) {
-                    DeathBox("Помилка з'єднання!", "Спробувати ще раз") {
+                    DeathBox(
+                        stringResource(R.string.main_activity_internet_error),
+                        stringResource(R.string.main_activity_try_again)
+                    ) {
                         viewModel.updateConnectionError(false)
                         viewModel.refresh()
                     }

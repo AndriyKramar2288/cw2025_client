@@ -1,119 +1,146 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Seezu</string>
-    <!--    Greetings page        -->
-    <string name="greetings_app_real_name">SEEZU</string>
-    <string name="greetings_app_desc">
-        Застосунок для контрольованого та продуктивного самонавчання
-        з гарантованим результатом.
-    </string>
-    <string name="greetings_continue">Продовжити...</string>
-    <!-- Strings related to login -->
-    <string name="prompt_email">Електронна скринька</string>
-    <string name="prompt_password">Пароль</string>
-    <string name="action_sign_in">Зареєструватись або увійти</string>
-    <string name="action_sign_in_short">Увійти</string>
-    <string name="welcome">"Вітаємо!"</string>
-    <string name="invalid_username">Електронна скринька некоректна!</string>
-    <string name="invalid_password">Пароль повинен мати довжину не менше 8 символів!</string>
-    <string name="login_error">"Електронна скринька або пароль некоректні!"</string>
-    <string name="network_error">"Помилка з'єднання!"</string>
-    <string name="large_text">
-        "Material is the metaphor.\n\n"
-
-        "A material metaphor is the unifying theory of a rationalized space and a system of motion."
-        "The material is grounded in tactile reality, inspired by the study of paper and ink, yet "
-        "technologically advanced and open to imagination and magic.\n"
-        "Surfaces and edges of the material provide visual cues that are grounded in reality. The "
-        "use of familiar tactile attributes helps users quickly understand affordances. Yet the "
-        "flexibility of the material creates new affordances that supercede those in the physical "
-        "world, without breaking the rules of physics.\n"
-        "The fundamentals of light, surface, and movement are key to conveying how objects move, "
-        "interact, and exist in space and in relation to each other. Realistic lighting shows "
-        "seams, divides space, and indicates moving parts.\n\n"
-
-        "Bold, graphic, intentional.\n\n"
-
-        "The foundational elements of print based design typography, grids, space, scale, color, "
-        "and use of imagery guide visual treatments. These elements do far more than please the "
-        "eye. They create hierarchy, meaning, and focus. Deliberate color choices, edge to edge "
-        "imagery, large scale typography, and intentional white space create a bold and graphic "
-        "interface that immerse the user in the experience.\n"
-        "An emphasis on user actions makes core functionality immediately apparent and provides "
-        "waypoints for the user.\n\n"
-
-        "Motion provides meaning.\n\n"
-
-        "Motion respects and reinforces the user as the prime mover. Primary user actions are "
-        "inflection points that initiate motion, transforming the whole design.\n"
-        "All action takes place in a single environment. Objects are presented to the user without "
-        "breaking the continuity of experience even as they transform and reorganize.\n"
-        "Motion is meaningful and appropriate, serving to focus attention and maintain continuity. "
-        "Feedback is subtle yet clear. Transitions are efﬁcient yet coherent.\n\n"
-
-        "3D world.\n\n"
-
-        "The material environment is a 3D space, which means all objects have x, y, and z "
-        "dimensions. The z-axis is perpendicularly aligned to the plane of the display, with the "
-        "positive z-axis extending towards the viewer. Every sheet of material occupies a single "
-        "position along the z-axis and has a standard 1dp thickness.\n"
-        "On the web, the z-axis is used for layering and not for perspective. The 3D world is "
-        "emulated by manipulating the y-axis.\n\n"
-
-        "Light and shadow.\n\n"
-
-        "Within the material environment, virtual lights illuminate the scene. Key lights create "
-        "directional shadows, while ambient light creates soft shadows from all angles.\n"
-        "Shadows in the material environment are cast by these two light sources. In Android "
-        "development, shadows occur when light sources are blocked by sheets of material at "
-        "various positions along the z-axis. On the web, shadows are depicted by manipulating the "
-        "y-axis only. The following example shows the card with a height of 6dp.\n\n"
-
-        "Resting elevation.\n\n"
-
-        "All material objects, regardless of size, have a resting elevation, or default elevation "
-        "that does not change. If an object changes elevation, it should return to its resting "
-        "elevation as soon as possible.\n\n"
-
-        "Component elevations.\n\n"
-
-        "The resting elevation for a component type is consistent across apps (e.g., FAB elevation "
-        "does not vary from 6dp in one app to 16dp in another app).\n"
-        "Components may have different resting elevations across platforms, depending on the depth "
-        "of the environment (e.g., TV has a greater depth than mobile or desktop).\n\n"
-
-        "Responsive elevation and dynamic elevation offsets.\n\n"
-
-        "Some component types have responsive elevation, meaning they change elevation in response "
-        "to user input (e.g., normal, focused, and pressed) or system events. These elevation "
-        "changes are consistently implemented using dynamic elevation offsets.\n"
-        "Dynamic elevation offsets are the goal elevation that a component moves towards, relative "
-        "to the component’s resting state. They ensure that elevation changes are consistent "
-        "across actions and component types. For example, all components that lift on press have "
-        "the same elevation change relative to their resting elevation.\n"
-        "Once the input event is completed or cancelled, the component will return to its resting "
-        "elevation.\n\n"
-
-        "Avoiding elevation interference.\n\n"
-
-        "Components with responsive elevations may encounter other components as they move between "
-        "their resting elevations and dynamic elevation offsets. Because material cannot pass "
-        "through other material, components avoid interfering with one another any number of ways, "
-        "whether on a per component basis or using the entire app layout.\n"
-        "On a component level, components can move or be removed before they cause interference. "
-        "For example, a floating action button (FAB) can disappear or move off screen before a "
-        "user picks up a card, or it can move if a snackbar appears.\n"
-        "On the layout level, design your app layout to minimize opportunities for interference. "
-        "For example, position the FAB to one side of stream of a cards so the FAB won’t interfere "
-        "when a user tries to pick up one of cards.\n\n"
-    </string>
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
-    <string name="main_main_page">Головна</string>
-    <string name="main_my_courses">Мої курси</string>
-    <string name="main_profile">Профіль</string>
-    <string name="main_page_course_plan_list_label">Оберіть план навчання</string>
-    <string name="main_page_create_course_plan_label">Не знайшли бажаний курс?\nСтворіть власний!</string>
-    <string name="title_activity_test_jetpack">TestJetpackActivity</string>
     <string name="title_activity_main">MainActivity</string>
     <string name="title_activity_start">StartActivity</string>
+
+
+
+    <string name="greetings_app_real_name">SEEZU</string>
+    <string name="greetings_app_desc">
+        An app for controlled and productive self-learning
+        with guaranteed results.
+    </string>
+    <string name="greetings_continue">Continue...</string>
+
+
+
+    <string name="compendium_screen_next_topic_alert">After completing the topic, you will only be able to modify the compendium content through flashcards.</string>
+    <string name="compendium_screen_next_topic_unsaved">Also, you have unsaved changes!</string>
+    <string name="compendium_screen_next_topic_continue">Continue?</string>
+    <string name="compendium_screen_without_save_alert">You have unsaved changes! Continue without saving?</string>
+    <string name="compendium_screen_own_notes">Personal Notes</string>
+    <string name="compendium_screen_without_save_label">You have unsaved changes!</string>
+    <string name="compendium_screen_without_save_button">Save</string>
+    <string name="compendium_screen_status_locked">Locked</string>
+    <string name="compendium_screen_status_can_start">Can Start</string>
+    <string name="compendium_screen_status_completed">Completed</string>
+    <string name="compendium_screen_status_current">Current Topic</string>
+    <string name="compendium_screen_concepts">Concepts</string>
+    <string name="compendium_screen_no_concepts">No concepts for this topic</string>
+    <string name="compendium_screen_concept_name">Name</string>
+    <string name="compendium_screen_concept_desc">Description</string>
+    <string name="compendium_screen_concept_count">Concepts</string>
+    <string name="compendium_screen_notes_present_label">Notes</string>
+    <string name="compendium_screen_notes_present_no">None</string>
+    <string name="compendium_screen_notes_present_yes">Present</string>
+    <string name="compendium_screen_navigate_view_prev">View\nPrevious</string>
+    <string name="compendium_screen_navigate_view_next">View\nNext</string>
+    <string name="compendium_screen_navigate_start_next">Start\nNext</string>
+    <string name="compendium_screen_navigate_end_course">End\nCourse</string>
+
+
+
+    <string name="course_info_author">Course Author</string>
+    <string name="course_info_study_progress">Study Progress</string>
+    <string name="course_info_started_at">Started: %1$s</string>
+    <string name="course_info_basic_progress">Overall Progress</string>
+    <string name="course_info_ended_topics_count_label">Completed</string>
+    <string name="course_info_concepts_count_label">Concepts</string>
+    <string name="course_info_concepts_count">%1$d concepts</string>
+    <string name="course_info_notes_is_present">💡 Notes available</string>
+
+
+
+    <string name="course_plan_creation_label">Course Creation</string>
+    <string name="course_plan_creation_name_label">Name...</string>
+    <string name="course_plan_creation_desc_label">Description...</string>
+    <string name="course_plan_creation_name_alert">Name must be between 5 and 255 characters</string>
+    <string name="course_plan_creation_add_topic">Add Topic</string>
+    <string name="course_plan_creation_error">Creation error!</string>
+    <string name="course_plan_creation_create">Create</string>
+    <string name="course_plan_creation_creating">Creating...</string>
+    <string name="course_plan_info_topics">Course Topics</string>
+    <string name="course_plan_info_join">Join Course</string>
+    <string name="course_plan_info_goto">Go to Progress</string>
+
+
+
+    <string name="course_screen_cards_new">New</string>
+    <string name="course_screen_cards_repeat">Review</string>
+    <string name="course_screen_cards_study">Study</string>
+    <string name="course_screen_my_courses">My Courses</string>
+    <string name="course_screen_concept_studying">Concept Study</string>
+    <string name="course_screen_concept_studying_start">Start Studying</string>
+    <string name="course_screen_concept_studying_empty">Nothing to study!</string>
+    <string name="course_screen_concept_studying_ended">Already completed!</string>
+    <string name="course_screen_concept_studying_label">Cards reviewed: %1$s | Average time: %2$s</string>
+    <string name="course_screen_course_author">"Author: "</string>
+    <string name="course_screen_course_topics_count">Topics: %1$s</string>
+    <string name="course_screen_course_concepts_count">Concepts: %1$s</string>
+    <string name="course_screen_course_current_topic">Current topic:</string>
+    <string name="course_screen_course_started_at">Started: %1$s</string>
+
+
+
+    <string name="card_screen_state_bad">Bad</string>
+    <string name="card_screen_state_easy">Easy</string>
+    <string name="card_screen_state_forget">Forgot</string>
+    <string name="card_screen_state_ok">OK</string>
+    <string name="card_screen_button_text">%1$s\n%2$s days</string>
+    <string name="card_screen_ended">That\'s all for now!</string>
+    <string name="card_screen_left_count">Remaining: %1$d</string>
+    <string name="card_screen_show">Show</string>
+    <string name="card_screen_edit_name">Name</string>
+    <string name="card_screen_edit_desc">Description</string>
+    <string name="card_screen_edit_cancel">Cancel</string>
+    <string name="card_screen_edit_save">Save</string>
+
+
+
+    <string name="main_activity_error">Error</string>
+    <string name="main_activity_nav_main">Home</string>
+    <string name="main_activity_nav_progress">Progress</string>
+    <string name="main_activity_nav_profile">Profile</string>
+    <string name="main_activity_loading">Loading...</string>
+    <string name="main_activity_internet_error">Connection error!</string>
+    <string name="main_activity_try_again">Try Again</string>
+
+
+
+    <string name="main_page_screen_recent_course_plans">Popular Learning Plans</string>
+    <string name="main_page_screen_create_course_label">Didn\'t find the course you want?\nCreate your own!</string>
+    <string name="main_page_screen_search">Search...</string>
+
+
+
+    <string name="profile_screen_logout">Log Out</string>
+    <string name="profile_screen_created_courses_label">User-created Courses</string>
+    <string name="profile_screen_topics_count">Topics: %1$d</string>
+
+
+
+    <string name="login_form_hello">Welcome!</string>
+    <string name="login_form_label">Sign in to your account</string>
+    <string name="login_form_login">Log In</string>
+    <string name="login_form_sign_in">Sign Up</string>
+    <string name="login_form_field_email">Email</string>
+    <string name="login_form_field_email_alert">Enter a valid email address</string>
+    <string name="login_form_field_username">Username</string>
+    <string name="login_form_field_username_placeholder">Enter username...</string>
+    <string name="login_form_field_username_alert">Username must be at least 5 characters</string>
+    <string name="login_form_field_photo">User avatar link</string>
+    <string name="login_form_field_photo_placeholder">Paste photo link...</string>
+    <string name="login_form_field_password">Password</string>
+    <string name="login_form_field_password_placeholder">Enter password</string>
+    <string name="login_form_field_password_alert">Password must contain more than 8 characters</string>
+    <string name="login_form_alert">Invalid email or password</string>
+    <string name="login_form_loading">Signing in...</string>
+
+
+
+    <string name="common_are_you_sure">Are you sure you want to continue?</string>
+    <string name="common_cancel">Cancel</string>
+    <string name="common_confirm">Confirm</string>
+    <string name="common_yes">Yes</string>
 </resources>
