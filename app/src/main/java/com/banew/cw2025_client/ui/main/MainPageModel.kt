@@ -194,6 +194,7 @@ class MainPageModel(isMock: Boolean = false) : ViewModel() {
         isConnectionError = value
 
         if (value) {
+            preferredRouteCallback = {it()}
             preferredRoute = "courses"
             isRefreshing = false
         }

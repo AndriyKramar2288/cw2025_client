@@ -1,6 +1,7 @@
 package com.banew.cw2025_client.ui.main
 
 import android.annotation.SuppressLint
+import android.util.Log
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -40,11 +41,9 @@ import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
@@ -71,24 +70,31 @@ private fun Preview() {
 
 class ConceptForm (
     nameInit: String = "",
-    descInit: String = ""
+    descInit: String = "",
+    idInit: Long? = null
 ) {
-    var id by mutableStateOf<Long?>(null)
+    var id by mutableStateOf(idInit)
     var name by mutableStateOf(nameInit)
     var desc by mutableStateOf(descInit)
     var isFlashCard by mutableStateOf(true)
 
     override fun equals(other: Any?) =
         if (other is ConceptForm)
-            name == other.name && desc == other.desc && isFlashCard == other.isFlashCard
+            id == other.id
+                    && name == other.name
+                    && desc == other.desc
+                    && isFlashCard == other.isFlashCard
         else
             false
 
     constructor(concept: TopicCompendiumDto.ConceptBasicDto)
-            : this(concept.name, concept.description) {
-                id = concept.id
-                isFlashCard = concept.isFlashCard
-            }
+            : this(
+        concept.name,
+        concept.description,
+        concept.id
+    ) {
+        isFlashCard = concept.isFlashCard
+    }
 
     override fun hashCode(): Int {
         var result = id?.hashCode() ?: 0
@@ -113,10 +119,10 @@ fun CompendiumScreen(topicId: Long, viewModel: MainPageModel, courseModel: Cours
         val type: TopicProgressType = compendium.status.toProgressType()
 
         var notesText by remember { mutableStateOf(compendium.notes ?: "") }
-        val concepts = remember { mutableStateListOf<ConceptForm>() }
+        var concepts by remember { mutableStateOf(emptyList<ConceptForm>()) }
 
-        val isUnsavedChanges = notesText != compendium.notes
-                || compendium.concepts.map { ConceptForm(it) } != concepts
+        val isUnsavedChanges = notesText != compendium.notes ||
+                compendium.concepts.map { ConceptForm(it) } != concepts
 
         var showAlertNextTopic by remember { mutableStateOf(false) }
 
@@ -141,10 +147,10 @@ fun CompendiumScreen(topicId: Long, viewModel: MainPageModel, courseModel: Cours
                     BottomElementType.NEXT
             else
                 BottomElementType.END
-
-        LaunchedEffect(compendium) {
-            concepts.clear()
-            compendium.concepts.map { concepts.add(ConceptForm(it)) }
+        
+        LaunchedEffect(compendium.concepts) {
+            concepts = compendium.concepts.map { ConceptForm(it) }
+            Log.d("AAAAAAAAA", concepts.joinToString { "${it.id}\n" })
         }
 
         val onClickUpdate = {
@@ -274,11 +280,15 @@ fun CompendiumScreen(topicId: Long, viewModel: MainPageModel, courseModel: Cours
             // Секція концептів
             ConceptsSection(
                 concepts,
-                type = type
-            ) {
-                concepts.add(ConceptForm())
-                it.requestScrollToPage(concepts.size - 1)
-            }
+                type = type,
+                onAddClick = {
+                    concepts += ConceptForm()
+                    it.requestScrollToPage(concepts.size - 1)
+                },
+                onRemoveClick = {
+                    concepts = concepts.filterIndexed { index, _ -> it != index }
+                }
+            )
 
             if (isUnsavedChanges) {
                 Spacer(Modifier.height(10.dp))
@@ -408,9 +418,10 @@ fun StatusBadge(type: TopicProgressType) {
 
 @Composable
 fun ConceptsSection(
-    concepts: SnapshotStateList<ConceptForm>,
+    concepts: List<ConceptForm>,
     type: TopicProgressType,
-    onClick: (PagerState) -> Unit
+    onAddClick: (PagerState) -> Unit,
+    onRemoveClick: (Int) -> Unit
 ) {
 
     val pagerState = rememberPagerState { concepts.size }
@@ -452,7 +463,7 @@ fun ConceptsSection(
                     ),
                     shape = RoundedCornerShape(5.dp),
                     onClick = {
-                        onClick(pagerState)
+                        onAddClick(pagerState)
                     }
                 ) {
                     Icon(
@@ -492,10 +503,9 @@ fun ConceptsSection(
                 ) { page ->
                     ConceptCard(
                         concept = concepts[page],
-                        type = type
-                    ) {
-                        concepts.remove(concepts[page])
-                    }
+                        type = type,
+                        onDeleteClick = { onRemoveClick(page) }
+                    )
                 }
                 Spacer(Modifier.height(2.dp))
                 HorizontalDivider(
