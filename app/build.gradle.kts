@@ -56,7 +56,7 @@ dependencies {
     androidTestImplementation(platform(libs.compose.bom))
     androidTestImplementation(libs.ui.test.junit4)
     coreLibraryDesugaring("com.android.tools", "desugar_jdk_libs", "2.0.4")
-    implementation(group = "com.banew", name = "cw2025_backend_common", version = "0.0.2-SNAPSHOT")
+    implementation(group = "com.banew", name = "cw2025_backend_common", version = "0.1.0-SNAPSHOT")
     implementation(libs.swiperefreshlayout)
     implementation(libs.appcompat)
     implementation(libs.material)

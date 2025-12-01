@@ -58,7 +58,7 @@ class CoursePlanInfoViewModel(val isMock: Boolean = true) : ViewModel() {
                 CoursePlanBasicDto.TopicBasicDto(
                     null, "тема 1", "опис"
                 )
-            )
+            ), 4
         )
     )
         private set

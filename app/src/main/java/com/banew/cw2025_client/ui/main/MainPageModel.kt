@@ -47,7 +47,7 @@ class MainPageModel(isMock: Boolean = false) : ViewModel() {
                         CoursePlanBasicDto.TopicBasicDto(
                             null, "тема 1", "опис"
                         )
-                    )
+                    ), 4
                 )
             ).flatMap { listOf(it, it, it, it, it) }
         )

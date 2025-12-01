@@ -8,12 +8,14 @@ import com.banew.cw2025_backend_common.dto.courses.CourseBasicDto
 import com.banew.cw2025_backend_common.dto.courses.CourseDetailedDto
 import com.banew.cw2025_backend_common.dto.courses.TopicCompendiumDto
 import com.banew.cw2025_backend_common.dto.users.UserLoginForm
+import com.banew.cw2025_backend_common.dto.users.UserProfileBasicDto
 import com.banew.cw2025_backend_common.dto.users.UserProfileDetailedDto
 import com.banew.cw2025_backend_common.dto.users.UserRegisterForm
 import com.banew.cw2025_backend_common.dto.users.UserTokenFormResult
 import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.Header
+import retrofit2.http.PATCH
 import retrofit2.http.POST
 import retrofit2.http.PUT
 import retrofit2.http.Path
@@ -41,6 +43,11 @@ interface ApiService {
         @Header("Authorization") token: String
     ): UserProfileDetailedDto
 
+    @PATCH("users/")
+    suspend fun updateUserProfile(
+        @Header("Authorization") token: String,
+        @Body body: UserProfileBasicDto
+    ): UserProfileBasicDto
 
     // --- COURSE PLAN ---
     @GET("course-plan/{courseId}")

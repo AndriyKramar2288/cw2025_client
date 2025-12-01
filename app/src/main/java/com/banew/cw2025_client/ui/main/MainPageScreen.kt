@@ -120,6 +120,21 @@ fun MainPageScreen(viewModel : MainPageModel) {
                             style = AppTypography.bodySmall
                         )
                     }
+                    Column(
+                        modifier = Modifier.padding(horizontal = 20.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Icon(
+                            painterResource(R.drawable.history_edu_40px),
+                            contentDescription = "students icon",
+                            tint = Color.LightGray,
+                            modifier = Modifier.requiredSize(30.dp)
+                        )
+                        Text(
+                            "Студентів: ${item.studentCount}",
+                            style = AppTypography.bodySmall
+                        )
+                    }
                 }
             }
         }

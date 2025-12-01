@@ -15,6 +15,7 @@ import com.banew.cw2025_backend_common.dto.courses.CourseBasicDto
 import com.banew.cw2025_backend_common.dto.courses.CourseDetailedDto
 import com.banew.cw2025_backend_common.dto.courses.TopicCompendiumDto
 import com.banew.cw2025_backend_common.dto.users.UserLoginForm
+import com.banew.cw2025_backend_common.dto.users.UserProfileBasicDto
 import com.banew.cw2025_backend_common.dto.users.UserProfileDetailedDto
 import com.banew.cw2025_backend_common.dto.users.UserRegisterForm
 import com.banew.cw2025_backend_common.dto.users.UserTokenFormResult
@@ -75,7 +76,8 @@ class DataSource(context: Context) {
                 desc,
                 topics.map { CoursePlanBasicDto.TopicBasicDto(
                     null, it.name.value, it.desc.value
-                ) }
+                ) },
+                0
             ))
         }
     }
@@ -232,6 +234,12 @@ class DataSource(context: Context) {
             : Result<FlashCardBasicDto> {
         return resolveResult {
             apiService.updateConcept("Bearer $token", flashCardId, body)
+        }
+    }
+
+    suspend fun updateProfile(body: UserProfileBasicDto): Result<UserProfileBasicDto> {
+        return resolveResult {
+            apiService.updateUserProfile("Bearer $token", body)
         }
     }
 

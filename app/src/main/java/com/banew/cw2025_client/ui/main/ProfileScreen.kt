@@ -33,6 +33,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -51,6 +52,7 @@ import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import com.banew.cw2025_backend_common.dto.coursePlans.CoursePlanBasicDto
+import com.banew.cw2025_backend_common.dto.users.UserProfileBasicDto
 import com.banew.cw2025_backend_common.dto.users.UserProfileCoursePlanDto
 import com.banew.cw2025_backend_common.dto.users.UserProfileDetailedDto
 import com.banew.cw2025_client.GlobalApplication
@@ -62,6 +64,7 @@ import kotlinx.coroutines.launch
 class ProfileScreenViewModel(val isMock: Boolean = false): ViewModel() {
     private val dataSource: DataSource? = GlobalApplication.getInstance()?.dataSource
 
+    var isProfileEdit by mutableStateOf(false)
     var profile by mutableStateOf(
         if (!isMock) null else UserProfileDetailedDto(
             1L,
@@ -86,6 +89,20 @@ class ProfileScreenViewModel(val isMock: Boolean = false): ViewModel() {
                 dataSource.userProfileDetailed(userId).asSuccess {
                     profile = it.data
                 }.default(contextModel)
+            }
+        }
+    }
+
+    fun updateProfile(form: EditProfileForm, contextModel: MainPageModel) {
+        dataSource?.let { dataSource ->
+            viewModelScope.launch {
+                contextModel.isRefreshing = true
+                dataSource.updateProfile(form.toBasicDto()).asSuccess {
+                    contextModel.refresh()
+                    initProfile(null, contextModel)
+                    isProfileEdit = false
+                }.default(contextModel)
+                contextModel.isRefreshing = false
             }
         }
     }
@@ -190,29 +207,28 @@ fun ProfilePageScreen(
                             }
                         }
                     }
-                    userId ?: Button(
-                        contentPadding = PaddingValues(horizontal = 40.dp),
-                        colors = ButtonDefaults.buttonColors(
-                            contentColor = Color.Transparent,
-                            containerColor = Color.Gray,
-                        ),
-                        shape = RoundedCornerShape(5.dp),
-                        onClick = {
-                            contextModel.logout()
+                    if (userId == null) {
+                        Row {
+                            ProfileButton(
+                                Color.Gray,
+                                stringResource(R.string.profile_screen_logout)
+                            ) {
+                                contextModel.logout()
+                            }
+                            Spacer(Modifier.width(5.dp))
+                            ProfileButton(
+                                Color.Gray.copy(alpha = 0.8f),
+                                "Оновити профіль"
+                            ) {
+                                model.isProfileEdit = true
+                            }
                         }
-                    ) {
-                        Text(
-                            text = stringResource(R.string.profile_screen_logout),
-                            style = AppTypography.bodyLarge,
-                            textAlign = TextAlign.Center,
-                            color = Color.White,
+                        HorizontalDivider(
+                            Modifier.fillMaxWidth(),
+                            2.dp, colorResource(R.color.navbar_button)
                         )
                     }
                 }
-                userId ?: HorizontalDivider(
-                    Modifier.fillMaxWidth(),
-                    2.dp, colorResource(R.color.navbar_button)
-                )
             }
             if (profile.coursePlans.isNotEmpty()) {
                 item {
@@ -274,5 +290,121 @@ fun ProfilePageScreen(
                 }
             }
         }
+        EditProfileBox(model, contextModel)
+    }
+}
+
+data class EditProfileForm(
+    val id: Long,
+    val username: String = "",
+    val email: String = "",
+    val photoSrc: String = ""
+) {
+    fun toBasicDto() = UserProfileBasicDto(id, username, email, photoSrc)
+}
+
+@Composable
+private fun EditProfileBox(viewModel: ProfileScreenViewModel, contextModel: MainPageModel) {
+    viewModel.profile.let { profile ->
+        var form by remember { mutableStateOf(EditProfileForm(0)) }
+
+        LaunchedEffect(profile) {
+            form = EditProfileForm(
+                profile!!.id,
+                profile.username,
+                profile.email,
+                profile.photoSrc ?: ""
+            )
+        }
+
+        if (viewModel.isProfileEdit) {
+            Box(
+                Modifier
+                    .fillMaxSize()
+                    .background(Color(0x55000000)),
+                contentAlignment = Alignment.Center
+            ) {
+                Column(
+                    Modifier
+                        .padding(10.dp)
+                        .background(
+                            colorResource(R.color.navbar_back).copy(alpha = .1f),
+                            RoundedCornerShape(10.dp)
+                        )
+                        .padding(10.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    CompendiumTextField(
+                        form.username,
+                        stringResource(R.string.profile_screen_new_username),
+                    ) { form = form.copy(username = it) }
+
+                    CompendiumTextField(
+                        form.email,
+                        stringResource(R.string.profile_screen_new_email),
+                    ) { form = form.copy(email = it) }
+
+                    CompendiumTextField(
+                        form.photoSrc,
+                        stringResource(R.string.profile_screen_new_avatar_src),
+                    ) { form = form.copy(photoSrc = it) }
+
+                    AsyncImage( // coil-compose
+                        model = form.photoSrc,
+                        contentDescription = "Photo",
+                        modifier = Modifier
+                            .padding(vertical = 16.dp)
+                            .size(80.dp)
+                            .clip(RoundedCornerShape(10.dp))
+                            .background(Color.LightGray),
+                        contentScale = ContentScale.Crop
+                    )
+
+                    Row (
+                        Modifier
+                            .fillMaxWidth()
+                            .background(
+                                Color(0x856D6D6D),
+                                RoundedCornerShape(5.dp)
+                            )
+                            .padding(15.dp),
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        ProfileButton (
+                            Color(0x654C1313),
+                            stringResource(R.string.profile_screen_cancel)
+                        ) {
+                            viewModel.isProfileEdit = false
+                        }
+                        ProfileButton (
+                            Color(0x65294510),
+                            stringResource(R.string.profile_screen_update)
+                        ) {
+                            viewModel.updateProfile(form, contextModel)
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun ProfileButton(color: Color, text: String, onClick: () -> Unit) {
+    Button(
+        contentPadding = PaddingValues(horizontal = 40.dp),
+        colors = ButtonDefaults.buttonColors(
+            contentColor = Color.Transparent,
+            containerColor = color,
+        ),
+        shape = RoundedCornerShape(5.dp),
+        onClick = onClick
+    ) {
+        Text(
+            text = text,
+            style = AppTypography.bodyLarge,
+            textAlign = TextAlign.Center,
+            color = Color.White,
+        )
     }
 }

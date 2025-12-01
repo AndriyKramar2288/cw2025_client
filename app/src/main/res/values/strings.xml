@@ -117,6 +117,11 @@
     <string name="profile_screen_logout">Log Out</string>
     <string name="profile_screen_created_courses_label">User-created Courses</string>
     <string name="profile_screen_topics_count">Topics: %1$d</string>
+    <string name="profile_screen_new_username">New username</string>
+    <string name="profile_screen_new_email">New email</string>
+    <string name="profile_screen_new_avatar_src">New link to the avatar</string>
+    <string name="profile_screen_cancel">Cancel</string>
+    <string name="profile_screen_update">Update</string>
 
 
 

@@ -121,7 +121,7 @@ fun CompendiumScreen(topicId: Long, viewModel: MainPageModel, courseModel: Cours
         var notesText by remember { mutableStateOf(compendium.notes ?: "") }
         var concepts by remember { mutableStateOf(emptyList<ConceptForm>()) }
 
-        val isUnsavedChanges = notesText != compendium.notes ||
+        val isUnsavedChanges = notesText != (compendium.notes ?: "") ||
                 compendium.concepts.map { ConceptForm(it) } != concepts
 
         var showAlertNextTopic by remember { mutableStateOf(false) }
@@ -155,7 +155,7 @@ fun CompendiumScreen(topicId: Long, viewModel: MainPageModel, courseModel: Cours
 
         val onClickUpdate = {
             val updatedCompendium = TopicCompendiumDto(
-                compendium.id, notesText.ifBlank { null },
+                compendium.id, notesText,
                 compendium.topic, concepts.map {
                     TopicCompendiumDto.ConceptBasicDto(
                         it.id, it.name, it.desc, it.isFlashCard
@@ -591,7 +591,7 @@ fun ConceptCard(concept: ConceptForm, type: TopicProgressType, onDeleteClick: ()
 
 @Composable
 fun CompendiumTextField(
-    field : String, label : String, type: TopicProgressType,
+    field : String, label : String, type: TopicProgressType = TopicProgressType.CURRENT,
     isError: (String) -> Boolean = { false }, errorMessage: String = "",
     largeText: Boolean = false,
     onChange : (String) -> Unit
