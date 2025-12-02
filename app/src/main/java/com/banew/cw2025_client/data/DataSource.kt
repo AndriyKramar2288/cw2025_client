@@ -66,6 +66,7 @@ class DataSource(context: Context) {
     suspend fun createCoursePlan(
         name: String,
         desc: String,
+        backSrc: String,
         topics: List<TopicForm>
     ): Result<CoursePlanBasicDto> {
         return resolveResult {
@@ -77,7 +78,7 @@ class DataSource(context: Context) {
                 topics.map { CoursePlanBasicDto.TopicBasicDto(
                     null, it.name.value, it.desc.value
                 ) },
-                0
+                0, backSrc.ifBlank { null }
             ))
         }
     }

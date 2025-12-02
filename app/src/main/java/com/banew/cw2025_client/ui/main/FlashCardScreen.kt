@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -407,7 +408,8 @@ fun EditConceptBox(viewModel: FlashCardViewModel, contextModel: MainPageModel) {
             Box(
                 Modifier
                     .fillMaxSize()
-                    .background(Color(0x55000000)),
+                    .background(Color(0x55000000))
+                    .clickable(enabled = false) {},
                 contentAlignment = Alignment.Center
             ) {
                 Column(

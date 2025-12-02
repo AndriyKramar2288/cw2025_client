@@ -3,6 +3,7 @@ package com.banew.cw2025_client.ui.main
 import android.annotation.SuppressLint
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -29,14 +30,17 @@ import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.blur
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import coil.compose.AsyncImage
 import com.banew.cw2025_client.R
 import com.banew.cw2025_client.ui.theme.AppTypography
 
@@ -73,11 +77,29 @@ fun MainPageScreen(viewModel : MainPageModel) {
             SearchRow(viewModel)
         }
         items(viewModel.currentCoursePlans) { item ->
+
+            val isBack = item.backgroundSrc != null
+            val textColor = if (isBack) Color.LightGray else Color.Gray
+            val blockModifier =
+                if (isBack)
+                    Modifier.padding(vertical = 5.dp)
+                else
+                    Modifier
+                        .padding(horizontal = 10.dp, vertical = 3.dp)
+            val borderRadius = if (isBack) 0.dp else 12.dp
+            val backModifier =
+                if (isBack)
+                    Modifier.background(Brush.horizontalGradient(listOf(
+                        Color(0x45808080),
+                        Color(0x45575757)
+                    )))
+                else Modifier.background(Color.White)
+
             Card (
-                shape = RoundedCornerShape(12.dp),
+                shape = RoundedCornerShape(borderRadius),
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 20.dp, vertical = 3.dp),
+                    .then(blockModifier),
                 colors = CardDefaults.cardColors(
                     containerColor = Color.White
                 ),
@@ -85,55 +107,73 @@ fun MainPageScreen(viewModel : MainPageModel) {
                     viewModel.preferredRoute = "coursePlan/${item.id}"
                 }
             ) {
-                Row(
-                    Modifier.fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Column (modifier = Modifier
-                        .weight(1f)
-                        .padding(10.dp)) {
-                        Text(
-                            text = item.name,
-                            style = AppTypography.titleLarge
-                        )
-                        Text(
-                            text = item.author.username,
-                            style = AppTypography.bodyMedium
-                        )
-                        Text(
-                            text = item.description,
-                            style = AppTypography.bodyMedium
+                Box(contentAlignment = Alignment.Center) {
+                    item.backgroundSrc?.let {
+                        AsyncImage(
+                            model = it,
+                            contentDescription = "Photo",
+                            modifier = Modifier
+                                .matchParentSize()
+                                .blur(5.dp),
+                            contentScale = ContentScale.Crop
                         )
                     }
-                    Column(
-                        modifier = Modifier.padding(horizontal = 20.dp),
-                        horizontalAlignment = Alignment.CenterHorizontally
+                    Row(
+                        Modifier
+                            .fillMaxWidth()
+                            .then(backModifier),
+                        verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Icon(
-                            painterResource(R.drawable.fact_check_40px),
-                            contentDescription = "topics icon",
-                            tint = Color.LightGray,
-                            modifier = Modifier.requiredSize(30.dp)
-                        )
-                        Text(
-                            "Тем: ${item.topics.size}",
-                            style = AppTypography.bodySmall
-                        )
-                    }
-                    Column(
-                        modifier = Modifier.padding(horizontal = 20.dp),
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        Icon(
-                            painterResource(R.drawable.history_edu_40px),
-                            contentDescription = "students icon",
-                            tint = Color.LightGray,
-                            modifier = Modifier.requiredSize(30.dp)
-                        )
-                        Text(
-                            "Студентів: ${item.studentCount}",
-                            style = AppTypography.bodySmall
-                        )
+                        Column (modifier = Modifier
+                            .weight(1f)
+                            .padding(horizontal = 25.dp, vertical = 15.dp)) {
+                            Text(
+                                text = item.name,
+                                style = AppTypography.titleLarge
+                            )
+                            Text(
+                                text = item.author.username,
+                                style = AppTypography.bodyMedium,
+                                color = textColor
+                            )
+                            Text(
+                                text = item.description,
+                                style = AppTypography.bodyMedium,
+                                color = textColor
+                            )
+                        }
+                        Column(
+                            modifier = Modifier.padding(horizontal = 15.dp),
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            Icon(
+                                painterResource(R.drawable.fact_check_40px),
+                                contentDescription = "topics icon",
+                                tint = Color.LightGray,
+                                modifier = Modifier.requiredSize(30.dp)
+                            )
+                            Text(
+                                "Тем: ${item.topics.size}",
+                                style = AppTypography.bodySmall,
+                                color = textColor
+                            )
+                        }
+                        Column(
+                            modifier = Modifier.padding(horizontal = 15.dp),
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            Icon(
+                                painterResource(R.drawable.history_edu_40px),
+                                contentDescription = "students icon",
+                                tint = Color.LightGray,
+                                modifier = Modifier.requiredSize(30.dp)
+                            )
+                            Text(
+                                "Студентів: ${item.studentCount}",
+                                style = AppTypography.bodySmall,
+                                color = textColor
+                            )
+                        }
                     }
                 }
             }

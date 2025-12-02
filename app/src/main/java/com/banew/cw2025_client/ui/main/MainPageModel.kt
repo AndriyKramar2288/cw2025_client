@@ -47,7 +47,7 @@ class MainPageModel(isMock: Boolean = false) : ViewModel() {
                         CoursePlanBasicDto.TopicBasicDto(
                             null, "тема 1", "опис"
                         )
-                    ), 4
+                    ), 4, "https://bukowina.org.ua/wp-content/uploads/2024/09/9191919.jpeg"
                 )
             ).flatMap { listOf(it, it, it, it, it) }
         )
@@ -66,7 +66,8 @@ class MainPageModel(isMock: Boolean = false) : ViewModel() {
                         "andriykramar465@gmail.com",
                         "https://cdn.omlet.com/images/originals/breed_abyssinian_cat.jpg"
                     ),
-                    "Desc for the first normal course"
+                    "Desc for the first normal course",
+                    null
                 ),
                 "qwewq",
                 4233, 13

@@ -3,6 +3,7 @@ package com.banew.cw2025_client.ui.main
 import android.annotation.SuppressLint
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -321,7 +322,8 @@ private fun EditProfileBox(viewModel: ProfileScreenViewModel, contextModel: Main
             Box(
                 Modifier
                     .fillMaxSize()
-                    .background(Color(0x55000000)),
+                    .background(Color(0x55000000))
+                    .clickable(enabled = false) {},
                 contentAlignment = Alignment.Center
             ) {
                 Column(

@@ -13,8 +13,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -40,6 +39,7 @@ import com.banew.cw2025_backend_common.dto.users.UserProfileBasicDto
 import com.banew.cw2025_client.GlobalApplication
 import com.banew.cw2025_client.R
 import com.banew.cw2025_client.data.DataSource
+import com.banew.cw2025_client.ui.components.BackgroundPhotoDisplayer
 import com.banew.cw2025_client.ui.components.UserProfileCard
 import com.banew.cw2025_client.ui.theme.AppTypography
 import com.banew.cw2025_client.ui.theme.MyAppTheme
@@ -58,7 +58,7 @@ class CoursePlanInfoViewModel(val isMock: Boolean = true) : ViewModel() {
                 CoursePlanBasicDto.TopicBasicDto(
                     null, "тема 1", "опис"
                 )
-            ), 4
+            ), 4, null
         )
     )
         private set
@@ -81,7 +81,7 @@ class CoursePlanInfoViewModel(val isMock: Boolean = true) : ViewModel() {
 @Composable
 fun CoursePlanInfo(id: Long, contextModel: MainPageModel, viewModel: CoursePlanInfoViewModel = viewModel()) {
 
-    LaunchedEffect(viewModel.coursePlan) {
+    LaunchedEffect(id) {
         viewModel.loadCourseById(id, contextModel)
     }
 
@@ -90,80 +90,89 @@ fun CoursePlanInfo(id: Long, contextModel: MainPageModel, viewModel: CoursePlanI
             modifier = Modifier
                 .fillMaxSize()
                 .verticalScroll(rememberScrollState())
-                .padding(horizontal = 20.dp, vertical = 30.dp),
+                .padding(bottom = 30.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            // Назва курсу
-            Text(
-                text = coursePlan.name,
-                style = AppTypography.titleLarge,
-                fontWeight = FontWeight.Bold,
-                textAlign = TextAlign.Center,
-                modifier = Modifier.padding(bottom = 16.dp)
-            )
-
-            // Автор
-            UserProfileCard(coursePlan.author, contextModel)
-
-            // Опис курсу
-            if (!coursePlan.description.isNullOrBlank()) {
+            BackgroundPhotoDisplayer(
+                coursePlan.backgroundSrc,
+                modifier = Modifier
+                    .padding(top = 30.dp)
+                    .padding(horizontal = 20.dp)
+            ) {
+                // Назва курсу
                 Text(
-                    text = coursePlan.description,
-                    style = AppTypography.bodyMedium,
-                    textAlign = TextAlign.Justify,
+                    text = coursePlan.name,
+                    style = AppTypography.titleLarge,
+                    fontWeight = FontWeight.Bold,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.padding(bottom = 16.dp)
+                )
+
+                // Автор
+                UserProfileCard(coursePlan.author, contextModel)
+
+                // Опис курсу
+                if (!coursePlan.description.isNullOrBlank()) {
+                    Text(
+                        text = coursePlan.description,
+                        style = AppTypography.bodyMedium,
+                        textAlign = TextAlign.Justify,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 20.dp)
+                            .background(
+                                brush = Brush.verticalGradient(
+                                    listOf(
+                                        colorResource(R.color.navbar_button)
+                                            .copy(alpha = 0.5f),
+                                        Color.Transparent
+                                    )
+                                ),
+                                shape = RoundedCornerShape(8.dp)
+                            )
+                            .padding(16.dp)
+                    )
+                }
+
+                // Теми курсу
+                Text(
+                    text = stringResource(R.string.course_plan_info_topics),
+                    style = AppTypography.bodyLarge,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(vertical = 20.dp)
-                        .background(
-                            brush = Brush.verticalGradient(
-                                listOf(
-                                    colorResource(R.color.navbar_button).copy(alpha = 0.1f),
-                                    Color.Transparent
-                                )
-                            ),
-                            shape = RoundedCornerShape(8.dp)
-                        )
-                        .padding(16.dp)
+                        .padding(vertical = 8.dp)
                 )
             }
 
-            // Теми курсу
-            Text(
-                text = stringResource(R.string.course_plan_info_topics),
-                style = AppTypography.bodyLarge,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 8.dp)
+            HorizontalDivider(
+                color = colorResource(R.color.navbar_button),
+                thickness = 2.dp
             )
 
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(bottom = 20.dp),
+                    .padding(vertical = 20.dp),
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 coursePlan.topics.forEach { topic ->
-                    Card(
-                        shape = RoundedCornerShape(10.dp),
-                        elevation = CardDefaults.cardElevation(defaultElevation = 3.dp),
-                        colors = CardDefaults.cardColors(containerColor = Color.White),
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        Column(modifier = Modifier.padding(12.dp)) {
+                    Column(modifier = Modifier
+                        .background(Color.White)
+                        .fillMaxWidth()
+                        .padding(horizontal = 25.dp, vertical = 15.dp)) {
+                        Text(
+                            color = Color.Black,
+                            text = topic.name,
+                            style = MaterialTheme.typography.titleSmall,
+                            fontWeight = FontWeight.SemiBold
+                        )
+                        if (!topic.description.isNullOrBlank()) {
                             Text(
-                                color = Color.Black,
-                                text = topic.name,
-                                style = MaterialTheme.typography.titleSmall,
-                                fontWeight = FontWeight.SemiBold
+                                text = topic.description,
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = Color.DarkGray,
+                                modifier = Modifier.padding(top = 4.dp)
                             )
-                            if (!topic.description.isNullOrBlank()) {
-                                Text(
-                                    text = topic.description,
-                                    style = MaterialTheme.typography.bodyMedium,
-                                    color = Color.DarkGray,
-                                    modifier = Modifier.padding(top = 4.dp)
-                                )
-                            }
                         }
                     }
                 }

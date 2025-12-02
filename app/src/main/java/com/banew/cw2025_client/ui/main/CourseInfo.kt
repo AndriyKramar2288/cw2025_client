@@ -59,6 +59,7 @@ import com.banew.cw2025_backend_common.dto.users.UserProfileBasicDto
 import com.banew.cw2025_client.GlobalApplication
 import com.banew.cw2025_client.R
 import com.banew.cw2025_client.data.DataSource
+import com.banew.cw2025_client.ui.components.BackgroundPhotoDisplayer
 import com.banew.cw2025_client.ui.components.UserProfileCard
 import com.banew.cw2025_client.ui.theme.AppTypography
 import kotlinx.coroutines.launch
@@ -87,7 +88,8 @@ class CourseViewModel(isMock: Boolean = false): ViewModel() {
                     "andriykramar465@gmail.com",
                     "https://cdn.omlet.com/images/originals/breed_abyssinian_cat.jpg"
                 ),
-                "Desc for the first normal course"
+                "Desc for the first normal course",
+                null
             ),
             listOf(
                 TopicCompendiumDto(
@@ -207,32 +209,37 @@ fun CourseInfo(id: Long, viewModel: MainPageModel, courseModel: CourseViewModel)
             modifier = Modifier
                 .fillMaxSize()
                 .verticalScroll(verticalScroll)
-                .padding(vertical = 30.dp),
+                .padding(bottom = 30.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            // Назва курсу
-            Text(
-                text = course.coursePlan.name,
-                style = AppTypography.titleLarge,
-                fontWeight = FontWeight.Bold,
-                textAlign = TextAlign.Center,
-                modifier = Modifier.padding(vertical = 8.dp)
-            )
+            BackgroundPhotoDisplayer(course.coursePlan.backgroundSrc) {
+                Spacer(modifier = Modifier.height(30.dp))
 
-            // Автор курсу
-            Spacer(modifier = Modifier.height(16.dp))
-            Text(
-                text = stringResource(R.string.course_info_author),
-                style = AppTypography.bodyMedium,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 10.dp)
-            )
-            UserProfileCard(
-                course.coursePlan.author,
-                viewModel,
-                Modifier.padding(horizontal = 20.dp)
-            )
+                // Назва курсу
+                Text(
+                    text = course.coursePlan.name,
+                    style = AppTypography.titleLarge,
+                    fontWeight = FontWeight.Bold,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.padding(vertical = 8.dp)
+                )
+
+                // Автор курсу
+                Spacer(modifier = Modifier.height(16.dp))
+                Text(
+                    text = stringResource(R.string.course_info_author),
+                    style = AppTypography.bodyMedium,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 10.dp)
+                )
+                UserProfileCard(
+                    course.coursePlan.author,
+                    viewModel,
+                    Modifier.padding(horizontal = 20.dp)
+                )
+            }
+
 
             // Статистика курсу
             Spacer(modifier = Modifier.height(8.dp))

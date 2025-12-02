@@ -15,10 +15,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
-import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -53,6 +50,7 @@ class CoursePlanCreationViewModel(val isMock: Boolean = false): ViewModel() {
     private val dataSource: DataSource? = GlobalApplication.getInstance()?.dataSource
     var nameFieldValue by mutableStateOf("")
     var descFieldValue by mutableStateOf("")
+    var backFieldValue by mutableStateOf("")
     var topicList by mutableStateOf(
         if (isMock) listOf(
             DataSource.TopicForm("TOPIC", "DESC")
@@ -68,7 +66,10 @@ class CoursePlanCreationViewModel(val isMock: Boolean = false): ViewModel() {
         viewModelScope.launch {
             isLoading = true
             when (val planRes = dataSource!!.createCoursePlan(
-                nameFieldValue, descFieldValue, topicList
+                nameFieldValue,
+                descFieldValue,
+                backFieldValue,
+                topicList
             )) {
                 is Result.Success ->
                     contextViewModel.confirmCoursePlanCreation(planRes.data)
@@ -118,17 +119,23 @@ fun CoursePlanCreationComponent(
                 thickness = 2.dp,
                 color = colorResource(R.color.navbar_button)
             )
-            CoursePlanTextField(
+            CompendiumTextField (
                 formModel.nameFieldValue, stringResource(R.string.course_plan_creation_name_label),
-                { it.length !in 5..255 },
-                stringResource(R.string.course_plan_creation_name_alert)
+                isError = { it.length !in 5..255 },
+                errorMessage = stringResource(R.string.course_plan_creation_name_alert)
             ) {
                 formModel.nameFieldValue = it
             }
-            CoursePlanTextField(formModel.descFieldValue,
-                stringResource(R.string.course_plan_creation_desc_label)
+            CompendiumTextField (formModel.descFieldValue,
+                stringResource(R.string.course_plan_creation_desc_label),
+                largeText = true
             ) {
                 formModel.descFieldValue = it
+            }
+            CompendiumTextField (formModel.backFieldValue,
+                "Посилання на фон курсу..."
+            ) {
+                formModel.backFieldValue = it
             }
             Row (
                 modifier = Modifier.padding(top = 10.dp),
@@ -203,17 +210,18 @@ fun CoursePlanCreationComponent(
                             .padding(horizontal = 10.dp)
                             .padding(bottom = 5.dp)
                     ) {
-                        CoursePlanTextField(
+                        CompendiumTextField (
                             item.name.value,
                             stringResource(R.string.course_plan_creation_name_label),
-                            { it.length !in 5..255 },
-                            stringResource(R.string.course_plan_creation_name_alert),
+                            isError = { it.length !in 5..255 },
+                            errorMessage = stringResource(R.string.course_plan_creation_name_alert),
                         ) {
                             item.name.value = it
                         }
-                        CoursePlanTextField(
+                        CompendiumTextField (
                             item.desc.value,
-                            stringResource(R.string.course_plan_creation_desc_label)
+                            stringResource(R.string.course_plan_creation_desc_label),
+                            largeText = true
                         ) {
                             item.desc.value = it
                         }
@@ -256,58 +264,6 @@ fun CoursePlanCreationComponent(
         if (formModel.isLoading) {
             LoadingBox(stringResource(R.string.course_plan_creation_creating))
         }
-    }
-}
-
-@Composable
-fun CoursePlanTextField(
-    field : String, label : String,
-    isError: (String) -> Boolean = { false }, errorMessage: String = "",
-    onChange : (String) -> Unit
-) {
-    TextField(
-        textStyle = AppTypography.bodyMedium,
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(top = 5.dp)
-            .background(
-                shape = RoundedCornerShape(10.dp),
-                brush = Brush.horizontalGradient(
-                    listOf(
-                        colorResource(R.color.navbar_back),
-                        colorResource(R.color.navbar_back2)
-                    )
-                )
-            ),
-        value = field,
-        onValueChange = onChange,
-        label = {
-            Text(text = label, style = AppTypography.bodySmall)
-        },
-        colors = TextFieldDefaults.colors(
-            unfocusedContainerColor = Color.Transparent,
-            unfocusedIndicatorColor = Color.Transparent,
-            focusedContainerColor = Color.Transparent,
-            focusedIndicatorColor = Color.Transparent,
-            unfocusedLabelColor = Color.Gray,
-            focusedLabelColor = Color.LightGray
-        )
-    )
-    if (field.isNotBlank() && isError(field)) {
-        Text(
-            textAlign = TextAlign.Center,
-            text = errorMessage,
-            color = MaterialTheme.colorScheme.error,
-            style = AppTypography.bodySmall,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(vertical = 4.dp)
-                .background(
-                    Color.White.copy(alpha = 0.4f),
-                    shape = RoundedCornerShape(5.dp)
-                )
-                .padding(vertical = 8.dp)
-        )
     }
 }
 

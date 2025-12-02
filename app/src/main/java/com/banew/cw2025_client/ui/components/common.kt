@@ -4,6 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -30,6 +31,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
@@ -63,6 +65,35 @@ private fun DeathPreview() {
 private fun AlertWrapPreview() {
     Box(Modifier.fillMaxSize()) {
         AlertDialogWrap(true, {}, {})
+    }
+}
+
+@Composable
+fun BackgroundPhotoDisplayer(
+    src: String?,
+    modifier: Modifier = Modifier,
+    content: @Composable (ColumnScope.() -> Unit),
+) {
+    Box {
+        AsyncImage(
+            model = src,
+            contentDescription = "Photo",
+            modifier = Modifier
+                .matchParentSize()
+                .blur(5.dp),
+            contentScale = ContentScale.Crop
+        )
+        Box(Modifier
+            .matchParentSize()
+            .background(Brush.verticalGradient(listOf(
+                Color.Transparent, Color.White
+            )))
+        )
+        Column(
+            modifier = modifier,
+            content = content,
+            horizontalAlignment = Alignment.CenterHorizontally
+        )
     }
 }
 
@@ -107,8 +138,8 @@ fun UserProfileCard(userProfile: UserProfileBasicDto, model: MainPageModel, modi
             .background(
                 Brush.horizontalGradient(
                     colors = listOf(
-                        colorResource(R.color.navbar_back),
-                        colorResource(R.color.navbar_button2).copy(alpha = 0.3f)
+                        colorResource(R.color.navbar_back).copy(alpha = .75f),
+                        colorResource(R.color.navbar_button2).copy(alpha = .75f)
                     )
                 ),
                 shape = RoundedCornerShape(10.dp)

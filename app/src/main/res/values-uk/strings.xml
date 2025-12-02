@@ -116,7 +116,7 @@
 
     <string name="profile_screen_logout">Вийти</string>
     <string name="profile_screen_created_courses_label">Створені користувачем курси</string>
-    <string name="profile_screen_topics_count">Тем: %1$d</string>
+    <string name="profile_screen_topics_count">Тем:\n%1$d</string>
     <string name="profile_screen_new_username">Нове ім\'я користувача</string>
     <string name="profile_screen_new_email">Нова електронна скринька</string>
     <string name="profile_screen_new_avatar_src">Нове посилання на аватар</string>
