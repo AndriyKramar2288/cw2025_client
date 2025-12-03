@@ -66,13 +66,12 @@ fun MainPageScreen(viewModel : MainPageModel) {
                     ),
                 )
             )
-            .padding(vertical = 15.dp)
     ) {
         item {
             Text(
                 text = stringResource(R.string.main_page_screen_recent_course_plans),
                 style = AppTypography.titleMedium,
-                modifier = Modifier.padding(5.dp)
+                modifier = Modifier.padding(5.dp).padding(top = 20.dp)
             )
             SearchRow(viewModel)
         }

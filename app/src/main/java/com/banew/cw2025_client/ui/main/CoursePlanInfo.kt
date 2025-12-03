@@ -235,7 +235,7 @@ fun CoursePlanInfo(id: Long, contextModel: MainPageModel, viewModel: CoursePlanI
 @Composable
 private fun CoursePlanInfoButton(text: String, onClick: () -> Unit) {
     Button(
-        contentPadding = PaddingValues(horizontal = 30.dp),
+        contentPadding = PaddingValues(horizontal = 15.dp),
         colors = ButtonDefaults.buttonColors(
             contentColor = Color.Transparent,
             containerColor = Color.Gray.copy(alpha = 0.8f),

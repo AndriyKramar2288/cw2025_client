@@ -133,11 +133,14 @@ fun ProfilePageScreen(
         LazyColumn (
             Modifier
                 .fillMaxSize()
-                .padding(vertical = 30.dp, horizontal = 10.dp),
+                .padding(horizontal = 10.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             item {
-                Column(horizontalAlignment = Alignment.End) {
+                Column(
+                    Modifier.padding(vertical = 30.dp),
+                    horizontalAlignment = Alignment.End
+                ) {
                     Row {
                         Box (
                             contentAlignment = Alignment.Center,
@@ -404,7 +407,7 @@ private fun ProfileButton(color: Color, text: String, onClick: () -> Unit) {
     ) {
         Text(
             text = text,
-            style = AppTypography.bodyLarge,
+            style = AppTypography.bodySmall,
             textAlign = TextAlign.Center,
             color = Color.White,
         )

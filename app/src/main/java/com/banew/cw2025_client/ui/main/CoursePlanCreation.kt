@@ -179,12 +179,13 @@ fun CoursePlanModifyingForm(
         Column (
             Modifier
                 .fillMaxSize()
-                .padding(horizontal = 10.dp, vertical = 30.dp)
+                .padding(horizontal = 10.dp)
                 .verticalScroll(rememberScrollState()),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
                 modifier = Modifier
+                    .padding(top = 30.dp)
                     .fillMaxWidth()
                     .background(
                         shape = RoundedCornerShape(5.dp),
@@ -405,14 +406,14 @@ private fun FormButton(text: String, color: Color, onClick: () -> Unit) {
             containerColor = color
         ),
         onClick = onClick,
-        contentPadding = PaddingValues(horizontal = 50.dp),
+        contentPadding = PaddingValues(horizontal = 40.dp),
         shape = RoundedCornerShape(5.dp),
         modifier = Modifier
             .padding(top = 20.dp),
     ) {
         Text(
             text = text,
-            style = AppTypography.titleLarge,
+            style = AppTypography.titleSmall,
             color = colorResource(R.color.navbar_back)
         )
     }
