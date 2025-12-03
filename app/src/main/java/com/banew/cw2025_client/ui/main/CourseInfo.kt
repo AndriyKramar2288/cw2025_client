@@ -59,6 +59,7 @@ import com.banew.cw2025_backend_common.dto.users.UserProfileBasicDto
 import com.banew.cw2025_client.GlobalApplication
 import com.banew.cw2025_client.R
 import com.banew.cw2025_client.data.DataSource
+import com.banew.cw2025_client.ui.components.AlertDialogWrap
 import com.banew.cw2025_client.ui.components.BackgroundPhotoDisplayer
 import com.banew.cw2025_client.ui.components.UserProfileCard
 import com.banew.cw2025_client.ui.theme.AppTypography
@@ -74,6 +75,8 @@ private fun Preview() {
 
 class CourseViewModel(isMock: Boolean = false): ViewModel() {
     private val dataSource: DataSource? = GlobalApplication.getInstance()?.dataSource
+
+    var isDeleteCourse by mutableStateOf(false)
 
     var course by mutableStateOf(
         if (!isMock) null else CourseDetailedDto(
@@ -184,14 +187,23 @@ class CourseViewModel(isMock: Boolean = false): ViewModel() {
     }
 
     fun endCourse(coursePlanId: Long, contextModel: MainPageModel) {
-        dataSource?.let { dataSource ->
-            viewModelScope.launch {
-                dataSource.endCourse(coursePlanId).asSuccess {
-                    course = it.data
-                    contextModel.preferredRoute = "course/${coursePlanId}"
-                    contextModel.shouldRefreshCourses = true
-                }.default(contextModel)
-            }
+        viewModelScope.launch {
+            dataSource!!.endCourse(coursePlanId).asSuccess {
+                course = it.data
+                contextModel.shouldRefreshCourses = true
+                contextModel.preferredRoute = "course/${coursePlanId}"
+            }.default(contextModel)
+        }
+    }
+
+    fun deleteCourse(coursePlanId: Long, contextModel: MainPageModel) {
+        viewModelScope.launch {
+            dataSource!!.deleteCourse(coursePlanId).asSuccess {
+                contextModel.shouldRefreshCourses = true
+                contextModel.shouldRefreshCoursePlans = true
+                contextModel.preferredRoute = "courses"
+                isDeleteCourse = false
+            }.default(contextModel)
         }
     }
 }
@@ -290,6 +302,46 @@ fun CourseInfo(id: Long, viewModel: MainPageModel, courseModel: CourseViewModel)
                 color = Color.Gray,
                 modifier = Modifier.padding(bottom = 16.dp)
             )
+
+            Box(
+                Modifier.fillMaxWidth(),
+                contentAlignment = Alignment.Center
+            ) {
+                HorizontalDivider(
+                    thickness = 1.dp,
+                    color = Color.Gray
+                )
+
+                AlertDialogWrap(
+                    courseModel.isDeleteCourse,
+                    {
+                        courseModel.deleteCourse(
+                            course.coursePlan.id,
+                            viewModel
+                        )
+                    },
+                    {
+                        courseModel.isDeleteCourse = false
+                    },
+                    "Після відмови від навчання на курсі весь ваш прогрес, зокрема " +
+                            "усі нотатки, концепти і флеш-картки з даного курсу будуть видалені!"
+                )
+                Button(
+                    onClick = {
+                        courseModel.isDeleteCourse = true
+                    },
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color(0xFFA84949)
+                    ),
+                    shape = RoundedCornerShape(5.dp)
+                ) {
+                    Text(
+                        "Відмовитись від навчання",
+                        style = AppTypography.bodySmall,
+                        color = Color.White
+                    )
+                }
+            }
         }
     }
 }

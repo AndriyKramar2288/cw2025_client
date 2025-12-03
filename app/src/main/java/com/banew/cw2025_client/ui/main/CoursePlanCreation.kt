@@ -406,7 +406,7 @@ private fun FormButton(text: String, color: Color, onClick: () -> Unit) {
         ),
         onClick = onClick,
         contentPadding = PaddingValues(horizontal = 50.dp),
-        shape = RoundedCornerShape(10.dp),
+        shape = RoundedCornerShape(5.dp),
         modifier = Modifier
             .padding(top = 20.dp),
     ) {

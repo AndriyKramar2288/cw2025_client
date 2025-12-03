@@ -79,7 +79,7 @@ fun MainPageScreen(viewModel : MainPageModel) {
         items(viewModel.currentCoursePlans) { item ->
 
             val isBack = item.backgroundSrc != null
-            val textColor = if (isBack) Color.LightGray else Color.Gray
+            val textColor = if (isBack) Color.DarkGray else Color.Gray
             val blockModifier =
                 if (isBack)
                     Modifier.padding(vertical = 5.dp)
@@ -90,8 +90,8 @@ fun MainPageScreen(viewModel : MainPageModel) {
             val backModifier =
                 if (isBack)
                     Modifier.background(Brush.horizontalGradient(listOf(
-                        Color(0x45808080),
-                        Color(0x45575757)
+                        Color(0x45FFFFFF),
+                        Color(0x45D5BBBB)
                     )))
                 else Modifier.background(Color.White)
 
@@ -149,7 +149,7 @@ fun MainPageScreen(viewModel : MainPageModel) {
                             Icon(
                                 painterResource(R.drawable.fact_check_40px),
                                 contentDescription = "topics icon",
-                                tint = Color.LightGray,
+                                tint = textColor,
                                 modifier = Modifier.requiredSize(30.dp)
                             )
                             Text(
@@ -165,7 +165,7 @@ fun MainPageScreen(viewModel : MainPageModel) {
                             Icon(
                                 painterResource(R.drawable.history_edu_40px),
                                 contentDescription = "students icon",
-                                tint = Color.LightGray,
+                                tint = textColor,
                                 modifier = Modifier.requiredSize(30.dp)
                             )
                             Text(

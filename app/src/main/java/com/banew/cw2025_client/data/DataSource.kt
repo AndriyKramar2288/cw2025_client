@@ -246,6 +246,17 @@ class DataSource(context: Context) {
         }
     }
 
+    suspend fun deleteCourse(coursePlanId: Long): Result<Unit> {
+        return resolveResult {
+            val response = apiService.deleteCourse("Bearer $token", coursePlanId)
+
+            if (response.isSuccessful)
+                Unit
+            else
+                throw HttpException(response)
+        }
+    }
+
     data class TopicForm(
         var name : MutableState<String> = mutableStateOf(""),
         var desc : MutableState<String> = mutableStateOf("")

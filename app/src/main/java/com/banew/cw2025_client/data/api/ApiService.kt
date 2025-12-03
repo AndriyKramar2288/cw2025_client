@@ -12,7 +12,9 @@ import com.banew.cw2025_backend_common.dto.users.UserProfileBasicDto
 import com.banew.cw2025_backend_common.dto.users.UserProfileDetailedDto
 import com.banew.cw2025_backend_common.dto.users.UserRegisterForm
 import com.banew.cw2025_backend_common.dto.users.UserTokenFormResult
+import retrofit2.Response
 import retrofit2.http.Body
+import retrofit2.http.DELETE
 import retrofit2.http.GET
 import retrofit2.http.Header
 import retrofit2.http.PATCH
@@ -118,6 +120,12 @@ interface ApiService {
         @Path("courseId") courseId: Long,
         @Body body: TopicCompendiumDto
     ): TopicCompendiumDto
+
+    @DELETE("course/by-plan/{courseId}")
+    suspend fun deleteCourse(
+        @Header("Authorization") token: String,
+        @Path("courseId") courseId: Long
+    ): Response<Unit>
 
     // --- FLASH CARDS ---
 
