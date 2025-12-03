@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Seezu</string>
+    <string name="title_activity_main">MainActivity</string>
+    <string name="title_activity_start">StartActivity</string>
+
+    <string name="greetings_app_real_name">SEEZU</string>
+    <string name="greetings_app_desc">
+        नियंत्रित और उत्पादक स्व-अध्ययन के लिए एक एप्लिकेशन
+        जिसके परिणाम की गारंटी है।
+    </string>
+    <string name="greetings_continue">जारी रखें...</string>
+
+    <string name="compendium_screen_next_topic_alert">विषय पूरा करने के बाद, आप केवल फ्लैशकार्ड के माध्यम से ही संक्षेप की सामग्री को संपादित कर पाएंगे।</string>
+    <string name="compendium_screen_next_topic_unsaved">और आपके पास अभी भी असहेजे गए परिवर्तन हैं!</string>
+    <string name="compendium_screen_next_topic_continue">जारी रखें?</string>
+    <string name="compendium_screen_without_save_alert">आपके पास असहेजे गए परिवर्तन हैं! बिना सहेजे जारी रखें?</string>
+    <string name="compendium_screen_own_notes">अपने नोट्स</string>
+    <string name="compendium_screen_without_save_label">आपके पास असहेजे गए परिवर्तन हैं!</string>
+    <string name="compendium_screen_without_save_button">सहेजें</string>
+    <string name="compendium_screen_status_locked">लॉक किया गया</string>
+    <string name="compendium_screen_status_can_start">शुरू कर सकते हैं</string>
+    <string name="compendium_screen_status_completed">पूरा हो गया</string>
+    <string name="compendium_screen_status_current">वर्तमान विषय</string>
+    <string name="compendium_screen_concepts">अवधारणाएं</string>
+    <string name="compendium_screen_no_concepts">इस विषय के लिए कोई अवधारणा नहीं</string>
+    <string name="compendium_screen_concept_name">नाम</string>
+    <string name="compendium_screen_concept_desc">विवरण</string>
+    <string name="compendium_screen_concept_count">अवधारणाएं</string>
+    <string name="compendium_screen_notes_present_label">नोट्स</string>
+    <string name="compendium_screen_notes_present_no">नहीं हैं</string>
+    <string name="compendium_screen_notes_present_yes">हैं</string>
+    <string name="compendium_screen_navigate_view_prev">पिछला\nदेखें</string>
+    <string name="compendium_screen_navigate_view_next">अगला\nदेखें</string>
+    <string name="compendium_screen_navigate_start_next">अगला\nशुरू करें</string>
+    <string name="compendium_screen_navigate_end_course">पाठ्यक्रम\nसमाप्त करें</string>
+
+    <string name="course_info_author">पाठ्यक्रम के लेखक</string>
+    <string name="course_info_study_progress">अध्ययन प्रगति</string>
+    <string name="course_info_started_at">आरंभ किया गया: %1$s</string>
+    <string name="course_info_basic_progress">कुल प्रगति</string>
+    <string name="course_info_ended_topics_count_label">पूरे किए गए</string>
+    <string name="course_info_concepts_count_label">अवधारणाएं</string>
+    <string name="course_info_concepts_count">%1$d अवधारणाएं</string>
+    <string name="course_info_notes_is_present">💡 नोट्स मौजूद हैं</string>
+    <string name="course_info_delete_course_alert">पाठ्यक्रम से बाहर निकलने के बाद, इस पाठ्यक्रम से आपके सभी नोट्स, अवधारणाएं और फ्लैशकार्ड सहित आपकी सभी प्रगति हटा दी जाएगी!</string>
+    <string name="course_info_delete_course_button">अध्ययन से बाहर निकलें</string>
+
+    <string name="course_plan_info_topics">पाठ्यक्रम के विषय</string>
+    <string name="course_plan_info_join">पाठ्यक्रम से जुड़ें</string>
+    <string name="course_plan_info_goto">प्रगति पर जाएं</string>
+    <string name="course_plan_info_edit_course_button">पाठ्यक्रम संपादित करें</string>
+
+    <string name="course_plan_creation_label">पाठ्यक्रम निर्माण</string>
+    <string name="course_plan_creation_name_label">नाम...</string>
+    <string name="course_plan_creation_desc_label">विवरण...</string>
+    <string name="course_plan_creation_name_alert">नाम में 5 से 255 वर्ण (शामिल) होने चाहिए</string>
+    <string name="course_plan_creation_add_topic">विषय जोड़ें</string>
+    <string name="course_plan_creation_error">निर्माण त्रुटि!</string>
+    <string name="course_plan_creation_create">बनाएं</string>
+    <string name="course_plan_creation_creating">बना रहा है...</string>
+    <string name="course_plan_creation_is_public">क्या पाठ्यक्रम सार्वजनिक होगा?</string>
+    <string name="course_plan_creation_background_src">पाठ्यक्रम पृष्ठभूमि का लिंक...</string>
+    <string name="course_plan_creation_cancel">रद्द करें</string>
+    <string name="course_plan_creation_update">अद्यतन करें</string>
+    <string name="course_plan_creation_updating_label">पाठ्यक्रम अद्यतन कर रहा है</string>
+
+    <string name="course_screen_cards_new">नए</string>
+    <string name="course_screen_cards_repeat">पुनरावृत्ति</string>
+    <string name="course_screen_cards_study">अध्ययन</string>
+    <string name="course_screen_my_courses">मेरे पाठ्यक्रम</string>
+    <string name="course_screen_concept_studying">अवधारणाओं का अध्ययन</string>
+    <string name="course_screen_concept_studying_start">अध्ययन शुरू करें</string>
+    <string name="course_screen_concept_studying_empty">पास करने के लिए कुछ भी नहीं है!</string>
+    <string name="course_screen_concept_studying_ended">पहले ही पूरा हो चुका है!</string>
+    <string name="course_screen_concept_studying_label">देखे गए कार्ड: %1$s | औसत समय: %2$s</string>
+    <string name="course_screen_course_author">"लेखक: "</string>
+    <string name="course_screen_course_topics_count">विषय: %1$s</string>
+    <string name="course_screen_course_concepts_count">अवधारणाएं: %1$s</string>
+    <string name="course_screen_course_current_topic">वर्तमान विषय:</string>
+    <string name="course_screen_course_started_at">आरंभ किया गया: %1$s</string>
+
+    <string name="card_screen_state_bad">बुरा</string>
+    <string name="card_screen_state_easy">आसान</string>
+    <string name="card_screen_state_forget">भूल गया</string>
+    <string name="card_screen_state_ok">ठीक है</string>
+    <string name="card_screen_button_text">%1$s\n%2$s दिन</string>
+    <string name="card_screen_ended">अभी के लिए बस इतना ही!</string>
+    <string name="card_screen_left_count">शेष: %1$d</string>
+    <string name="card_screen_show">दिखाएँ</string>
+    <string name="card_screen_edit_name">नाम</string>
+    <string name="card_screen_edit_desc">विवरण</string>
+    <string name="card_screen_edit_cancel">रद्द करें</string>
+    <string name="card_screen_edit_save">सहेजें</string>
+
+    <string name="main_activity_error">त्रुटि</string>
+    <string name="main_activity_nav_main">होम</string>
+    <string name="main_activity_nav_progress">प्रगति</string>
+    <string name="main_activity_nav_profile">प्रोफ़ाइल</string>
+    <string name="main_activity_loading">लोड हो रहा है...</string>
+    <string name="main_activity_internet_error">कनेक्शन त्रुटि!</string>
+    <string name="main_activity_try_again">पुन: प्रयास करें</string>
+
+    <string name="main_page_screen_recent_course_plans">लोकप्रिय अध्ययन योजनाएँ</string>
+    <string name="main_page_screen_create_course_label">मनचाहा पाठ्यक्रम नहीं मिला?\nअपना खुद का बनाएं!</string>
+    <string name="main_page_screen_search">खोज...</string>
+
+    <string name="profile_screen_logout">लॉग आउट</string>
+    <string name="profile_screen_created_courses_label">उपयोगकर्ता द्वारा बनाए गए पाठ्यक्रम</string>
+    <string name="profile_screen_topics_count">विषय:\n%1$d</string>
+    <string name="profile_screen_new_username">नया उपयोगकर्ता नाम</string>
+    <string name="profile_screen_new_email">नया ईमेल</string>
+    <string name="profile_screen_new_avatar_src">नए अवतार का लिंक</string>
+    <string name="profile_screen_cancel">रद्द करें</string>
+    <string name="profile_screen_update">अद्यतन करें</string>
+    <string name="profile_screen_update_profile">प्रोफ़ाइल अद्यतन करें</string>
+
+    <string name="login_form_hello">स्वागत है!</string>
+    <string name="login_form_label">अपने खाते में लॉग इन करें</string>
+    <string name="login_form_login">लॉग इन करें</string>
+    <string name="login_form_sign_in">पंजीकरण करें</string>
+    <string name="login_form_field_email">ईमेल</string>
+    <string name="login_form_field_email_alert">सही ईमेल पता दर्ज करें</string>
+    <string name="login_form_field_username">उपयोगकर्ता नाम</string>
+    <string name="login_form_field_username_placeholder">उपयोगकर्ता नाम दर्ज करें...</string>
+    <string name="login_form_field_username_alert">उपयोगकर्ता नाम कम से कम 5 वर्णों का होना चाहिए</string>
+    <string name="login_form_field_photo">उपयोगकर्ता अवतार का लिंक</string>
+    <string name="login_form_field_photo_placeholder">फोटो लिंक पेस्ट करें...</string>
+    <string name="login_form_field_password">पासवर्ड</string>
+    <string name="login_form_field_password_placeholder">पासवर्ड दर्ज करें</string>
+    <string name="login_form_field_password_alert">पासवर्ड में 8 से अधिक वर्ण होने चाहिए</string>
+    <string name="login_form_alert">गलत ईमेल या पासवर्ड</string>
+    <string name="login_form_loading">लॉग इन हो रहा है...</string>
+
+    <string name="common_are_you_sure">क्या आप वाकई जारी रखना चाहते हैं?</string>
+    <string name="common_cancel">रद्द करें</string>
+    <string name="common_confirm">पुष्टि</string>
+    <string name="common_yes">हाँ</string>
+</resources>

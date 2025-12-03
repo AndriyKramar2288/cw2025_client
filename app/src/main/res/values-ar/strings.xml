@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Seezu</string>
+    <string name="title_activity_main">MainActivity</string>
+    <string name="title_activity_start">StartActivity</string>
+
+    <string name="greetings_app_real_name">SEEZU</string>
+    <string name="greetings_app_desc">
+        تطبيق للتعلم الذاتي المُنظَّم والمنتج
+        بنتائج مضمونة.
+    </string>
+    <string name="greetings_continue">متابعة...</string>
+
+    <string name="compendium_screen_next_topic_alert">بعد الانتهاء من الموضوع، لن تتمكن من تعديل محتوى الملخص إلا من خلال البطاقات التعليمية.</string>
+    <string name="compendium_screen_next_topic_unsaved">ولديكم أيضًا تغييرات غير محفوظة!</string>
+    <string name="compendium_screen_next_topic_continue">متابعة؟</string>
+    <string name="compendium_screen_without_save_alert">لديكم تغييرات غير محفوظة! هل تريدون المتابعة دون حفظ؟</string>
+    <string name="compendium_screen_own_notes">ملاحظاتي الخاصة</string>
+    <string name="compendium_screen_without_save_label">لديكم تغييرات غير محفوظة!</string>
+    <string name="compendium_screen_without_save_button">حفظ</string>
+    <string name="compendium_screen_status_locked">مغلق</string>
+    <string name="compendium_screen_status_can_start">يمكن البدء</string>
+    <string name="compendium_screen_status_completed">مكتمل</string>
+    <string name="compendium_screen_status_current">الموضوع الحالي</string>
+    <string name="compendium_screen_concepts">المفاهيم</string>
+    <string name="compendium_screen_no_concepts">لا توجد مفاهيم لهذا الموضوع</string>
+    <string name="compendium_screen_concept_name">الاسم</string>
+    <string name="compendium_screen_concept_desc">الوصف</string>
+    <string name="compendium_screen_concept_count">المفاهيم</string>
+    <string name="compendium_screen_notes_present_label">ملاحظات</string>
+    <string name="compendium_screen_notes_present_no">لا يوجد</string>
+    <string name="compendium_screen_notes_present_yes">يوجد</string>
+    <string name="compendium_screen_navigate_view_prev">عرض\nالسابق</string>
+    <string name="compendium_screen_navigate_view_next">عرض\nالتالي</string>
+    <string name="compendium_screen_navigate_start_next">بدء\nالتالي</string>
+    <string name="compendium_screen_navigate_end_course">إنهاء\nالمساق</string>
+
+    <string name="course_info_author">مؤلف المساق</string>
+    <string name="course_info_study_progress">تقدم الدراسة</string>
+    <string name="course_info_started_at">بدأ في: %1$s</string>
+    <string name="course_info_basic_progress">التقدم العام</string>
+    <string name="course_info_ended_topics_count_label">مكتمل</string>
+    <string name="course_info_concepts_count_label">المفاهيم</string>
+    <string name="course_info_concepts_count">%1$d مفهوم</string>
+    <string name="course_info_notes_is_present">💡 توجد ملاحظات</string>
+    <string name="course_info_delete_course_alert">بعد الانسحاب من المساق، سيتم حذف كل تقدمكم، بما في ذلك جميع الملاحظات والمفاهيم والبطاقات التعليمية من هذا المساق!</string>
+    <string name="course_info_delete_course_button">الانسحاب من الدراسة</string>
+
+    <string name="course_plan_info_topics">مواضيع المساق</string>
+    <string name="course_plan_info_join">الانضمام إلى المساق</string>
+    <string name="course_plan_info_goto">الانتقال إلى التقدم</string>
+    <string name="course_plan_info_edit_course_button">تعديل المساق</string>
+
+    <string name="course_plan_creation_label">إنشاء المساق</string>
+    <string name="course_plan_creation_name_label">الاسم...</string>
+    <string name="course_plan_creation_desc_label">الوصف...</string>
+    <string name="course_plan_creation_name_alert">يجب أن يتراوح طول الاسم بين 5 و 255 حرفًا متضمنًا</string>
+    <string name="course_plan_creation_add_topic">إضافة موضوع</string>
+    <string name="course_plan_creation_error">خطأ في الإنشاء!</string>
+    <string name="course_plan_creation_create">إنشاء</string>
+    <string name="course_plan_creation_creating">جارٍ الإنشاء...</string>
+    <string name="course_plan_creation_is_public">هل سيكون المساق عامًا؟</string>
+    <string name="course_plan_creation_background_src">رابط لخلفية المساق...</string>
+    <string name="course_plan_creation_cancel">إلغاء</string>
+    <string name="course_plan_creation_update">تحديث</string>
+    <string name="course_plan_creation_updating_label">جارٍ تحديث المساق</string>
+
+    <string name="course_screen_cards_new">جديد</string>
+    <string name="course_screen_cards_repeat">تكرار</string>
+    <string name="course_screen_cards_study">دراسة</string>
+    <string name="course_screen_my_courses">مساقاتي</string>
+    <string name="course_screen_concept_studying">دراسة المفاهيم</string>
+    <string name="course_screen_concept_studying_start">بدء الدراسة</string>
+    <string name="course_screen_concept_studying_empty">لا يوجد شيء للمرور به!</string>
+    <string name="course_screen_concept_studying_ended">تم الانتهاء منه بالفعل!</string>
+    <string name="course_screen_concept_studying_label">البطاقات المعروضة: %1$s | متوسط الوقت: %2$s</string>
+    <string name="course_screen_course_author">"المؤلف: "</string>
+    <string name="course_screen_course_topics_count">المواضيع: %1$s</string>
+    <string name="course_screen_course_concepts_count">المفاهيم: %1$s</string>
+    <string name="course_screen_course_current_topic">الموضوع الحالي:</string>
+    <string name="course_screen_course_started_at">بدأ في: %1$s</string>
+
+    <string name="card_screen_state_bad">سيئ</string>
+    <string name="card_screen_state_easy">سهل</string>
+    <string name="card_screen_state_forget">نسيت</string>
+    <string name="card_screen_state_ok">حسناً</string>
+    <string name="card_screen_button_text">%1$s\n%2$s يوم</string>
+    <string name="card_screen_ended">هذا كل شيء في الوقت الحالي!</string>
+    <string name="card_screen_left_count">المتبقي: %1$d</string>
+    <string name="card_screen_show">عرض</string>
+    <string name="card_screen_edit_name">الاسم</string>
+    <string name="card_screen_edit_desc">الوصف</string>
+    <string name="card_screen_edit_cancel">إلغاء</string>
+    <string name="card_screen_edit_save">حفظ</string>
+
+    <string name="main_activity_error">خطأ</string>
+    <string name="main_activity_nav_main">الرئيسية</string>
+    <string name="main_activity_nav_progress">التقدم</string>
+    <string name="main_activity_nav_profile">الملف الشخصي</string>
+    <string name="main_activity_loading">جارٍ التحميل...</string>
+    <string name="main_activity_internet_error">خطأ في الاتصال!</string>
+    <string name="main_activity_try_again">المحاولة مرة أخرى</string>
+
+    <string name="main_page_screen_recent_course_plans">خطط الدراسة الشائعة</string>
+    <string name="main_page_screen_create_course_label">لم تجد المساق الذي تريده؟\nأنشئ مساقك الخاص!</string>
+    <string name="main_page_screen_search">بحث...</string>
+
+    <string name="profile_screen_logout">تسجيل الخروج</string>
+    <string name="profile_screen_created_courses_label">المساقات التي أنشأها المستخدم</string>
+    <string name="profile_screen_topics_count">المواضيع:\n%1$d</string>
+    <string name="profile_screen_new_username">اسم مستخدم جديد</string>
+    <string name="profile_screen_new_email">بريد إلكتروني جديد</string>
+    <string name="profile_screen_new_avatar_src">رابط صورة رمزية جديدة</string>
+    <string name="profile_screen_cancel">إلغاء</string>
+    <string name="profile_screen_update">تحديث</string>
+    <string name="profile_screen_update_profile">تحديث الملف الشخصي</string>
+
+    <string name="login_form_hello">مرحباً!</string>
+    <string name="login_form_label">سجل الدخول إلى حسابك</string>
+    <string name="login_form_login">تسجيل الدخول</string>
+    <string name="login_form_sign_in">تسجيل</string>
+    <string name="login_form_field_email">البريد الإلكتروني</string>
+    <string name="login_form_field_email_alert">أدخل عنوان بريد إلكتروني صحيح</string>
+    <string name="login_form_field_username">اسم المستخدم</string>
+    <string name="login_form_field_username_placeholder">أدخل اسماً مستعاراً...</string>
+    <string name="login_form_field_username_alert">يجب أن يتكون الاسم المستعار من 5 أحرف على الأقل</string>
+    <string name="login_form_field_photo">رابط صورة الملف الشخصي للمستخدم</string>
+    <string name="login_form_field_photo_placeholder">الصق رابط الصورة...</string>
+    <string name="login_form_field_password">كلمة المرور</string>
+    <string name="login_form_field_password_placeholder">أدخل كلمة المرور</string>
+    <string name="login_form_field_password_alert">يجب أن تحتوي كلمة المرور على أكثر من 8 أحرف</string>
+    <string name="login_form_alert">بريد إلكتروني أو كلمة مرور غير صحيحة</string>
+    <string name="login_form_loading">جارٍ تسجيل الدخول...</string>
+
+    <string name="common_are_you_sure">هل أنتم متأكدون أنكم تريدون المتابعة؟</string>
+    <string name="common_cancel">إلغاء</string>
+    <string name="common_confirm">تأكيد</string>
+    <string name="common_yes">نعم</string>
+</resources>

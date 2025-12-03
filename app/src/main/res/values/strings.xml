@@ -4,8 +4,6 @@
     <string name="title_activity_main">MainActivity</string>
     <string name="title_activity_start">StartActivity</string>
 
-
-
     <string name="greetings_app_real_name">SEEZU</string>
     <string name="greetings_app_desc">
         An app for controlled and productive self-learning
@@ -13,19 +11,17 @@
     </string>
     <string name="greetings_continue">Continue...</string>
 
-
-
-    <string name="compendium_screen_next_topic_alert">After completing the topic, you will only be able to modify the compendium content through flashcards.</string>
-    <string name="compendium_screen_next_topic_unsaved">Also, you have unsaved changes!</string>
+    <string name="compendium_screen_next_topic_alert">After completing the topic, you will only be able to change the content of the compendium through flashcards.</string>
+    <string name="compendium_screen_next_topic_unsaved">And you also have unsaved changes!</string>
     <string name="compendium_screen_next_topic_continue">Continue?</string>
     <string name="compendium_screen_without_save_alert">You have unsaved changes! Continue without saving?</string>
-    <string name="compendium_screen_own_notes">Personal Notes</string>
+    <string name="compendium_screen_own_notes">Personal notes</string>
     <string name="compendium_screen_without_save_label">You have unsaved changes!</string>
     <string name="compendium_screen_without_save_button">Save</string>
     <string name="compendium_screen_status_locked">Locked</string>
-    <string name="compendium_screen_status_can_start">Can Start</string>
+    <string name="compendium_screen_status_can_start">Can start</string>
     <string name="compendium_screen_status_completed">Completed</string>
-    <string name="compendium_screen_status_current">Current Topic</string>
+    <string name="compendium_screen_status_current">Current topic</string>
     <string name="compendium_screen_concepts">Concepts</string>
     <string name="compendium_screen_no_concepts">No concepts for this topic</string>
     <string name="compendium_screen_concept_name">Name</string>
@@ -34,44 +30,47 @@
     <string name="compendium_screen_notes_present_label">Notes</string>
     <string name="compendium_screen_notes_present_no">None</string>
     <string name="compendium_screen_notes_present_yes">Present</string>
-    <string name="compendium_screen_navigate_view_prev">View\nPrevious</string>
-    <string name="compendium_screen_navigate_view_next">View\nNext</string>
-    <string name="compendium_screen_navigate_start_next">Start\nNext</string>
-    <string name="compendium_screen_navigate_end_course">End\nCourse</string>
+    <string name="compendium_screen_navigate_view_prev">View\nprevious</string>
+    <string name="compendium_screen_navigate_view_next">View\nnext</string>
+    <string name="compendium_screen_navigate_start_next">Start\nnext</string>
+    <string name="compendium_screen_navigate_end_course">Complete\ncourse</string>
 
-
-
-    <string name="course_info_author">Course Author</string>
-    <string name="course_info_study_progress">Study Progress</string>
+    <string name="course_info_author">Course author</string>
+    <string name="course_info_study_progress">Study progress</string>
     <string name="course_info_started_at">Started: %1$s</string>
-    <string name="course_info_basic_progress">Overall Progress</string>
+    <string name="course_info_basic_progress">Overall progress</string>
     <string name="course_info_ended_topics_count_label">Completed</string>
     <string name="course_info_concepts_count_label">Concepts</string>
     <string name="course_info_concepts_count">%1$d concepts</string>
-    <string name="course_info_notes_is_present">💡 Notes available</string>
+    <string name="course_info_notes_is_present">💡 Has notes</string>
+    <string name="course_info_delete_course_alert">After withdrawing from the course, all your progress, including all notes, concepts and flashcards from this course will be deleted!</string>
+    <string name="course_info_delete_course_button">Withdraw from course</string>
 
+    <string name="course_plan_info_topics">Course topics</string>
+    <string name="course_plan_info_join">Join course</string>
+    <string name="course_plan_info_goto">Go to progress</string>
+    <string name="course_plan_info_edit_course_button">Edit course</string>
 
-
-    <string name="course_plan_creation_label">Course Creation</string>
+    <string name="course_plan_creation_label">Course creation</string>
     <string name="course_plan_creation_name_label">Name...</string>
     <string name="course_plan_creation_desc_label">Description...</string>
-    <string name="course_plan_creation_name_alert">Name must be between 5 and 255 characters</string>
-    <string name="course_plan_creation_add_topic">Add Topic</string>
+    <string name="course_plan_creation_name_alert">Name must be 5..255 characters long</string>
+    <string name="course_plan_creation_add_topic">Add topic</string>
     <string name="course_plan_creation_error">Creation error!</string>
     <string name="course_plan_creation_create">Create</string>
     <string name="course_plan_creation_creating">Creating...</string>
-    <string name="course_plan_info_topics">Course Topics</string>
-    <string name="course_plan_info_join">Join Course</string>
-    <string name="course_plan_info_goto">Go to Progress</string>
-
-
+    <string name="course_plan_creation_is_public">Will the course be public?</string>
+    <string name="course_plan_creation_background_src">Course background link...</string>
+    <string name="course_plan_creation_cancel">Cancel</string>
+    <string name="course_plan_creation_update">Update</string>
+    <string name="course_plan_creation_updating_label">Course update</string>
 
     <string name="course_screen_cards_new">New</string>
     <string name="course_screen_cards_repeat">Review</string>
     <string name="course_screen_cards_study">Study</string>
-    <string name="course_screen_my_courses">My Courses</string>
-    <string name="course_screen_concept_studying">Concept Study</string>
-    <string name="course_screen_concept_studying_start">Start Studying</string>
+    <string name="course_screen_my_courses">My courses</string>
+    <string name="course_screen_concept_studying">Concept study</string>
+    <string name="course_screen_concept_studying_start">Start study</string>
     <string name="course_screen_concept_studying_empty">Nothing to study!</string>
     <string name="course_screen_concept_studying_ended">Already completed!</string>
     <string name="course_screen_concept_studying_label">Cards reviewed: %1$s | Average time: %2$s</string>
@@ -81,13 +80,11 @@
     <string name="course_screen_course_current_topic">Current topic:</string>
     <string name="course_screen_course_started_at">Started: %1$s</string>
 
-
-
     <string name="card_screen_state_bad">Bad</string>
     <string name="card_screen_state_easy">Easy</string>
     <string name="card_screen_state_forget">Forgot</string>
     <string name="card_screen_state_ok">OK</string>
-    <string name="card_screen_button_text">%1$s\n%2$s days</string>
+    <string name="card_screen_button_text">%1$s\n%2$s day</string>
     <string name="card_screen_ended">That\'s all for now!</string>
     <string name="card_screen_left_count">Remaining: %1$d</string>
     <string name="card_screen_show">Show</string>
@@ -96,39 +93,32 @@
     <string name="card_screen_edit_cancel">Cancel</string>
     <string name="card_screen_edit_save">Save</string>
 
-
-
     <string name="main_activity_error">Error</string>
     <string name="main_activity_nav_main">Home</string>
     <string name="main_activity_nav_progress">Progress</string>
     <string name="main_activity_nav_profile">Profile</string>
     <string name="main_activity_loading">Loading...</string>
     <string name="main_activity_internet_error">Connection error!</string>
-    <string name="main_activity_try_again">Try Again</string>
+    <string name="main_activity_try_again">Try again</string>
 
-
-
-    <string name="main_page_screen_recent_course_plans">Popular Learning Plans</string>
-    <string name="main_page_screen_create_course_label">Didn\'t find the course you want?\nCreate your own!</string>
+    <string name="main_page_screen_recent_course_plans">Popular learning plans</string>
+    <string name="main_page_screen_create_course_label">Didn\'t find the course you wanted?\nCreate your own!</string>
     <string name="main_page_screen_search">Search...</string>
 
-
-
-    <string name="profile_screen_logout">Log Out</string>
-    <string name="profile_screen_created_courses_label">User-created Courses</string>
-    <string name="profile_screen_topics_count">Topics: %1$d</string>
+    <string name="profile_screen_logout">Logout</string>
+    <string name="profile_screen_created_courses_label">User-created courses</string>
+    <string name="profile_screen_topics_count">Topics:\n%1$d</string>
     <string name="profile_screen_new_username">New username</string>
     <string name="profile_screen_new_email">New email</string>
-    <string name="profile_screen_new_avatar_src">New link to the avatar</string>
+    <string name="profile_screen_new_avatar_src">New avatar link</string>
     <string name="profile_screen_cancel">Cancel</string>
     <string name="profile_screen_update">Update</string>
-
-
+    <string name="profile_screen_update_profile">Update profile</string>
 
     <string name="login_form_hello">Welcome!</string>
     <string name="login_form_label">Sign in to your account</string>
-    <string name="login_form_login">Log In</string>
-    <string name="login_form_sign_in">Sign Up</string>
+    <string name="login_form_login">Sign in</string>
+    <string name="login_form_sign_in">Sign up</string>
     <string name="login_form_field_email">Email</string>
     <string name="login_form_field_email_alert">Enter a valid email address</string>
     <string name="login_form_field_username">Username</string>
@@ -142,10 +132,8 @@
     <string name="login_form_alert">Invalid email or password</string>
     <string name="login_form_loading">Signing in...</string>
 
-
-
     <string name="common_are_you_sure">Are you sure you want to continue?</string>
     <string name="common_cancel">Cancel</string>
-    <string name="common_confirm">Confirm</string>
+    <string name="common_confirm">Confirmation</string>
     <string name="common_yes">Yes</string>
 </resources>

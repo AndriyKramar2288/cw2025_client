@@ -199,7 +199,7 @@ fun CoursePlanModifyingForm(
                     .padding(vertical = 10.dp),
                 textAlign = TextAlign.Center,
                 text = if (isUpdate)
-                    "Оновлення курсу"
+                    stringResource(R.string.course_plan_creation_updating_label)
                 else
                     stringResource(R.string.course_plan_creation_label),
                 style = AppTypography.titleMedium,
@@ -225,7 +225,7 @@ fun CoursePlanModifyingForm(
                 formModel.descFieldValue = it
             }
             CompendiumTextField (formModel.backFieldValue,
-                "Посилання на фон курсу..."
+                stringResource(R.string.course_plan_creation_background_src)
             ) {
                 formModel.backFieldValue = it
             }
@@ -256,7 +256,7 @@ fun CoursePlanModifyingForm(
                 }
                 Spacer(Modifier.width(10.dp))
                 Text(
-                    text = "Чи буде курс публічним?",
+                    text = stringResource(R.string.course_plan_creation_is_public),
                     style = AppTypography.bodyMedium
                 )
             }
@@ -372,7 +372,7 @@ fun CoursePlanModifyingForm(
             ) {
                 if (isUpdate) {
                     FormButton(
-                        "Скасувати", Color.Gray
+                        stringResource(R.string.course_plan_creation_cancel), Color.Gray
                     ) {
                         cancelCallback()
                         formModel.cancel()
@@ -380,7 +380,7 @@ fun CoursePlanModifyingForm(
                 }
                 FormButton(
                     if (isUpdate)
-                        "Оновити"
+                        stringResource(R.string.course_plan_creation_update)
                     else
                         stringResource(R.string.course_plan_creation_create),
                     colorResource(R.color.navbar_button)

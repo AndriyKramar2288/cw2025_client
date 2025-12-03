@@ -222,7 +222,7 @@ fun ProfilePageScreen(
                             Spacer(Modifier.width(5.dp))
                             ProfileButton(
                                 Color.Gray.copy(alpha = 0.8f),
-                                "Оновити профіль"
+                                stringResource(R.string.profile_screen_update_profile)
                             ) {
                                 model.isProfileEdit = true
                             }

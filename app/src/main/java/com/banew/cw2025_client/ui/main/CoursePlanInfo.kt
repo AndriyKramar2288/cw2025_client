@@ -123,8 +123,6 @@ fun CoursePlanInfo(id: Long, contextModel: MainPageModel, viewModel: CoursePlanI
                     // Автор
                     UserProfileCard(coursePlan.author, contextModel)
 
-                    //if (viewModel.coursePlan.author.id == contextModel.)
-
                     // Опис курсу
                     if (!coursePlan.description.isNullOrBlank()) {
                         Text(
@@ -210,7 +208,9 @@ fun CoursePlanInfo(id: Long, contextModel: MainPageModel, viewModel: CoursePlanI
                             contextModel.preferredRoute = "course/${coursePlan.id}"
                     }
                     if (coursePlan.author.id == contextModel.currentUser?.id) {
-                        CoursePlanInfoButton("Редагувати курс") {
+                        CoursePlanInfoButton(
+                            stringResource(R.string.course_plan_info_edit_course_button)
+                        ) {
                             viewModel.isEdit = true
                         }
                     }

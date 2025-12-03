@@ -49,6 +49,15 @@
     <string name="course_info_concepts_count_label">Концептів</string>
     <string name="course_info_concepts_count">%1$d концептів</string>
     <string name="course_info_notes_is_present">💡 Є нотатки</string>
+    <string name="course_info_delete_course_alert">Після відмови від навчання на курсі весь ваш прогрес, зокрема усі нотатки, концепти і флеш-картки з даного курсу будуть видалені!</string>
+    <string name="course_info_delete_course_button">Відмовитись від навчання</string>
+
+
+
+    <string name="course_plan_info_topics">Теми курсу</string>
+    <string name="course_plan_info_join">Доєднатись до курсу</string>
+    <string name="course_plan_info_goto">Перейти до прогресу</string>
+    <string name="course_plan_info_edit_course_button">Редагувати курс</string>
 
 
 
@@ -60,9 +69,11 @@
     <string name="course_plan_creation_error">Помилка створення!</string>
     <string name="course_plan_creation_create">Створити</string>
     <string name="course_plan_creation_creating">Створення...</string>
-    <string name="course_plan_info_topics">Теми курсу</string>
-    <string name="course_plan_info_join">Доєднатись до курсу</string>
-    <string name="course_plan_info_goto">Перейти до прогресу</string>
+    <string name="course_plan_creation_is_public">Чи буде курс публічним?</string>
+    <string name="course_plan_creation_background_src">Посилання на фон курсу...</string>
+    <string name="course_plan_creation_cancel">Скасувати</string>
+    <string name="course_plan_creation_update">Оновити</string>
+    <string name="course_plan_creation_updating_label">Оновлення курсу</string>
 
 
 
@@ -122,6 +133,7 @@
     <string name="profile_screen_new_avatar_src">Нове посилання на аватар</string>
     <string name="profile_screen_cancel">Скасувати</string>
     <string name="profile_screen_update">Оновити</string>
+    <string name="profile_screen_update_profile">Оновити профіль</string>
 
 
 

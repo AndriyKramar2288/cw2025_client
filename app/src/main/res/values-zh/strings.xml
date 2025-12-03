@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Seezu</string>
+    <string name="greetings_app_real_name">SEEZU</string>
+    <string name="greetings_app_desc">一款用于可控和高效自学的应用程序，保证学习效果。</string>
+    <string name="greetings_continue">继续...</string>
+
+    <string name="compendium_screen_next_topic_alert">完成主题后，您只能通过闪卡更改纲要内容。</string>
+    <string name="compendium_screen_next_topic_unsaved">而且您还有未保存的更改！</string>
+    <string name="compendium_screen_next_topic_continue">继续吗？</string>
+    <string name="compendium_screen_without_save_alert">您有未保存的更改！不保存继续吗？</string>
+    <string name="compendium_screen_own_notes">个人笔记</string>
+    <string name="compendium_screen_without_save_label">您有未保存的更改！</string>
+    <string name="compendium_screen_without_save_button">保存</string>
+    <string name="compendium_screen_status_locked">已锁定</string>
+    <string name="compendium_screen_status_can_start">可以开始</string>
+    <string name="compendium_screen_status_completed">已完成</string>
+    <string name="compendium_screen_status_current">当前主题</string>
+    <string name="compendium_screen_concepts">概念</string>
+    <string name="compendium_screen_no_concepts">此主题没有概念</string>
+    <string name="compendium_screen_concept_name">名称</string>
+    <string name="compendium_screen_concept_desc">描述</string>
+    <string name="compendium_screen_concept_count">概念</string>
+    <string name="compendium_screen_notes_present_label">笔记</string>
+    <string name="compendium_screen_notes_present_no">无</string>
+    <string name="compendium_screen_notes_present_yes">有</string>
+    <string name="compendium_screen_navigate_view_prev">查看\n上一个</string>
+    <string name="compendium_screen_navigate_view_next">查看\n下一个</string>
+    <string name="compendium_screen_navigate_start_next">开始\n下一个</string>
+    <string name="compendium_screen_navigate_end_course">完成\n课程</string>
+
+    <string name="course_info_author">课程作者</string>
+    <string name="course_info_study_progress">学习进度</string>
+    <string name="course_info_started_at">开始时间：%1$s</string>
+    <string name="course_info_basic_progress">总体进度</string>
+    <string name="course_info_ended_topics_count_label">已完成</string>
+    <string name="course_info_concepts_count_label">概念</string>
+    <string name="course_info_concepts_count">%1$d 个概念</string>
+    <string name="course_info_notes_is_present">💡 有笔记</string>
+    <string name="course_info_delete_course_alert">退出课程后，您的所有进度，包括该课程的所有笔记、概念和闪卡都将被删除！</string>
+    <string name="course_info_delete_course_button">退出课程</string>
+
+    <string name="course_plan_info_topics">课程主题</string>
+    <string name="course_plan_info_join">加入课程</string>
+    <string name="course_plan_info_goto">前往进度</string>
+    <string name="course_plan_info_edit_course_button">编辑课程</string>
+
+    <string name="course_plan_creation_label">创建课程</string>
+    <string name="course_plan_creation_name_label">名称...</string>
+    <string name="course_plan_creation_desc_label">描述...</string>
+    <string name="course_plan_creation_name_alert">名称必须为5到255个字符</string>
+    <string name="course_plan_creation_add_topic">添加主题</string>
+    <string name="course_plan_creation_error">创建错误！</string>
+    <string name="course_plan_creation_create">创建</string>
+    <string name="course_plan_creation_creating">创建中...</string>
+    <string name="course_plan_creation_is_public">课程是否公开？</string>
+    <string name="course_plan_creation_background_src">课程背景链接...</string>
+    <string name="course_plan_creation_cancel">取消</string>
+    <string name="course_plan_creation_update">更新</string>
+    <string name="course_plan_creation_updating_label">更新课程</string>
+
+    <string name="course_screen_cards_new">新建</string>
+    <string name="course_screen_cards_repeat">复习</string>
+    <string name="course_screen_cards_study">学习</string>
+    <string name="course_screen_my_courses">我的课程</string>
+    <string name="course_screen_concept_studying">概念学习</string>
+    <string name="course_screen_concept_studying_start">开始学习</string>
+    <string name="course_screen_concept_studying_empty">没有可学习的内容！</string>
+    <string name="course_screen_concept_studying_ended">已完成！</string>
+    <string name="course_screen_concept_studying_label">已复习卡片：%1$s | 平均时间：%2$s</string>
+    <string name="course_screen_course_author">"作者："</string>
+    <string name="course_screen_course_topics_count">主题：%1$s</string>
+    <string name="course_screen_course_concepts_count">概念：%1$s</string>
+    <string name="course_screen_course_current_topic">当前主题：</string>
+    <string name="course_screen_course_started_at">开始时间：%1$s</string>
+
+    <string name="card_screen_state_bad">差</string>
+    <string name="card_screen_state_easy">简单</string>
+    <string name="card_screen_state_forget">忘记</string>
+    <string name="card_screen_state_ok">还行</string>
+    <string name="card_screen_button_text">%1$s\n%2$s 天</string>
+    <string name="card_screen_ended">暂时就这些了！</string>
+    <string name="card_screen_left_count">剩余：%1$d</string>
+    <string name="card_screen_show">显示</string>
+    <string name="card_screen_edit_name">名称</string>
+    <string name="card_screen_edit_desc">描述</string>
+    <string name="card_screen_edit_cancel">取消</string>
+    <string name="card_screen_edit_save">保存</string>
+
+    <string name="main_activity_error">错误</string>
+    <string name="main_activity_nav_main">主页</string>
+    <string name="main_activity_nav_progress">进度</string>
+    <string name="main_activity_nav_profile">个人资料</string>
+    <string name="main_activity_loading">加载中...</string>
+    <string name="main_activity_internet_error">连接错误！</string>
+    <string name="main_activity_try_again">重试</string>
+
+    <string name="main_page_screen_recent_course_plans">热门学习计划</string>
+    <string name="main_page_screen_create_course_label">没有找到您想要的课程？\n创建您自己的课程！</string>
+    <string name="main_page_screen_search">搜索...</string>
+
+    <string name="profile_screen_logout">退出登录</string>
+    <string name="profile_screen_created_courses_label">用户创建的课程</string>
+    <string name="profile_screen_topics_count">主题：\n%1$d</string>
+    <string name="profile_screen_new_username">新用户名</string>
+    <string name="profile_screen_new_email">新电子邮箱</string>
+    <string name="profile_screen_new_avatar_src">新头像链接</string>
+    <string name="profile_screen_cancel">取消</string>
+    <string name="profile_screen_update">更新</string>
+    <string name="profile_screen_update_profile">更新个人资料</string>
+
+    <string name="login_form_hello">欢迎！</string>
+    <string name="login_form_label">登录您的账户</string>
+    <string name="login_form_login">登录</string>
+    <string name="login_form_sign_in">注册</string>
+    <string name="login_form_field_email">电子邮箱</string>
+    <string name="login_form_field_email_alert">请输入有效的电子邮箱地址</string>
+    <string name="login_form_field_username">用户名</string>
+    <string name="login_form_field_username_placeholder">输入用户名...</string>
+    <string name="login_form_field_username_alert">用户名必须至少5个字符</string>
+    <string name="login_form_field_photo">用户头像链接</string>
+    <string name="login_form_field_photo_placeholder">粘贴照片链接...</string>
+    <string name="login_form_field_password">密码</string>
+    <string name="login_form_field_password_placeholder">输入密码</string>
+    <string name="login_form_field_password_alert">密码必须超过8个字符</string>
+    <string name="login_form_alert">无效的电子邮箱或密码</string>
+    <string name="login_form_loading">登录中...</string>
+
+    <string name="common_are_you_sure">您确定要继续吗？</string>
+    <string name="common_cancel">取消</string>
+    <string name="common_confirm">确认</string>
+    <string name="common_yes">是</string>
+</resources>

@@ -323,8 +323,7 @@ fun CourseInfo(id: Long, viewModel: MainPageModel, courseModel: CourseViewModel)
                     {
                         courseModel.isDeleteCourse = false
                     },
-                    "Після відмови від навчання на курсі весь ваш прогрес, зокрема " +
-                            "усі нотатки, концепти і флеш-картки з даного курсу будуть видалені!"
+                    stringResource(R.string.course_info_delete_course_alert)
                 )
                 Button(
                     onClick = {
@@ -336,7 +335,7 @@ fun CourseInfo(id: Long, viewModel: MainPageModel, courseModel: CourseViewModel)
                     shape = RoundedCornerShape(5.dp)
                 ) {
                     Text(
-                        "Відмовитись від навчання",
+                        stringResource(R.string.course_info_delete_course_button),
                         style = AppTypography.bodySmall,
                         color = Color.White
                     )

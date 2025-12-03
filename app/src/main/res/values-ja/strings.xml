@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Seezu</string>
+    <string name="greetings_app_real_name">SEEZU</string>
+    <string name="greetings_app_desc">効果的な自己学習のための管理され生産的なアプリケーション。確実な結果を保証します。</string>
+    <string name="greetings_continue">続ける...</string>
+
+    <string name="compendium_screen_next_topic_alert">トピックを完了すると、フラッシュカードを通じてのみコンペンディアムの内容を変更できるようになります。</string>
+    <string name="compendium_screen_next_topic_unsaved">また、保存されていない変更があります！</string>
+    <string name="compendium_screen_next_topic_continue">続けますか？</string>
+    <string name="compendium_screen_without_save_alert">保存されていない変更があります！保存せずに続けますか？</string>
+    <string name="compendium_screen_own_notes">個人ノート</string>
+    <string name="compendium_screen_without_save_label">保存されていない変更があります！</string>
+    <string name="compendium_screen_without_save_button">保存</string>
+    <string name="compendium_screen_status_locked">ロック済み</string>
+    <string name="compendium_screen_status_can_start">開始可能</string>
+    <string name="compendium_screen_status_completed">完了</string>
+    <string name="compendium_screen_status_current">現在のトピック</string>
+    <string name="compendium_screen_concepts">概念</string>
+    <string name="compendium_screen_no_concepts">このトピックには概念がありません</string>
+    <string name="compendium_screen_concept_name">名前</string>
+    <string name="compendium_screen_concept_desc">説明</string>
+    <string name="compendium_screen_concept_count">概念</string>
+    <string name="compendium_screen_notes_present_label">ノート</string>
+    <string name="compendium_screen_notes_present_no">なし</string>
+    <string name="compendium_screen_notes_present_yes">あり</string>
+    <string name="compendium_screen_navigate_view_prev">前を\n表示</string>
+    <string name="compendium_screen_navigate_view_next">次を\n表示</string>
+    <string name="compendium_screen_navigate_start_next">次を\n開始</string>
+    <string name="compendium_screen_navigate_end_course">コースを\n完了</string>
+
+    <string name="course_info_author">コース作成者</string>
+    <string name="course_info_study_progress">学習進捗</string>
+    <string name="course_info_started_at">開始日: %1$s</string>
+    <string name="course_info_basic_progress">全体の進捗</string>
+    <string name="course_info_ended_topics_count_label">完了</string>
+    <string name="course_info_concepts_count_label">概念</string>
+    <string name="course_info_concepts_count">%1$d 概念</string>
+    <string name="course_info_notes_is_present">💡 ノートあり</string>
+    <string name="course_info_delete_course_alert">コースから退会すると、このコースのすべてのノート、概念、フラッシュカードを含むすべての進捗が削除されます！</string>
+    <string name="course_info_delete_course_button">コースから退会</string>
+
+    <string name="course_plan_info_topics">コーストピック</string>
+    <string name="course_plan_info_join">コースに参加</string>
+    <string name="course_plan_info_goto">進捗へ移動</string>
+    <string name="course_plan_info_edit_course_button">コースを編集</string>
+
+    <string name="course_plan_creation_label">コース作成</string>
+    <string name="course_plan_creation_name_label">名前...</string>
+    <string name="course_plan_creation_desc_label">説明...</string>
+    <string name="course_plan_creation_name_alert">名前は5〜255文字である必要があります</string>
+    <string name="course_plan_creation_add_topic">トピックを追加</string>
+    <string name="course_plan_creation_error">作成エラー！</string>
+    <string name="course_plan_creation_create">作成</string>
+    <string name="course_plan_creation_creating">作成中...</string>
+    <string name="course_plan_creation_is_public">コースを公開しますか？</string>
+    <string name="course_plan_creation_background_src">コース背景リンク...</string>
+    <string name="course_plan_creation_cancel">キャンセル</string>
+    <string name="course_plan_creation_update">更新</string>
+    <string name="course_plan_creation_updating_label">コース更新</string>
+
+    <string name="course_screen_cards_new">新規</string>
+    <string name="course_screen_cards_repeat">復習</string>
+    <string name="course_screen_cards_study">学習</string>
+    <string name="course_screen_my_courses">マイコース</string>
+    <string name="course_screen_concept_studying">概念学習</string>
+    <string name="course_screen_concept_studying_start">学習を開始</string>
+    <string name="course_screen_concept_studying_empty">学習するものがありません！</string>
+    <string name="course_screen_concept_studying_ended">すでに完了！</string>
+    <string name="course_screen_concept_studying_label">確認済みカード: %1$s | 平均時間: %2$s</string>
+    <string name="course_screen_course_author">"作成者: "</string>
+    <string name="course_screen_course_topics_count">トピック: %1$s</string>
+    <string name="course_screen_course_concepts_count">概念: %1$s</string>
+    <string name="course_screen_course_current_topic">現在のトピック:</string>
+    <string name="course_screen_course_started_at">開始日: %1$s</string>
+
+    <string name="card_screen_state_bad">難しい</string>
+    <string name="card_screen_state_easy">簡単</string>
+    <string name="card_screen_state_forget">忘れた</string>
+    <string name="card_screen_state_ok">普通</string>
+    <string name="card_screen_button_text">%1$s\n%2$s 日</string>
+    <string name="card_screen_ended">今はこれで全てです！</string>
+    <string name="card_screen_left_count">残り: %1$d</string>
+    <string name="card_screen_show">表示</string>
+    <string name="card_screen_edit_name">名前</string>
+    <string name="card_screen_edit_desc">説明</string>
+    <string name="card_screen_edit_cancel">キャンセル</string>
+    <string name="card_screen_edit_save">保存</string>
+
+    <string name="main_activity_error">エラー</string>
+    <string name="main_activity_nav_main">ホーム</string>
+    <string name="main_activity_nav_progress">進捗</string>
+    <string name="main_activity_nav_profile">プロフィール</string>
+    <string name="main_activity_loading">読み込み中...</string>
+    <string name="main_activity_internet_error">接続エラー！</string>
+    <string name="main_activity_try_again">再試行</string>
+
+    <string name="main_page_screen_recent_course_plans">人気の学習プラン</string>
+    <string name="main_page_screen_create_course_label">お探しのコースが見つかりませんか？\n独自のコースを作成しましょう！</string>
+    <string name="main_page_screen_search">検索...</string>
+
+    <string name="profile_screen_logout">ログアウト</string>
+    <string name="profile_screen_created_courses_label">ユーザー作成コース</string>
+    <string name="profile_screen_topics_count">トピック:\n%1$d</string>
+    <string name="profile_screen_new_username">新しいユーザー名</string>
+    <string name="profile_screen_new_email">新しいメールアドレス</string>
+    <string name="profile_screen_new_avatar_src">新しいアバターリンク</string>
+    <string name="profile_screen_cancel">キャンセル</string>
+    <string name="profile_screen_update">更新</string>
+    <string name="profile_screen_update_profile">プロフィールを更新</string>
+
+    <string name="login_form_hello">ようこそ！</string>
+    <string name="login_form_label">アカウントにサインイン</string>
+    <string name="login_form_login">サインイン</string>
+    <string name="login_form_sign_in">サインアップ</string>
+    <string name="login_form_field_email">メールアドレス</string>
+    <string name="login_form_field_email_alert">有効なメールアドレスを入力してください</string>
+    <string name="login_form_field_username">ユーザー名</string>
+    <string name="login_form_field_username_placeholder">ユーザー名を入力...</string>
+    <string name="login_form_field_username_alert">ユーザー名は5文字以上である必要があります</string>
+    <string name="login_form_field_photo">アバターリンク</string>
+    <string name="login_form_field_photo_placeholder">写真リンクを貼り付け...</string>
+    <string name="login_form_field_password">パスワード</string>
+    <string name="login_form_field_password_placeholder">パスワードを入力</string>
+    <string name="login_form_field_password_alert">パスワードは8文字以上である必要があります</string>
+    <string name="login_form_alert">無効なメールアドレスまたはパスワード</string>
+    <string name="login_form_loading">サインイン中...</string>
+
+    <string name="common_are_you_sure">続行してもよろしいですか？</string>
+    <string name="common_cancel">キャンセル</string>
+    <string name="common_confirm">確認</string>
+    <string name="common_yes">はい</string>
+</resources>

@@ -1,7 +1,6 @@
 package com.banew.cw2025_client.ui.main
 
 import android.annotation.SuppressLint
-import android.util.Log
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -150,7 +149,6 @@ fun CompendiumScreen(topicId: Long, viewModel: MainPageModel, courseModel: Cours
         
         LaunchedEffect(compendium.concepts) {
             concepts = compendium.concepts.map { ConceptForm(it) }
-            Log.d("AAAAAAAAA", concepts.joinToString { "${it.id}\n" })
         }
 
         val onClickUpdate = {

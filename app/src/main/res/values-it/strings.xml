@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Seezu</string>
+    <string name="title_activity_main">MainActivity</string>
+    <string name="title_activity_start">StartActivity</string>
+
+    <string name="greetings_app_real_name">SEEZU</string>
+    <string name="greetings_app_desc">
+        Applicazione per l\'autoapprendimento controllato e produttivo
+        con un risultato garantito.
+    </string>
+    <string name="greetings_continue">Continua...</string>
+
+    <string name="compendium_screen_next_topic_alert">Dopo aver completato l\'argomento, potrai modificare il contenuto del compendio solo tramite le flashcard.</string>
+    <string name="compendium_screen_next_topic_unsaved">E avete anche delle modifiche non salvate!</string>
+    <string name="compendium_screen_next_topic_continue">Continuare?</string>
+    <string name="compendium_screen_without_save_alert">Avete delle modifiche non salvate! Continuare senza salvare?</string>
+    <string name="compendium_screen_own_notes">Note personali</string>
+    <string name="compendium_screen_without_save_label">Avete delle modifiche non salvate!</string>
+    <string name="compendium_screen_without_save_button">Salva</string>
+    <string name="compendium_screen_status_locked">Bloccato</string>
+    <string name="compendium_screen_status_can_start">Può iniziare</string>
+    <string name="compendium_screen_status_completed">Completato</string>
+    <string name="compendium_screen_status_current">Argomento attuale</string>
+    <string name="compendium_screen_concepts">Concetti</string>
+    <string name="compendium_screen_no_concepts">Nessun concetto per questo argomento</string>
+    <string name="compendium_screen_concept_name">Nome</string>
+    <string name="compendium_screen_concept_desc">Descrizione</string>
+    <string name="compendium_screen_concept_count">Concetti</string>
+    <string name="compendium_screen_notes_present_label">Note</string>
+    <string name="compendium_screen_notes_present_no">Non ci sono</string>
+    <string name="compendium_screen_notes_present_yes">Ci sono</string>
+    <string name="compendium_screen_navigate_view_prev">Visualizza\nprecedente</string>
+    <string name="compendium_screen_navigate_view_next">Visualizza\nsuccessivo</string>
+    <string name="compendium_screen_navigate_start_next">Inizia\nsuccessivo</string>
+    <string name="compendium_screen_navigate_end_course">Termina\nil corso</string>
+
+    <string name="course_info_author">Autore del corso</string>
+    <string name="course_info_study_progress">Progresso di studio</string>
+    <string name="course_info_started_at">Iniziato il: %1$s</string>
+    <string name="course_info_basic_progress">Progresso generale</string>
+    <string name="course_info_ended_topics_count_label">Completati</string>
+    <string name="course_info_concepts_count_label">Concetti</string>
+    <string name="course_info_concepts_count">%1$d concetti</string>
+    <string name="course_info_notes_is_present">💡 Note presenti</string>
+    <string name="course_info_delete_course_alert">Dopo aver abbandonato il corso, tutti i vostri progressi, incluse tutte le note, i concetti e le flashcard di questo corso, verranno eliminati!</string>
+    <string name="course_info_delete_course_button">Abbandona il corso</string>
+
+    <string name="course_plan_info_topics">Argomenti del corso</string>
+    <string name="course_plan_info_join">Iscriviti al corso</string>
+    <string name="course_plan_info_goto">Vai al progresso</string>
+    <string name="course_plan_info_edit_course_button">Modifica corso</string>
+
+    <string name="course_plan_creation_label">Creazione del corso</string>
+    <string name="course_plan_creation_name_label">Nome...</string>
+    <string name="course_plan_creation_desc_label">Descrizione...</string>
+    <string name="course_plan_creation_name_alert">Il nome deve essere lungo tra 5 e 255 caratteri inclusi</string>
+    <string name="course_plan_creation_add_topic">Aggiungi argomento</string>
+    <string name="course_plan_creation_error">Errore di creazione!</string>
+    <string name="course_plan_creation_create">Crea</string>
+    <string name="course_plan_creation_creating">Creazione in corso...</string>
+    <string name="course_plan_creation_is_public">Il corso sarà pubblico?</string>
+    <string name="course_plan_creation_background_src">Link allo sfondo del corso...</string>
+    <string name="course_plan_creation_cancel">Annulla</string>
+    <string name="course_plan_creation_update">Aggiorna</string>
+    <string name="course_plan_creation_updating_label">Aggiornamento del corso</string>
+
+    <string name="course_screen_cards_new">Nuove</string>
+    <string name="course_screen_cards_repeat">Ripetizione</string>
+    <string name="course_screen_cards_study">Studio</string>
+    <string name="course_screen_my_courses">I miei corsi</string>
+    <string name="course_screen_concept_studying">Studio dei concetti</string>
+    <string name="course_screen_concept_studying_start">Inizia lo studio</string>
+    <string name="course_screen_concept_studying_empty">Non c\'è nulla da passare!</string>
+    <string name="course_screen_concept_studying_ended">Già completato!</string>
+    <string name="course_screen_concept_studying_label">Schede visualizzate: %1$s | Tempo medio: %2$s</string>
+    <string name="course_screen_course_author">"Autore: "</string>
+    <string name="course_screen_course_topics_count">Argomenti: %1$s</string>
+    <string name="course_screen_course_concepts_count">Concetti: %1$s</string>
+    <string name="course_screen_course_current_topic">Argomento attuale:</string>
+    <string name="course_screen_course_started_at">Iniziato il: %1$s</string>
+
+    <string name="card_screen_state_bad">Cattivo</string>
+    <string name="card_screen_state_easy">Facile</string>
+    <string name="card_screen_state_forget">Dimenticato</string>
+    <string name="card_screen_state_ok">OK</string>
+    <string name="card_screen_button_text">%1$s\n%2$s giorno</string>
+    <string name="card_screen_ended">Questo è tutto per ora!</string>
+    <string name="card_screen_left_count">Rimanenti: %1$d</string>
+    <string name="card_screen_show">Mostra</string>
+    <string name="card_screen_edit_name">Nome</string>
+    <string name="card_screen_edit_desc">Descrizione</string>
+    <string name="card_screen_edit_cancel">Annulla</string>
+    <string name="card_screen_edit_save">Salva</string>
+
+    <string name="main_activity_error">Errore</string>
+    <string name="main_activity_nav_main">Home</string>
+    <string name="main_activity_nav_progress">Progresso</string>
+    <string name="main_activity_nav_profile">Profilo</string>
+    <string name="main_activity_loading">Caricamento...</string>
+    <string name="main_activity_internet_error">Errore di connessione!</string>
+    <string name="main_activity_try_again">Riprova</string>
+
+    <string name="main_page_screen_recent_course_plans">Piani di studio popolari</string>
+    <string name="main_page_screen_create_course_label">Non hai trovato il corso desiderato?\nCreane uno tuo!</string>
+    <string name="main_page_screen_search">Cerca...</string>
+
+    <string name="profile_screen_logout">Esci</string>
+    <string name="profile_screen_created_courses_label">Corsi creati dall\'utente</string>
+    <string name="profile_screen_topics_count">Argomenti:\n%1$d</string>
+    <string name="profile_screen_new_username">Nuovo nome utente</string>
+    <string name="profile_screen_new_email">Nuova email</string>
+    <string name="profile_screen_new_avatar_src">Nuovo link avatar</string>
+    <string name="profile_screen_cancel">Annulla</string>
+    <string name="profile_screen_update">Aggiorna</string>
+    <string name="profile_screen_update_profile">Aggiorna profilo</string>
+
+    <string name="login_form_hello">Benvenuto!</string>
+    <string name="login_form_label">Accedi al tuo account</string>
+    <string name="login_form_login">Accedi</string>
+    <string name="login_form_sign_in">Registrati</string>
+    <string name="login_form_field_email">Email</string>
+    <string name="login_form_field_email_alert">Inserisci un indirizzo email corretto</string>
+    <string name="login_form_field_username">Nome utente</string>
+    <string name="login_form_field_username_placeholder">Inserisci uno pseudonimo...</string>
+    <string name="login_form_field_username_alert">Lo pseudonimo deve contenere almeno 5 caratteri</string>
+    <string name="login_form_field_photo">Link avatar utente</string>
+    <string name="login_form_field_photo_placeholder">Incolla il link della foto...</string>
+    <string name="login_form_field_password">Password</string>
+    <string name="login_form_field_password_placeholder">Inserisci la password</string>
+    <string name="login_form_field_password_alert">La password deve contenere più di 8 caratteri</string>
+    <string name="login_form_alert">Email o password non corretta</string>
+    <string name="login_form_loading">Accesso in corso...</string>
+
+    <string name="common_are_you_sure">Sei sicuro di voler continuare?</string>
+    <string name="common_cancel">Annulla</string>
+    <string name="common_confirm">Conferma</string>
+    <string name="common_yes">Sì</string>
+</resources>
