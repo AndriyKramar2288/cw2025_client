@@ -70,9 +70,7 @@ class CoursePlanInfoViewModel(val isMock: Boolean = true) : ViewModel() {
     var isEdit by mutableStateOf(false)
 
     fun loadCourseById(id: Long, contextModel: MainPageModel) {
-        coursePlan = contextModel.currentCoursePlans.firstOrNull { it.id == id }
-
-        coursePlan ?: dataSource?.let { dataSource ->
+        dataSource?.let { dataSource ->
             viewModelScope.launch {
                 contextModel.isRefreshing = true
                 dataSource.loadCoursePlanById(id).asSuccess {
