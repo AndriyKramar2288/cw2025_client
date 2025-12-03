@@ -33,11 +33,16 @@ private constructor() {
 
     fun default(contextModel: MainPageModel): Result<T> {
         asError {
+            contextModel.lastException = it.error
+
+            if (it.error.message.equals("Not authorized!")) {
+                contextModel.logout()
+            }
+
             contextModel.updateConnectionError(
                 contextModel.isConnectionError ||
                 it.error.message.equals("Network error")
             )
-            contextModel.lastException = it.error
         }
         return this
     }

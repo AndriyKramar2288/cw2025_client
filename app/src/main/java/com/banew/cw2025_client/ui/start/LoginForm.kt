@@ -172,7 +172,7 @@ fun GreetingsStep2(
                 stringResource(R.string.login_form_field_username_placeholder),
                 android.R.drawable.star_on,
                 viewModel.username,
-                viewModel.username.isNotEmpty() && viewModel.username.length <= 5,
+                viewModel.username.isNotEmpty() && viewModel.username.length < 5,
                 stringResource(R.string.login_form_field_username_alert),
             ) { viewModel.username = it }
             // Photo Field

@@ -32,12 +32,17 @@ interface ApiService {
 
 
     // --- USER ---
-    @GET("users/")
+    @GET("users/detailed")
     suspend fun currentUser(
         @Header("Authorization") token: String
     ): UserProfileDetailedDto
 
-    @GET("users/{userId}")
+    @GET("users/")
+    suspend fun currentUserBasic(
+        @Header("Authorization") token: String
+    ): UserProfileBasicDto
+
+    @GET("users/{userId}/detailed")
     suspend fun userProfileById(
         @Path("userId") userId: Long,
         @Header("Authorization") token: String
@@ -54,6 +59,13 @@ interface ApiService {
     suspend fun loadCoursePlanById(
         @Header("Authorization") token: String,
         @Path("courseId") courseId: Long
+    ): CoursePlanBasicDto
+
+    @PATCH("course-plan/{courseId}")
+    suspend fun updateCoursePlan(
+        @Header("Authorization") token: String,
+        @Path("courseId") courseId: Long,
+        @Body body: CoursePlanBasicDto
     ): CoursePlanBasicDto
 
     @GET("course-plan/search")

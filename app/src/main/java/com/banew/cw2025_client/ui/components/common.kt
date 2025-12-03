@@ -26,6 +26,8 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Switch
+import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -237,6 +239,30 @@ fun DeathBox(text1: String, text2: String, onClick: () -> Unit) {
             }
         }
     }
+}
+
+@Composable
+fun MySwitch(
+    value: Boolean,
+    onChange: (Boolean) -> Unit,
+    innerContent: @Composable (() -> Unit) = {}
+) {
+    Switch(
+        colors = SwitchDefaults.colors(
+            checkedBorderColor = Color.Transparent,
+            checkedThumbColor = Color.LightGray,
+            checkedTrackColor = Color.LightGray.copy(alpha = .5f),
+            checkedIconColor = Color.White,
+            uncheckedBorderColor = Color.Transparent,
+            uncheckedThumbColor = Color.Gray,
+            uncheckedTrackColor = Color.Gray.copy(alpha = .5f),
+            uncheckedIconColor = Color.LightGray,
+
+        ),
+        checked = value,
+        onCheckedChange = onChange,
+        thumbContent = innerContent
+    )
 }
 
 @Composable

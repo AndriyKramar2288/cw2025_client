@@ -47,7 +47,9 @@ class MainPageModel(isMock: Boolean = false) : ViewModel() {
                         CoursePlanBasicDto.TopicBasicDto(
                             null, "тема 1", "опис"
                         )
-                    ), 4, "https://bukowina.org.ua/wp-content/uploads/2024/09/9191919.jpeg"
+                    ), 4,
+                    "https://bukowina.org.ua/wp-content/uploads/2024/09/9191919.jpeg",
+                    true
                 )
             ).flatMap { listOf(it, it, it, it, it) }
         )
@@ -86,6 +88,8 @@ class MainPageModel(isMock: Boolean = false) : ViewModel() {
         ))
         private set
 
+    var currentUser by mutableStateOf<UserProfileBasicDto?>(null)
+        private set
 
     var preferredRoute
         get() = preferredRouteState.value
@@ -143,15 +147,10 @@ class MainPageModel(isMock: Boolean = false) : ViewModel() {
             dataSource!!.beginCourse(coursePLanId).asSuccess {
                 currentCourses += listOf(it.data)
                 shouldRefreshCourses = true
+                shouldRefreshCoursePlans = true
                 preferredRoute = "courses"
             }.default(this@MainPageModel)
         }
-    }
-
-    fun confirmCoursePlanCreation(dto: CoursePlanBasicDto) {
-        currentCoursePlans += listOf(dto)
-        preferredRoute = "home"
-        shouldRefreshCoursePlans = true
     }
 
     private suspend fun refreshCoursePlanPage(forced: Boolean = false) {
@@ -178,17 +177,24 @@ class MainPageModel(isMock: Boolean = false) : ViewModel() {
         }.asNetEx()
     }
 
+    private suspend fun refreshCurrentUser() {
+        dataSource!!.userProfile().asSuccess {
+            currentUser = it.data
+        }.default(this)
+    }
+
     fun refresh() {
-        dataSource!!.token ?: logout()
+        dataSource!!.token?.let {
+            viewModelScope.launch {
+                isRefreshing = true
 
-        viewModelScope.launch {
-            isRefreshing = true
+                refreshCoursePage(true)
+                refreshCoursePlanPage(true)
+                refreshCurrentUser()
 
-            refreshCoursePage(true)
-            refreshCoursePlanPage(true)
-
-            isRefreshing = false
-        }
+                isRefreshing = false
+            }
+        } ?: logout()
     }
 
     fun updateConnectionError(value: Boolean) {

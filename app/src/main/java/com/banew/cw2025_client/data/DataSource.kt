@@ -41,10 +41,20 @@ import java.util.concurrent.TimeUnit
 class DataSource(context: Context) {
     private val prefs: SharedPreferences = context.getSharedPreferences("MyAppPrefs", Context.MODE_PRIVATE)
 
-    private suspend fun <T> resolveResult(successCallback: (T) -> Unit = {}, resultSource: (suspend () -> T)) = try {
-        val result = resultSource()
-        successCallback(result)
-        Result.Success(result)
+    private suspend fun <T> resolveResult(
+        successCallback: (T) -> Unit = {},
+        isTokenCheck: Boolean = true,
+        resultSource: (suspend () -> T)
+    ) = try {
+        if (isTokenCheck && token == null) {
+            logout()
+            Result.Error(IOException("Not authorized!"))
+        }
+        else {
+            val result = resultSource()
+            successCallback(result)
+            Result.Success(result)
+        }
     } catch (e: HttpException) {
         Result.Error(IOException(resolveHttpException(e)))
     } catch (e: Exception) {
@@ -64,22 +74,10 @@ class DataSource(context: Context) {
     }
 
     suspend fun createCoursePlan(
-        name: String,
-        desc: String,
-        backSrc: String,
-        topics: List<TopicForm>
+        form: CoursePlanBasicDto
     ): Result<CoursePlanBasicDto> {
         return resolveResult {
-            apiService.createCoursePlan("Bearer $token", CoursePlanBasicDto(
-                null,
-                name,
-                null,
-                desc,
-                topics.map { CoursePlanBasicDto.TopicBasicDto(
-                    null, it.name.value, it.desc.value
-                ) },
-                0, backSrc.ifBlank { null }
-            ))
+            apiService.createCoursePlan("Bearer $token", form)
         }
     }
 
@@ -131,13 +129,11 @@ class DataSource(context: Context) {
         }
     }
 
+    suspend fun userProfile(): Result<UserProfileBasicDto> = resolveResult {
+        apiService.currentUserBasic("Bearer $token")
+    }
+
     suspend fun userProfileDetailed(userId: Long? = null): Result<UserProfileDetailedDto> {
-
-        if (token == null) {
-            logout()
-            return Result.Error(IOException("Not authorized!"))
-        }
-
         return resolveResult {
             if (userId == null)
                 apiService.currentUser("Bearer $token")
@@ -152,7 +148,7 @@ class DataSource(context: Context) {
 
         return resolveResult({
             updateToken(it.token)
-        }) {
+        }, false) {
             apiService.login(form)
         }
     }
@@ -170,7 +166,7 @@ class DataSource(context: Context) {
 
         return resolveResult({
             updateToken(it.token)
-        }) {
+        }, false) {
             apiService.register(form)
         }
     }
@@ -241,6 +237,12 @@ class DataSource(context: Context) {
     suspend fun updateProfile(body: UserProfileBasicDto): Result<UserProfileBasicDto> {
         return resolveResult {
             apiService.updateUserProfile("Bearer $token", body)
+        }
+    }
+
+    suspend fun updateCoursePlan(basicDto: CoursePlanBasicDto): Result<CoursePlanBasicDto> {
+        return resolveResult {
+            apiService.updateCoursePlan("Bearer $token", basicDto.id, basicDto)
         }
     }
 
