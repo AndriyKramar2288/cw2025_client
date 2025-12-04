@@ -136,4 +136,8 @@
     <string name="common_cancel">रद्द करें</string>
     <string name="common_confirm">पुष्टि</string>
     <string name="common_yes">हाँ</string>
+    <string name="main_page_screen_students_total">छात्र: %1$d</string>
+    <string name="main_page_screen_topics_total">विषय: %1$d</string>
+    <string name="course_plan_info_is_public">सार्वजनिक</string>
+    <string name="course_plan_info_is_private">निजी</string>
 </resources>

@@ -171,11 +171,12 @@ fun UserProfileCard(userProfile: UserProfileBasicDto, model: MainPageModel, modi
                 Text(
                     text = userProfile.username,
                     style = AppTypography.bodyMedium,
+                    color = Color.DarkGray
                 )
                 Text(
                     text = userProfile.email,
                     style = AppTypography.bodyMedium,
-                    color = Color.Gray.copy(alpha = 0.7f)
+                    color = Color.DarkGray.copy(alpha = 0.7f)
                 )
             }
         }

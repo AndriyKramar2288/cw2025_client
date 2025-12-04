@@ -136,4 +136,8 @@
     <string name="common_cancel">إلغاء</string>
     <string name="common_confirm">تأكيد</string>
     <string name="common_yes">نعم</string>
+    <string name="main_page_screen_students_total">الطلاب: %1$d</string>
+    <string name="main_page_screen_topics_total">المواضيع: %1$d</string>
+    <string name="course_plan_info_is_public">عام</string>
+    <string name="course_plan_info_is_private">خاص</string>
 </resources>

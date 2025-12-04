@@ -254,13 +254,13 @@ fun RowScope.MyNavigationItem(
             )
         },
         colors = NavigationBarItemColors(
-            Color(0, 0, 0, 0),
+            Color.Transparent,
             colorResource(R.color.navbar_text),
-            Color(0, 0, 0, 0),
+            Color.LightGray.copy(alpha = .5f),
             colorResource(R.color.navbar_icon_tint),
             colorResource(R.color.navbar_text),
-            Color(0, 0, 0, 0),
-            Color(0, 0, 0, 0),
+            Color.Transparent,
+            Color.Transparent,
         ),
         label = { Text(text = label, fontSize = 14.sp) },
         enabled = !viewModel.isConnectionError && !viewModel.isRefreshing

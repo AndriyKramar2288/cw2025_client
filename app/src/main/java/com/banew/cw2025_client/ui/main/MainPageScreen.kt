@@ -38,6 +38,7 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
@@ -71,7 +72,9 @@ fun MainPageScreen(viewModel : MainPageModel) {
             Text(
                 text = stringResource(R.string.main_page_screen_recent_course_plans),
                 style = AppTypography.titleMedium,
-                modifier = Modifier.padding(5.dp).padding(top = 20.dp)
+                modifier = Modifier
+                    .padding(5.dp)
+                    .padding(top = 20.dp)
             )
             SearchRow(viewModel)
         }
@@ -89,8 +92,8 @@ fun MainPageScreen(viewModel : MainPageModel) {
             val backModifier =
                 if (isBack)
                     Modifier.background(Brush.horizontalGradient(listOf(
-                        Color(0x45FFFFFF),
-                        Color(0x45D5BBBB)
+                        Color(0xA4FFFFFF),
+                        Color(0xBEE0B794)
                     )))
                 else Modifier.background(Color.White)
 
@@ -138,7 +141,9 @@ fun MainPageScreen(viewModel : MainPageModel) {
                             Text(
                                 text = item.description,
                                 style = AppTypography.bodyMedium,
-                                color = textColor
+                                color = textColor,
+                                maxLines = 2,
+                                overflow = TextOverflow.Ellipsis
                             )
                         }
                         Column(
@@ -152,7 +157,10 @@ fun MainPageScreen(viewModel : MainPageModel) {
                                 modifier = Modifier.requiredSize(30.dp)
                             )
                             Text(
-                                "Тем: ${item.topics.size}",
+                                stringResource(
+                                    R.string.main_page_screen_topics_total,
+                                    item.topics.size
+                                ),
                                 style = AppTypography.bodySmall,
                                 color = textColor
                             )
@@ -168,7 +176,10 @@ fun MainPageScreen(viewModel : MainPageModel) {
                                 modifier = Modifier.requiredSize(30.dp)
                             )
                             Text(
-                                "Студентів: ${item.studentCount}",
+                                stringResource(
+                                    R.string.main_page_screen_students_total,
+                                    item.studentCount
+                                ),
                                 style = AppTypography.bodySmall,
                                 color = textColor
                             )

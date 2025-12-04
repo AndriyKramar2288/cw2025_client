@@ -160,4 +160,8 @@
     <string name="common_cancel">Скасувати</string>
     <string name="common_confirm">Підтвердження</string>
     <string name="common_yes">Так</string>
+    <string name="main_page_screen_students_total">Студентів: %1$d</string>
+    <string name="main_page_screen_topics_total">Тем: %1$d</string>
+    <string name="course_plan_info_is_public">Публічний</string>
+    <string name="course_plan_info_is_private">Приватний</string>
 </resources>

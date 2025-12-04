@@ -136,4 +136,8 @@
     <string name="common_cancel">Annulla</string>
     <string name="common_confirm">Conferma</string>
     <string name="common_yes">Sì</string>
+    <string name="main_page_screen_students_total">Studenti: %1$d</string>
+    <string name="main_page_screen_topics_total">Argomenti: %1$d</string>
+    <string name="course_plan_info_is_public">Pubblico</string>
+    <string name="course_plan_info_is_private">Privato</string>
 </resources>

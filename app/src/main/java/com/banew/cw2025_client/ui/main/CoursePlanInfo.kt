@@ -12,12 +12,14 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -30,6 +32,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -127,6 +130,7 @@ fun CoursePlanInfo(id: Long, contextModel: MainPageModel, viewModel: CoursePlanI
                             text = coursePlan.description,
                             style = AppTypography.bodyMedium,
                             textAlign = TextAlign.Justify,
+                            color = Color.DarkGray,
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(vertical = 20.dp)
@@ -144,14 +148,40 @@ fun CoursePlanInfo(id: Long, contextModel: MainPageModel, viewModel: CoursePlanI
                         )
                     }
 
-                    // Теми курсу
-                    Text(
-                        text = stringResource(R.string.course_plan_info_topics),
-                        style = AppTypography.bodyLarge,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(vertical = 8.dp)
-                    )
+                    Row(
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        // Теми курсу
+                        Text(
+                            text = stringResource(R.string.course_plan_info_topics),
+                            style = AppTypography.bodyLarge,
+                            modifier = Modifier
+                                .padding(vertical = 8.dp)
+                        )
+
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Text(
+                                text =
+                                    if (coursePlan.isPublic)
+                                        stringResource(R.string.course_plan_info_is_public)
+                                    else
+                                        stringResource(R.string.course_plan_info_is_private),
+                                style = AppTypography.bodyMedium,
+                                modifier = Modifier
+                                    .padding(8.dp)
+                            )
+                            Icon(
+                                if (coursePlan.isPublic)
+                                    painterResource(R.drawable.public_40px)
+                                else
+                                    painterResource(R.drawable.public_off_40px),
+                                "is public icon",
+                                modifier = Modifier.requiredSize(20.dp),
+                                tint = colorResource(R.color.navbar_button)
+                            )
+                        }
+                    }
                 }
 
                 HorizontalDivider(

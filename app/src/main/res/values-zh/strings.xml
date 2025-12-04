@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Seezu</string>
+    <string name="title_activity_start">StartActivity</string>
     <string name="greetings_app_real_name">SEEZU</string>
     <string name="greetings_app_desc">一款用于可控和高效自学的应用程序，保证学习效果。</string>
     <string name="greetings_continue">继续...</string>
@@ -130,4 +131,9 @@
     <string name="common_cancel">取消</string>
     <string name="common_confirm">确认</string>
     <string name="common_yes">是</string>
+    <string name="main_page_screen_students_total">学生：%1$d</string>
+    <string name="main_page_screen_topics_total">主题：%1$d</string>
+    <string name="title_activity_main">MainActivity</string>
+    <string name="course_plan_info_is_public">公开</string>
+    <string name="course_plan_info_is_private">私密</string>
 </resources>

@@ -136,4 +136,8 @@
     <string name="common_cancel">Cancel</string>
     <string name="common_confirm">Confirmation</string>
     <string name="common_yes">Yes</string>
+    <string name="main_page_screen_students_total">Студентів: %1$d</string>
+    <string name="main_page_screen_topics_total">Тем: %1$d</string>
+    <string name="course_plan_info_is_public">Public</string>
+    <string name="course_plan_info_is_private">Private</string>
 </resources>

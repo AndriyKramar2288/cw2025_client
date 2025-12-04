@@ -336,7 +336,7 @@ private fun CourseCard(course: CourseBasicDto, viewModel: MainPageModel) {
                     text = description,
                     style = AppTypography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    maxLines = 3,
+                    maxLines = 2,
                     overflow = TextOverflow.Ellipsis
                 )
             }

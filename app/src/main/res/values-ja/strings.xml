@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Seezu</string>
+    <string name="title_activity_main">MainActivity</string>
+    <string name="title_activity_start">MainActivity</string>
     <string name="greetings_app_real_name">SEEZU</string>
     <string name="greetings_app_desc">効果的な自己学習のための管理され生産的なアプリケーション。確実な結果を保証します。</string>
     <string name="greetings_continue">続ける...</string>
@@ -130,4 +132,8 @@
     <string name="common_cancel">キャンセル</string>
     <string name="common_confirm">確認</string>
     <string name="common_yes">はい</string>
+    <string name="main_page_screen_students_total">学生数: %1$d</string>
+    <string name="main_page_screen_topics_total">トピック数: %1$d</string>
+    <string name="course_plan_info_is_public">公開</string>
+    <string name="course_plan_info_is_private">非公開</string>
 </resources>

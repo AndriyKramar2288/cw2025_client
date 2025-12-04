@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Seezu</string>
+    <string name="title_activity_start">StartActivity</string>
     <string name="greetings_app_real_name">SEEZU</string>
     <string name="greetings_app_desc">Eine App für kontrolliertes und produktives Selbstlernen mit garantierten Ergebnissen.</string>
     <string name="greetings_continue">Fortfahren...</string>
@@ -130,4 +131,9 @@
     <string name="common_cancel">Abbrechen</string>
     <string name="common_confirm">Bestätigung</string>
     <string name="common_yes">Ja</string>
+    <string name="main_page_screen_students_total">Studenten: %1$d</string>
+    <string name="main_page_screen_topics_total">Themen: %1$d</string>
+    <string name="title_activity_main">MainActivity</string>
+    <string name="course_plan_info_is_public">Öffentlich</string>
+    <string name="course_plan_info_is_private">Privat</string>
 </resources>
