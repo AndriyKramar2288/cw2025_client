@@ -136,4 +136,5 @@
     <string name="title_activity_main">MainActivity</string>
     <string name="course_plan_info_is_public">Öffentlich</string>
     <string name="course_plan_info_is_private">Privat</string>
+    <string name="compendium_screen_concept_count_small">%1$d Stk.</string>
 </resources>

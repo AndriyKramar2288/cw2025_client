@@ -198,7 +198,7 @@ fun MainPageScreen(viewModel : MainPageModel) {
                 horizontalArrangement = Arrangement.Center,
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier
-                    .padding(horizontal = 35.dp)
+                    .padding(horizontal = 20.dp)
                     .fillMaxWidth()
                     .background(
                         brush = Brush.horizontalGradient(

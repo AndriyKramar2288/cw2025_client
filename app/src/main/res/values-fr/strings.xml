@@ -140,4 +140,5 @@
     <string name="main_page_screen_topics_total">Sujets : %1$d</string>
     <string name="course_plan_info_is_public">Public</string>
     <string name="course_plan_info_is_private">Privé</string>
+    <string name="compendium_screen_concept_count_small">%1$d élém.</string>
 </resources>

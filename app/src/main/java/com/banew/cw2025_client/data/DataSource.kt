@@ -271,7 +271,7 @@ class DataSource(context: Context) {
         private var retrofit: Retrofit? = null
         private const val BASE_URL = "http://10.0.2.2:8080/api/"
         private const val PROD_URL = "https://cw2025-backend.onrender.com/api/"
-        private const val PROD = true
+        private const val PROD = false
         private const val CONNECT_TIMEOUT = 10L
         private const val READ_TIMEOUT = 60L
         private val client: Retrofit

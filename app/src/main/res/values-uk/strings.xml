@@ -164,4 +164,5 @@
     <string name="main_page_screen_topics_total">Тем: %1$d</string>
     <string name="course_plan_info_is_public">Публічний</string>
     <string name="course_plan_info_is_private">Приватний</string>
+    <string name="compendium_screen_concept_count_small">%1$d шт.</string>
 </resources>

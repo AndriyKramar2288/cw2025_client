@@ -140,4 +140,5 @@
     <string name="main_page_screen_topics_total">Argomenti: %1$d</string>
     <string name="course_plan_info_is_public">Pubblico</string>
     <string name="course_plan_info_is_private">Privato</string>
+    <string name="compendium_screen_concept_count_small">%1$d pz.</string>
 </resources>

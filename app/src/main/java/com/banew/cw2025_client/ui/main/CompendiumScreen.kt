@@ -445,7 +445,10 @@ fun ConceptsSection(
                     style = AppTypography.bodyLarge
                 )
                 Text(
-                    text = "${concepts.size} шт.",
+                    text = stringResource(
+                        R.string.compendium_screen_concept_count_small,
+                        concepts.size
+                    ),
                     style = AppTypography.bodyMedium,
                     color = Color.Gray
                 )
