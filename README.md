@@ -4,7 +4,10 @@
 
 [🇺🇸 English](../README.md) | [🇺🇦 Українська](README.uk.md)
 
-| ![Скріншот головного екрану](docs_resources/screenshot%201.png) | ![Скріншот детального перегляду](docs_resources/screenshot%202.png) | ![Скріншот профілю](docs_resources/screenshot%203.png) | ![Скріншот налаштувань](docs_resources/screenshot%204.png) |
+<img src="docs_resources/screenshot 1.png" width="200" />
+<img src="docs_resources/screenshot 2.png" width="200" />
+<img src="docs_resources/screenshot 3.png" width="200" />
+<img src="docs_resources/screenshot 4.png" width="200" />
 
 ---
 
