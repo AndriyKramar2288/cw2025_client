@@ -5,10 +5,10 @@
 [🇺🇸 English](../README.md) | [🇺🇦 Українська](README.uk.md)
 
 <div style="display: flex; gap: 10px;">
-  <img src="docs_resources/screenshot 1.png" width="200" />
-  <img src="docs_resources/screenshot 2.png" width="200" />
-  <img src="docs_resources/screenshot 3.png" width="200" />
-  <img src="docs_resources/screenshot 4.png" width="200" />
+  <img src="../docs_resources/screenshot 1.png" width="200" />
+  <img src="../docs_resources/screenshot 2.png" width="200" />
+  <img src="../docs_resources/screenshot 3.png" width="200" />
+  <img src="../docs_resources/screenshot 4.png" width="200" />
 </div>
 
 ---
